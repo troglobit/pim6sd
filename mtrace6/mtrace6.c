@@ -230,7 +230,7 @@ mtrace_loop()
 {
 	int nsoc, fromlen, rcvcc;
 	struct timeval tv, tv_wait;
-	struct fd_set *fdsp;
+	fd_set *fdsp;
 	size_t nfdsp;
 	struct sockaddr_storage from_ss;
 	struct sockaddr *from_sock = (struct sockaddr *)&from_ss;
