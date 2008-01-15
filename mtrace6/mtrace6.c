@@ -454,7 +454,9 @@ ip6_validaddr(ifname, addr)
 	struct sockaddr_in6 *addr;
 {
 	int s;
+#ifdef SIOCGIFAFLAG_IN6
 	struct in6_ifreq ifr6;
+#endif
 	u_int32_t flags6;
 
 	/* we need a global address only...XXX: should be flexible? */
@@ -463,6 +465,7 @@ ip6_validaddr(ifname, addr)
 	    IN6_IS_ADDR_SITELOCAL(&addr->sin6_addr))
 		return(0);
 
+#ifdef SIOCGIFAFLAG_IN6
 	/* get IPv6 dependent flags and examine them */
 	if ((s = socket(AF_INET6, SOCK_DGRAM, 0)) < 0)
 		err(1, "ip6_validaddr: socket");
@@ -482,7 +485,7 @@ ip6_validaddr(ifname, addr)
 	if (flags6 & (IN6_IFF_ANYCAST | IN6_IFF_TENTATIVE |
 		      IN6_IFF_DUPLICATED | IN6_IFF_DETACHED))
 		return(0);
-
+#endif
 	return(1);
 }
 
