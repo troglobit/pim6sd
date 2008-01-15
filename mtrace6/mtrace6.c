@@ -59,6 +59,7 @@
 #include <err.h>
 #include <ifaddrs.h>
 
+#include "mld6.h"
 #include "trace.h"
 
 static char *gateway, *intface, *source, *group, *receiver, *destination;
