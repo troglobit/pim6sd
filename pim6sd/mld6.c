@@ -81,8 +81,8 @@
 #include <net/if.h>
 #include <net/route.h>
 #include <netinet/in.h>
-#include <netinet/icmp6.h>
 #include <netinet/ip6.h>
+#include <netinet/icmp6.h>
 #ifdef __linux__
 #include <linux/mroute6.h>
 #else

@@ -11,6 +11,10 @@
  * $Id: netlink.c,v 1.2 2005/09/21 11:38:22 suzsuz Exp $
  */
 
+#ifdef HAVE_CONFIG_H
+#include <../include/config.h>
+#endif
+
 #ifndef HAVE_NETLINK
 /* not compiled */
 #else

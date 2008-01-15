@@ -80,6 +80,9 @@
 /* Define to 1 if you support the 'routing socket' function. */
 #undef HAVE_ROUTING_SOCKETS
 
+/* Define to 1 if you support the 'netlink' function. */
+#undef HAVE_NETLINK
+
 /* Define to 1 if you have a length field in struct sockaddr */
 #undef HAVE_SA_LEN
 

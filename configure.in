@@ -138,18 +138,21 @@ AC_TRY_RUN([#include <errno.h>
 
 main ()
 {
+#ifdef AF_NETLINK
+  exit(1);
+#else
   int ac_sock;
-
   ac_sock = socket (AF_ROUTE, SOCK_RAW, 0);
   if (ac_sock < 0 && errno == EINVAL)
     exit (1);
   exit (0);
+#endif
 }],
 	[AC_DEFINE(HAVE_ROUTING_SOCKETS)
-	 UK_METHOD=routesock.o
+	 UK_METHOD=routesock
 	 AC_MSG_RESULT(routing socket)],
 	[AC_DEFINE(HAVE_NETLINK)
-	 UK_METHOD=netlink.o
+	 UK_METHOD=netlink
 	 AC_MSG_RESULT(netlink)])
 AC_SUBST(UK_METHOD)
 

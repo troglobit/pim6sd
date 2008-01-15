@@ -1,6 +1,7 @@
 #ifndef __LINUX_MROUTE6_H
 #define __LINUX_MROUTE6_H
 
+#include <linux/types.h>
 #include <linux/sockios.h>
 
 /*
@@ -25,28 +26,28 @@
 #define MRT6_ASSERT	(MRT6_BASE+7)	/* Activate PIM assert mode		*/
 #define MRT6_PIM	(MRT6_BASE+8)	/* enable PIM code	*/
 
-#define SIOCGETVIFCNT	SIOCPROTOPRIVATE	/* IP protocol privates */
-#define SIOCGETSGCNT	(SIOCPROTOPRIVATE+1)
+#define SIOCGETMIFCNT_IN6	SIOCPROTOPRIVATE	/* IP protocol privates */
+#define SIOCGETSGCNT_IN6	(SIOCPROTOPRIVATE+1)
 #define SIOCGETRPF	(SIOCPROTOPRIVATE+2)
 
-#define MAXMIFS		32	
+#define MAXMIFS		32
 typedef unsigned long mifbitmap_t;	/* User mode code depends on this lot */
 typedef unsigned short mifi_t;
 #define ALL_MIFS	((mifi_t)(-1))
 
 #ifndef IF_SETSIZE
-#define IF_SETSIZE      256
+#define IF_SETSIZE	256
 #endif
 
-typedef u_int32_t       if_mask;
+typedef	__u32		if_mask;
 #define NIFBITS (sizeof(if_mask) * 8)        /* bits per mask */
 
-#ifndef howmany
-#define howmany(x, y)   (((x) + ((y) - 1)) / (y))
+#ifndef DIV_ROUND_UP
+#define	DIV_ROUND_UP(x,y)	(((x) + ((y) - 1)) / (y))
 #endif
 
 typedef struct if_set {
-	        if_mask ifs_bits[howmany(IF_SETSIZE, NIFBITS)];
+	if_mask ifs_bits[DIV_ROUND_UP(IF_SETSIZE, NIFBITS)];
 } if_set;
 
 #define IF_SET(n, p)    ((p)->ifs_bits[(n)/NIFBITS] |= (1 << ((n) % NIFBITS)))
@@ -55,22 +56,22 @@ typedef struct if_set {
 #define IF_COPY(f, t)   bcopy(f, t, sizeof(*(f)))
 #define IF_ZERO(p)      bzero(p, sizeof(*(p)))
 
-/*
- 	Same idea as select
- 
+#if 0
+/* Same idea as select */
+
 #define VIFM_SET(n,m)	((m)|=(1<<(n)))
 #define VIFM_CLR(n,m)	((m)&=~(1<<(n)))
 #define VIFM_ISSET(n,m)	((m)&(1<<(n)))
 #define VIFM_CLRALL(m)	((m)=0)
 #define VIFM_COPY(mfrom,mto)	((mto)=(mfrom))
 #define VIFM_SAME(m1,m2)	((m1)==(m2))
-*/
+#endif
 
 /*
  *	Passed by mrouted for an MRT_ADD_MIF - again we use the
  *	mrouted 3.6 structures for compatibility
  */
- 
+
 struct mif6ctl {
 	mifi_t	mif6c_mifi;		/* Index of MIF */
 	unsigned char mif6c_flags;	/* MIFF_ flags */
@@ -84,7 +85,7 @@ struct mif6ctl {
 /*
  *	Cache manipulation structures for mrouted and PIMd
  */
- 
+
 struct mf6cctl
 {
 	struct sockaddr_in6 mf6cc_origin;		/* Origin of mcast	*/
@@ -97,14 +98,14 @@ struct mf6cctl
 	int	     mfcc_expire;
 };
 
-/* 
- *	Group count retrieval for mrouted
+/*
+ *	Group count retrieval for pim6sd
  */
- 
+
 struct sioc_sg_req6
 {
-	struct in6_addr src;
-	struct in6_addr grp;
+	struct sockaddr_in6 src;
+	struct sockaddr_in6 grp;
 	unsigned long pktcnt;
 	unsigned long bytecnt;
 	unsigned long wrong_if;
@@ -116,7 +117,7 @@ struct sioc_sg_req6
 
 struct sioc_mif_req6
 {
-	mifi_t	vifi;		/* Which iface */
+	mifi_t	mifi;		/* Which iface */
 	unsigned long icount;	/* In packets */
 	unsigned long ocount;	/* Out packets */
 	unsigned long ibytes;	/* In bytes */
@@ -128,13 +129,14 @@ struct sioc_mif_req6
  */
 
 #ifdef __KERNEL__
+struct inet6_dev * ipv6_find_idev(struct net_device *dev);
 #include <net/sock.h>
 
 extern int ip6_mroute_setsockopt(struct sock *, int, char __user *, int);
 extern int ip6_mroute_getsockopt(struct sock *, int, char __user *, int __user *);
+extern int ip6_mr_input(struct sk_buff *skb);
 extern int ip6mr_ioctl(struct sock *sk, int cmd, void __user *arg);
 extern void ip6_mr_init(void);
-
 
 struct mif_device
 {
@@ -149,7 +151,7 @@ struct mif_device
 
 #define VIFF_STATIC 0x8000
 
-struct mfc6_cache 
+struct mfc6_cache
 {
 	struct mfc6_cache *next;		/* Next entry on cache line 	*/
 	struct in6_addr mf6c_mcastgrp;			/* Group the entry belongs to 	*/
@@ -179,16 +181,20 @@ struct mfc6_cache
 
 #define MFC6_LINES		64
 
-#if  (MFC6_LINES & (MFC6_LINES -1 )) == 0
+#if  (MFC6_LINES & (MFC6_LINES - 1)) == 0
 #define MF6CHASHMOD(h) ((h) & (MFC6_LINES -1))
 #else
 #define MF6CHASHMOD(h) ((h) % MFC6_LINES)
 #endif
 
-#define MFC6_HASH(a, g) MF6CHASHMOD((a).s6_addr32[0] ^ (a).s6_addr32[1] ^ \
-				    (a).s6_addr32[2] ^ (a).s6_addr32[3] ^ \
-				    (a).s6_addr32[0] ^ (a).s6_addr32[1] ^ \
-				    (a).s6_addr32[2] ^ (a).s6_addr32[3])
+#define MFC6_HASH(a, g) MF6CHASHMOD((__force u32)(a)->s6_addr32[0] ^ \
+				    (__force u32)(a)->s6_addr32[1] ^ \
+				    (__force u32)(a)->s6_addr32[2] ^ \
+				    (__force u32)(a)->s6_addr32[3] ^ \
+				    (__force u32)(g)->s6_addr32[0] ^ \
+				    (__force u32)(g)->s6_addr32[1] ^ \
+				    (__force u32)(g)->s6_addr32[2] ^ \
+				    (__force u32)(g)->s6_addr32[3])
 
 #endif
 
@@ -204,13 +210,14 @@ struct mfc6_cache
 #define IGMPMSG_WRONGVIF	2		/* For PIM assert processing (unused) */
 #define IGMPMSG_WHOLEPKT	3		/* For PIM Register processing */
 
+#define PIM_REGISTER		1
+
 #ifdef __KERNEL__
 
 #define PIM_V1_VERSION		__constant_htonl(0x10000000)
 #define PIM_V1_REGISTER		1
 
 #define PIM_VERSION		2
-#define PIM_REGISTER		1
 
 #define PIM_NULL_REGISTER	__constant_htonl(0x40000000)
 
@@ -224,14 +231,14 @@ struct pim6reghdr
 	__u32	flags;
 };
 
-
 struct rtmsg;
 extern int ip6mr_get_route(struct sk_buff *skb, struct rtmsg *rtm, int nowait);
-#endif
 
-#ifdef __KERNEL__
-#define IN6_ARE_ADDR_EQUAL(a,b) \
-	(memcmp(&(a)->s6_addr[0], &(b)->s6_addr[0], sizeof(struct in6_addr)) == 0)
+#ifdef CONFIG_IPV6_MROUTE
+extern struct sock *mroute6_socket;
+#else
+#define mroute6_socket	NULL
+#endif
 #endif
 
 /*
@@ -246,22 +253,45 @@ struct mrt6msg {
 #define MRT6MSG_NOCACHE		1
 #define MRT6MSG_WRONGMIF	2
 #define MRT6MSG_WHOLEPKT	3		/* used for use level encap */
-	u_char		im6_mbz;		/* must be zero		   */
-	u_char		im6_msgtype;		/* what type of message    */
-	u_int16_t	im6_mif;		/* mif rec'd on		   */
-	u_int32_t	im6_pad;		/* padding for 64 bit arch */
+	__u8		im6_mbz;		/* must be zero		   */
+	__u8		im6_msgtype;		/* what type of message    */
+	__u16		im6_mif;		/* mif rec'd on		   */
+	__u32		im6_pad;		/* padding for 64 bit arch */
 	struct in6_addr	im6_src, im6_dst;
 };
+
+#if 0
+/*
+ * PIM packet header
+ */
+#define PIM_VERSION	2
+struct pim {
+#if defined(__BIG_ENDIAN_BITFIELD)
+	__u8	pim_ver:4,	/* PIM version */
+		pim_type:4;	/* PIM type    */
+#elif defined(__LITTLE_ENDIAN_BITFIELD)
+	__u8	pim_type:4,	/* PIM version */
+		pim_ver:4;	/* PIM type    */
+#endif
+	__u8	pim_rsv;	/* Reserved */
+	__be16	pim_cksum;	/* IP style check sum */
+};
+
+#define PIM_MINLEN	8		/* The header min. length */
+#define PIM6_REG_MINLEN	(PIM_MINLEN+40)	/* Register message + inner IP6 header */
+
+#define	IPV6_VERSION		0x60
+#define	IPV6_VERSION_MASK	0xf0
 
 /* XXX :there should not be there  */
 #include <linux/icmpv6.h>
 
 struct mld_hdr {
 	struct icmp6hdr mld_icmp6_hdr;
-	struct in6_addr	mld_addr;
+	struct in6_addr mld_addr;
 };
 
-#define mld_type mld_icmp6_hdr.icmp6_type
-
+#define	mld_type	mld_icmp6_hdr.icmp6_type
+#endif
 
 #endif

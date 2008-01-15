@@ -112,11 +112,13 @@
 #include <net/if.h>
 #include <net/route.h>
 #include <netinet/in.h>
+#include <netinet/icmp6.h>
 #ifdef HAVE_NETINET6_PIM6_H
 #include <netinet6/pim6.h>
 #endif
 #ifdef __linux__
 #include <linux/mroute6.h>
+#include <linux/pim6.h>
 #else
 #include <netinet6/ip6_mroute.h>
 #endif
@@ -140,6 +142,13 @@
 #include "inet6.h"
 #include "kern.h"
 #include "routesock.h"
+
+#ifndef IPV6_VERSION
+#define	IPV6_VERSION		0x60
+#endif
+#ifndef IPV6_VERSION_MASK
+#define IPV6_VERSION_MASK	0xf0
+#endif
 
 struct pim_hello_options {
     int bitmap;			/* bitmap to show which option is included */

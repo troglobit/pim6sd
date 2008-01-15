@@ -83,15 +83,36 @@ struct mld_hdr {
 #define mld_type mld_icmp6_hdr.icmp6_type
 #define mld_code mld_icmp6_hdr.icmp6_code
 #define mld_maxdelay mld_icmp6_hdr.icmp6_maxdelay
-#endif
+
+#else
 
 #define mld_hdr		mld6_hdr
 #define mld_type	mld6_type
 #define mld_code	mld6_code
-#define mld_cksum	mld6_cksum
 #define mld_maxdelay	mld6_maxdelay
-#define mld_reserved	mld6_reserved
 #define mld_addr	mld6_addr
+
+#endif
+
+#define mld_cksum	mld6_cksum
+#define mld_reserved	mld6_reserved
+#endif
+
+#ifndef IP6OPT_RTALERT_MLD
+#define IP6OPT_RTALERT_MLD	0
+#define IP6OPT_RTALERT		0x05
+#endif
+
+#ifndef IP6OPT_ROUTER_ALERT
+#define IP6OPT_ROUTER_ALERT	IP6OPT_RTALERT
+#define	IP6OPT_RTALERT_LEN	4
+#endif
+
+#ifndef IN6ADDR_LINKLOCAL_ALLNODES_INIT
+#define IN6ADDR_LINKLOCAL_ALLNODES_INIT \
+	{{{ 0xff, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, \
+	    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01 }}}
+static const struct in6_addr in6addr_linklocal_allnodes = IN6ADDR_LINKLOCAL_ALLNODES_INIT;
 #endif
 
 #endif

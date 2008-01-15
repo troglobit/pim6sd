@@ -120,7 +120,9 @@ config_vifs_from_kernel()
 	 * Loop through all of the interfaces.
 	 */
 	for (ifa = ifap; ifa; ifa = ifa->ifa_next) {
+#ifdef SIOCGIFAFLAG_IN6
 		struct in6_ifreq ifr6;
+#endif
 
 		/*
 		 * Ignore any interface for an address family other than IPv6.
@@ -151,6 +153,7 @@ config_vifs_from_kernel()
 			rmt = NULL;
 		}
 
+#ifdef SIOCGIFAFLAG_IN6
 		/*
 		 * Get IPv6 specific flags, and ignore an anycast address.
 		 * XXX: how about a deprecated, tentative, duplicated or
@@ -176,6 +179,7 @@ config_vifs_from_kernel()
 				continue;
 			}
 		}
+#endif
 
 		if (IN6_IS_ADDR_LINKLOCAL(&addr.sin6_addr))
 		{

@@ -83,6 +83,7 @@
 #include <net/if.h>
 #include <net/route.h>
 #include <netinet/in.h>
+#include <netinet/icmp6.h>
 #ifdef __linux__
 #include <linux/mroute6.h>
 #else
@@ -90,6 +91,8 @@
 #endif
 #ifdef HAVE_NETINET6_PIM6_H
 #include <netinet6/pim6.h>
+#else
+#include <linux/pim6.h>
 #endif
 #include <netinet/ip6.h>
 #include <arpa/inet.h>
@@ -238,7 +241,7 @@ pim6_read(f, rfd)
 {
     register int pim6_recvlen;
 
-#ifdef SYSV
+#if defined(SYSV) || defined(__linux__)
     sigset_t block, oblock;
 #else
     register int omask;
@@ -252,7 +255,7 @@ pim6_read(f, rfd)
         return;
     }
 
-#ifdef SYSV
+#if defined(SYSV) || defined(__linux__)
     (void)sigemptyset(&block);
     (void)sigaddset(&block, SIGALRM);
     if (sigprocmask(SIG_BLOCK, &block, &oblock) < 0)
@@ -264,7 +267,7 @@ pim6_read(f, rfd)
 
     accept_pim6(pim6_recvlen);
 
-#ifdef SYSV
+#if defined(SYSV) || defined(__linux__)
     (void)sigprocmask(SIG_SETMASK, &oblock, (sigset_t *)NULL);
 #else
     (void)sigsetmask(omask);

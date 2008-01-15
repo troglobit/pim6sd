@@ -55,6 +55,7 @@
 #include <netinet/in.h>
 #include <netinet/ip6.h>
 #ifdef __linux__
+#include <netinet/icmp6.h>
 #include <linux/mroute6.h>
 #else
 #include <netinet6/ip6_mroute.h>

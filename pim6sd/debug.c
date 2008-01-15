@@ -78,6 +78,7 @@
 #include <stdlib.h>
 #include <syslog.h>
 #include <errno.h>
+#include <time.h>
 #include "defs.h"
 #include "pathnames.h"
 #include "pimd.h"
@@ -719,11 +720,18 @@ va_dcl
 		msg);
 	if (syserr == 0)
 	    fprintf(fp, "\n");
-	else
+	else {
+#ifdef HAVE_STRERROR
+	    fprintf(fp, ": %s\n", strerror(syserr));
+#else
 	    if (syserr < sys_nerr)
-		fprintf(fp, ": %s\n", sys_errlist[syserr]);
+		fprintf(fp, ": %s\n",
+			sys_errlist[syserr]
+		);
 	    else
 		fprintf(fp, ": errno %d\n", syserr);
+#endif
+	}
     }
 
     /*

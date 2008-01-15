@@ -63,6 +63,7 @@
 #include <net/if.h>
 #include <net/route.h>
 #include <netinet/in.h>
+#include <netinet/icmp6.h>
 #ifdef __linux__
 #include <linux/mroute6.h>
 #else
@@ -425,9 +426,9 @@ usage:
     init_mld6();
     init_pim6();
 
-#ifdef HAVE_ROUTING_SOCKETS
+#if defined(HAVE_ROUTING_SOCKETS) || defined(HAVE_NETLINK)
     init_routesock();
-#endif				/* HAVE_ROUTING_SOCKETS */
+#endif				/* HAVE_ROUTING_SOCKETS || HAVE_NETLINK */
 
     init_pim6_mrt();
     init_timers();
@@ -793,9 +794,9 @@ restart(i)
     init_mld6();
     init_pim6();
 
-#ifdef HAVE_ROUTING_SOCKETS
+#if defined(HAVE_ROUTING_SOCKETS) || defined(HAVE_NETLINK)
     init_routesock();
-#endif				/* HAVE_ROUTING_SOCKETS */
+#endif				/* HAVE_ROUTING_SOCKETS || HAVE_NETLINK */
 
     init_pim6_mrt();
     init_vifs();
