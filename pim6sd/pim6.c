@@ -92,7 +92,7 @@
 #ifdef HAVE_NETINET6_PIM6_H
 #include <netinet6/pim6.h>
 #else
-#include <linux/pim6.h>
+#include <linux/pim.h>
 #endif
 #include <netinet/ip6.h>
 #include <arpa/inet.h>
