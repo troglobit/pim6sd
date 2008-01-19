@@ -27,17 +27,19 @@ struct pim {
 #define PIM_VERSION		2
 #define PIM_REGISTER		1
 
-#if 0 /* defined(__KERNEL__) */
+#if defined(__KERNEL__)
 /* PIMv2 register message header layout (ietf-draft-idmr-pimvsm-v2-00.ps */
 struct pimreghdr
 {
 	__u8	type;
 	__u8	reserved;
-	__sum16	csum;
+	__be16	csum;
 	__be32	flags;
 };
 
 #define PIM_NULL_REGISTER	__constant_htonl(0x40000000)
+
+extern int pim_rcv_v1(struct sk_buff *);
 #endif
 
 #endif
