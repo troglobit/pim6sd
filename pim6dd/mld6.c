@@ -158,6 +158,13 @@ init_mld6()
 		  (void *) &allrouters_group.sin6_addr) != 1)
 	log_msg(LOG_ERR, 0, "inet_pton failed for ff02::2");
 
+#ifdef IPV6_ROUTER_ALERT
+    on = 0;	/* Accept Router Alert option with value 0 (RFC2711) */
+    if (setsockopt(mld6_socket, IPPROTO_IPV6, IPV6_ROUTER_ALERT, &on,
+		   sizeof(on)) < 0)
+	log_msg(LOG_ERR, errno, "setsockopt(IPV6_ROUTER_ALERT)");
+#endif
+
     /* filter all non-MLD ICMP messages */
     ICMP6_FILTER_SETBLOCKALL(&filt);
     ICMP6_FILTER_SETPASS(ICMP6_MEMBERSHIP_QUERY, &filt);
