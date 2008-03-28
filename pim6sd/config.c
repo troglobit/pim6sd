@@ -123,11 +123,11 @@ config_vifs_from_kernel()
 #ifdef SIOCGIFAFLAG_IN6
 		struct in6_ifreq ifr6;
 #endif
-
 		/*
 		 * Ignore any interface for an address family other than IPv6.
 		 */
-		if (ifa->ifa_addr->sa_family != AF_INET6) {
+		if (!ifa->ifa_addr ||
+		    ifa->ifa_addr->sa_family != AF_INET6) {
 			/* Eventually may have IPv6 address later */
 			total_interfaces++;
 			continue;
