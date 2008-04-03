@@ -161,8 +161,10 @@ init_mld6()
 #ifdef IPV6_ROUTER_ALERT
     on = 0;	/* Accept Router Alert option with value 0 (RFC2711) */
     if (setsockopt(mld6_socket, IPPROTO_IPV6, IPV6_ROUTER_ALERT, &on,
-		   sizeof(on)) < 0)
-	log_msg(LOG_ERR, errno, "setsockopt(IPV6_ROUTER_ALERT)");
+		   sizeof(on)) < 0) {
+	/* Note: some kernel might need this */
+	log_msg(LOG_WARNING, errno, "setsockopt(IPV6_ROUTER_ALERT)");
+    }
 #endif
 
     /* filter all non-MLD ICMP messages */
