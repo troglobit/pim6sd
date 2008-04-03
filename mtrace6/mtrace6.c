@@ -255,7 +255,9 @@ mtrace_loop()
 		memset(fdsp, 0, nfdsp);
 		FD_SET(mldsoc, fdsp);
 
-		if ((nsoc = select(mldsoc + 1, fdsp, NULL, NULL, &tv_wait)) < 0)
+		if ((nsoc = select(mldsoc + 1,
+				   SELECT_TYPE_ARG234 fdsp, NULL, NULL,
+				   SELECT_TYPE_ARG5 &tv_wait)) < 0)
 			err(1, "select");
 		free(fdsp);
 

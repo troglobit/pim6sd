@@ -572,7 +572,9 @@ usage:
 		timer(&dummysigalrm);
 	    }
 	}
-	if ((n = select(nfds, &rfds, NULL, NULL, timeout)) < 0)
+	if ((n = select(nfds,
+			SELECT_TYPE_ARG234 &rfds, NULL, NULL,
+			SELECT_TYPE_ARG5 timeout)) < 0)
 	{
 	    if (errno != EINTR)	
 		log_msg(LOG_WARNING, errno, "select failed");
