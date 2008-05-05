@@ -85,6 +85,7 @@
 #include <netinet/in.h>
 #ifdef __linux__
 #include <linux/mroute6.h>
+#include <linux/pim.h>
 #else
 #include <netinet6/ip6_mroute.h>
 #endif

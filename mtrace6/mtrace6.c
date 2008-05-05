@@ -59,6 +59,7 @@
 #include <err.h>
 #include <ifaddrs.h>
 
+#include "mld6.h"
 #include "trace.h"
 
 static char *gateway, *intface, *source, *group, *receiver, *destination;
@@ -229,7 +230,7 @@ mtrace_loop()
 {
 	int nsoc, fromlen, rcvcc;
 	struct timeval tv, tv_wait;
-	struct fd_set *fdsp;
+	fd_set *fdsp;
 	size_t nfdsp;
 	struct sockaddr_storage from_ss;
 	struct sockaddr *from_sock = (struct sockaddr *)&from_ss;
@@ -452,9 +453,11 @@ ip6_validaddr(ifname, addr)
 	char *ifname;
 	struct sockaddr_in6 *addr;
 {
+#ifdef SIOCGIFAFLAG_IN6
 	int s;
 	struct in6_ifreq ifr6;
 	u_int32_t flags6;
+#endif
 
 	/* we need a global address only...XXX: should be flexible? */
 	if (IN6_IS_ADDR_LOOPBACK(&addr->sin6_addr) ||
@@ -462,6 +465,7 @@ ip6_validaddr(ifname, addr)
 	    IN6_IS_ADDR_SITELOCAL(&addr->sin6_addr))
 		return(0);
 
+#ifdef SIOCGIFAFLAG_IN6
 	/* get IPv6 dependent flags and examine them */
 	if ((s = socket(AF_INET6, SOCK_DGRAM, 0)) < 0)
 		err(1, "ip6_validaddr: socket");
@@ -481,6 +485,7 @@ ip6_validaddr(ifname, addr)
 	if (flags6 & (IN6_IFF_ANYCAST | IN6_IFF_TENTATIVE |
 		      IN6_IFF_DUPLICATED | IN6_IFF_DETACHED))
 		return(0);
+#endif
 
 	return(1);
 }

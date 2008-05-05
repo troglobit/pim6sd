@@ -8,8 +8,12 @@
  * (until proven otherwise).
  */
 /*
- * $Id: netlink.c,v 1.2 2005/09/21 11:38:22 suzsuz Exp $
+ * $Id: netlink.c,v 1.3 2008/05/01 03:03:38 suzsuz Exp $
  */
+
+#ifdef HAVE_CONFIG_H
+#include <../include/config.h>
+#endif
 
 #ifndef HAVE_NETLINK
 /* not compiled */

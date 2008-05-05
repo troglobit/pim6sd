@@ -1,3 +1,25 @@
+May 1 2008	suz@kame.net
+	- include/linux/*, configure, configure.in, include/config.h.in,
+	  pim6sd/Makefile, pim6sd/Makefile.am, pim6sd/Makefile.in, pim6sd/config.c,
+	  pim6sd/debug.c, pim6sd/main.c, pim6sd/mld6.c, pim6sd/mld6.h, pim6sd/mrt.c,
+	  pim6sd/netlink.c pim6sd/pim6.c, pim6sd/pim6_proto.c, pim6sd/route.c,
+	  pim6sd/routesock.c, pim6sd/rp.c:
+	    pim6sd supports linux now (experimental).
+	    IPv6-multicast-aware linux kernel is available from USAGI Project 
+	    or the latest 2.6 snapshot.  (contributed by USAGI Project)
+	- pmsft/pmsft.c, mtrace6/mtrace6.c: removed a compilation warning.
+		
+Apr 7 2008	suz@kame.net
+	- mtrace6.c: use "struct in6_ifreq" only when SIOCGIFAFLAG_IN6 is available.
+	  (contributed by USAGI Project)
+	- mtrace6.c: use "fd_set", instead of "struct fd_set", to support OSes
+	  without "struct fd_set".
+	  (contributed by USAGI Project)
+	- mtrace6: added mld6.h to support OSes without struct mld_hdr {}.
+	  (contributed by USAGI Project)
+	- configure.in: added an knob to choose applications to be build.
+	  (contributed by USAGI Project)
+
 Dec 4 2006	suz@kame.net
 	- pim6sd: fixed a compilation failure on netbsd (with gcc-4.1.2)
 

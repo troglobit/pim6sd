@@ -120,7 +120,9 @@ config_vifs_from_kernel()
 	 * Loop through all of the interfaces.
 	 */
 	for (ifa = ifap; ifa; ifa = ifa->ifa_next) {
+#ifdef SIOCGIFAFLAG_IN6
 		struct in6_ifreq ifr6;
+#endif
 
 		/*
 		 * Ignore any interface for an address family other than IPv6.
@@ -156,6 +158,7 @@ config_vifs_from_kernel()
 		 * XXX: how about a deprecated, tentative, duplicated or
 		 * detached address?
 		 */
+#ifdef SIOCGIFAFLAG_IN6
 #ifdef HAVE_STRLCPY
 		strlcpy(ifr6.ifr_name, ifa->ifa_name, sizeof(ifr6.ifr_name));
 #elif HAVE_STRNCPY
@@ -176,6 +179,7 @@ config_vifs_from_kernel()
 				continue;
 			}
 		}
+#endif
 
 		if (IN6_IS_ADDR_LINKLOCAL(&addr.sin6_addr))
 		{

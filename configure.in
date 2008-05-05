@@ -5,8 +5,6 @@ AC_PREREQ(2.59)
 AC_INIT(README)
 AM_CONFIG_HEADER(include/config.h)
 AM_INIT_AUTOMAKE(mcast-tools, 20050926)
-SUBDIRS="mcastread mcastsend mfc mtrace6 pim6dd pim6sd pmsft"
-AC_SUBST(SUBDIRS)
 
 # Checks for programs.
 AC_PROG_CC
@@ -108,10 +106,52 @@ if test "$ts_cv_sa_len" = yes; then
 	AC_DEFINE([HAVE_SA_LEN], 1, [Define to 1 if you have a length field in struct sockaddr])
 fi
 
+AC_MSG_CHECKING(tool you enabled)
+SUBDIRS_ALL="mcastread mcastsend mfc mtrace6 pim6dd pim6sd pmsft"
+SUBDIRS=""
+
+AC_ARG_ENABLE(mcastread,
+[  --disable-mcastread   do not build mcastread],
+  [],
+  [enable_mcastread=yes])
+AC_ARG_ENABLE(mcastsend,
+[  --disable-mcastsend   do not build mcastsend],
+  [],
+  [enable_mcastsend=yes])
+AC_ARG_ENABLE(mfc,
+[  --disable-mfc         do not build mfc],
+  [],
+  [enable_mfc=yes])
+AC_ARG_ENABLE(mtrace6,
+[  --disable-mtrace6     do not build mtrace6],
+  [],
+  [enable_mtrace6=yes])
+AC_ARG_ENABLE(pim6sd,
+[  --disable-pim6sd      do not build pim6sd],
+  [],
+  [enable_pim6sd=yes])
+AC_ARG_ENABLE(pim6dd,
+[  --disable-pim6dd      do not build pim6dd],
+  [],
+  [enable_pim6dd=yes])
+AC_ARG_ENABLE(pmsft,
+[  --disable-pmsft       do not build pmsft],
+  [],
+  [enable_pmsft=yes])
+
+for subdir in ${SUBDIRS_ALL}; do
+       eval enable=\$enable_${subdir}
+       if test "$enable" = "yes"; then
+               SUBDIRS="${SUBDIRS} $subdir"
+       fi
+done
+
+AC_MSG_RESULT($SUBDIRS)
+AC_SUBST(SUBDIRS)
+
 AC_MSG_CHECKING(if you enabled router-side mldv2)
 AC_ARG_ENABLE(mldv2router, 
-[  --disable-mldv2router	disables router-side MLDv2 functionality
-  --enable-mldv2router	enables router-side MLDv2 functionality],
+[  --disable-mldv2router	disables router-side MLDv2 functionality],
   [],
   [enable_mldv2router=yes])
 if test "$enable_mldv2router" = "yes"; then
@@ -121,8 +161,7 @@ AC_MSG_RESULT($enable_mldv2router)
 
 AC_MSG_CHECKING(if you enabled host-side mldv2)
 AC_ARG_ENABLE(mldv2host, 
-[  --disable-mldv2host	disables host-side MLDv2 functionality
-  --enable-mldv2host	enables host-side MLDv2 functionality],
+[  --enable-mldv2host	enables host-side MLDv2 functionality],
   [],
   [enable_mldv2host=no])
 if test "$enable_mldv2host" = "yes"; then
@@ -138,18 +177,22 @@ AC_TRY_RUN([#include <errno.h>
 
 main ()
 {
+#ifdef AF_NETLINK
+  exit(1);
+#else
   int ac_sock;
 
   ac_sock = socket (AF_ROUTE, SOCK_RAW, 0);
   if (ac_sock < 0 && errno == EINVAL)
     exit (1);
   exit (0);
+#endif
 }],
 	[AC_DEFINE(HAVE_ROUTING_SOCKETS)
-	 UK_METHOD=routesock.o
+	 UK_METHOD=routesock
 	 AC_MSG_RESULT(routing socket)],
 	[AC_DEFINE(HAVE_NETLINK)
-	 UK_METHOD=netlink.o
+	 UK_METHOD=netlink
 	 AC_MSG_RESULT(netlink)])
 AC_SUBST(UK_METHOD)
 

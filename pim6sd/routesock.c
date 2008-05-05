@@ -474,6 +474,22 @@ k_req_incoming(source, rpfcinfo)
 
 #endif				/* HAVE_ROUTING_SOCKETS */
 
+#ifndef TAILQ_FIRST
+#define TAILQ_FIRST(head)	((head)->tqh_first)
+#endif
+#ifndef TAILQ_EMPTY
+#define TAILQ_EMPTY(head)	(!TAILQ_FIRST(head))
+#endif
+#ifndef TAILQ_NEXT
+#define TAILQ_NEXT(elm,field)	((elm)->field.tqe_next)
+#endif
+#ifndef TAILQ_FOREACH
+#define TAILQ_FOREACH(var, head, field)			\
+	for ((var) = TAILQ_FIRST((head));		\
+	     (var);					\
+	     (var) = TAILQ_NEXT((var), field))
+#endif
+
 TAILQ_HEAD(staticrt_list, staticrt);
 static struct staticrt_list staticrt_head;
 
