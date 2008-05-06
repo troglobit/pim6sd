@@ -523,7 +523,7 @@ send_mld6(type, code, src, dst, group, index, delay, datalen, alert)
     make_mld6_msg(type, code, src, dst, group, index, delay, datalen, alert);
     dstp = (struct sockaddr_in6 *)sndmh.msg_name;
 
-#ifdef __KAME__
+#if defined(__KAME__) || defined(__linux__)
     if (IN6_IS_ADDR_LINKLOCAL(&dstp->sin6_addr) || 
 	IN6_IS_ADDR_MC_LINKLOCAL(&dstp->sin6_addr))
 	dstp->sin6_scope_id = index;

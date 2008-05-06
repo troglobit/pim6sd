@@ -1,3 +1,16 @@
+May 5 2008	suz@kame.net
+	- {pim6dd,pim6sd}/{mld6.c, netlink.c}:
+	    assign sin6_scope-id on linux as well as in KAME
+	    (contributed by USAGI Project)
+	- pim6sd/config.c, pim6dd/config.c, mcastsend/mcastsend.c, mtrace6/mtrace6.c
+	    prevent a NULL pointer access in Linux.  (getifaddrs() returns
+	    an ifa with ifa->ifa_addr=NULL for pim6reg interface)
+	    (contributed by USAGI Project)
+	- {pim6dd,pim6sd}/routesock.c
+	    fixed a compilation failure on linux, and stop supporting OSes
+	    without routing-socket or netlink.
+	    (suggested by USAGI Project)
+
 May 1 2008	suz@kame.net
 	- include/linux/*, configure, configure.in, include/config.h.in,
 	  pim6sd/Makefile, pim6sd/Makefile.am, pim6sd/Makefile.in, pim6sd/config.c,

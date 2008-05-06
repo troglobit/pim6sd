@@ -127,7 +127,8 @@ config_vifs_from_kernel()
 		/*
 		 * Ignore any interface for an address family other than IPv6.
 		 */
-		if (ifa->ifa_addr->sa_family != AF_INET6) {
+		if (ifa->ifa_addr == NULL ||
+		    ifa->ifa_addr->sa_family != AF_INET6) {
 			/* Eventually may have IPv6 address later */
 			total_interfaces++;
 			continue;

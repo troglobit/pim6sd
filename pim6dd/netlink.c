@@ -8,7 +8,7 @@
  * (until proven otherwise).
  */
 /*
- * $Id: netlink.c,v 1.1 2005/09/21 11:33:52 suzsuz Exp $
+ * $Id: netlink.c,v 1.2 2008/05/05 11:49:56 suzsuz Exp $
  */
 
 #ifndef HAVE_NETLINK
@@ -231,6 +231,7 @@ getmsg(struct rtmsg *rtm, int msglen, struct rpfctl *rpf)
 	log_msg(LOG_DEBUG, 0, "NETLINK: gateway is %s", inet6_fmt(&gw));
 	init_sin6(&rpf->rpfneighbor);
 	rpf->rpfneighbor.sin6_addr = gw;
+	rpf->rpfneighbor.sin6_scope_id = v->uv_ifindex;
     } else
 	rpf->rpfneighbor = rpf->source;
     rpf->iif = vifi;

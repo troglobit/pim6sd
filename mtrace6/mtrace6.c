@@ -504,7 +504,8 @@ get_my_sockaddr(family, addrp, l)
 	}
 
 	for (ifa = ifap; ifa; ifa = ifa->ifa_next) {
-		if (ifa->ifa_addr->sa_family != family)
+		if (ifa->ifa_addr == NULL ||
+		    ifa->ifa_addr->sa_family != family)
 			continue;
 		if (get_sa_len(ifa->ifa_addr) > l)
 			continue;
