@@ -101,8 +101,12 @@ process_cmd(char *cmd, FILE *fp)
 #endif
 	struct addrinfo hints, *res, *res0;
 	int error;
-	char str1[NI_MAXHOST], str2[NI_MAXHOST], *line, ifname[IFNAMSIZ];
-	int i, n, opt, level;
+	char str1[NI_MAXHOST], *line, ifname[IFNAMSIZ];
+	int i, n, opt;
+#ifdef HAVE_MLDV2HOST
+	int level;
+	char str2[NI_MAXHOST]
+#endif
 
 	/* Skip whitespaces */
 	line = cmd + 1;

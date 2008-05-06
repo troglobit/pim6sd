@@ -331,32 +331,5 @@ getmsg(rtm, msglen, rpfinfop)
     
     return(TRUE);
 }
-
-
-#else	/* HAVE_ROUTING_SOCKETS */
-
-
-/*
- * Return in rpfcinfo the incoming interface and the next hop router
- * toward source.
- */
-/* TODO: check whether next hop router address is in network or host order */
-int
-k_req_incoming(source, rpfcinfo)
-    struct sockaddr_in6 *source;
-    struct rpfctl *rpfcinfo;
-{
-    rpfcinfo->source = *source;
-    rpfcinfo->iif = NO_VIF;     /* just initialized, will be */
-    /* changed in kernel */
-    memset(&rpfcinfo->rpfneighbor, 0, sizeof(rpfcinfo->rpfneighbor));  /* initialized */
-    
-    if (ioctl(udp_socket, SIOCGETRPF, (char *) rpfcinfo) < 0){
-	log_msg(LOG_ERR, errno, "ioctl SIOCGETRPF k_req_incoming");
-	return(FALSE);
-    }
-    return (TRUE);
-}
-
 #endif	/* HAVE_ROUTING_SOCKETS */
 

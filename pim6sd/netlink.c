@@ -8,7 +8,7 @@
  * (until proven otherwise).
  */
 /*
- * $Id: netlink.c,v 1.2 2005/09/21 11:38:22 suzsuz Exp $
+ * $Id: netlink.c,v 1.4 2008/05/05 11:49:55 suzsuz Exp $
  */
 
 #ifdef HAVE_CONFIG_H

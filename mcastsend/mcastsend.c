@@ -215,6 +215,8 @@ bind_srcaddr(res, so, ifname, scope_limit)
 	for (ifa = ifap; ifa; ifa = ifa->ifa_next) {
 		if (strcmp(ifa->ifa_name, ifname) != 0)
 			continue;
+		if (ifa->ifa_addr == NULL)
+			continue;
 		if (res->ai_family != ifa->ifa_addr->sa_family)
 			continue;
 

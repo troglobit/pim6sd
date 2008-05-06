@@ -444,30 +444,6 @@ getmsg(rtm, msglen, rpfinfop)
 
     return (TRUE);
 }
-
-/*
- * Return in rpfcinfo the incoming interface and the next hop router toward
- * source.
- */
-/* TODO: check whether next hop router address is in network or host order */
-int
-k_req_incoming(source, rpfcinfo)
-    struct sockaddr_in6 *source;
-    struct rpfctl  *rpfcinfo;
-{
-    rpfcinfo->source = *source;
-    rpfcinfo->iif = NO_VIF;	/* just initialized, will be */
-    /* changed in kernel */
-    memset(&rpfcinfo->rpfneighbor, 0, sizeof(rpfcinfo->rpfneighbor));	/* initialized */
-
-    if (ioctl(udp_socket, SIOCGETRPF, (char *) rpfcinfo) < 0)
-    {
-	log_msg(LOG_ERR, errno, "ioctl SIOCGETRPF k_req_incoming");
-	return (FALSE);
-    }
-    return (TRUE);
-}
-
 #endif				/* HAVE_ROUTING_SOCKETS */
 
 #ifndef TAILQ_FIRST
@@ -480,10 +456,10 @@ k_req_incoming(source, rpfcinfo)
 #define TAILQ_NEXT(elm,field)	((elm)->field.tqe_next)
 #endif
 #ifndef TAILQ_FOREACH
-#define TAILQ_FOREACH(var, head, field)                                 \
-        for ((var) = TAILQ_FIRST((head));                               \
-            (var);                                                      \
-            (var) = TAILQ_NEXT((var), field))
+#define TAILQ_FOREACH(var, head, field)			\
+	for ((var) = TAILQ_FIRST((head));		\
+	     (var);					\
+	     (var) = TAILQ_NEXT((var), field))
 #endif
 
 TAILQ_HEAD(staticrt_list, staticrt);
@@ -512,6 +488,7 @@ int add_static_rt_entry(paddr, plen, gwaddr)
 	entry->plen = plen;
 	entry->gwaddr = *gwaddr;
 	TAILQ_INSERT_TAIL(&staticrt_head, entry, link);
+
 	return 0;
 }
 

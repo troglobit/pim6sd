@@ -144,10 +144,10 @@
 #include "routesock.h"
 
 #ifndef IPV6_VERSION
-#define	IPV6_VERSION		0x60
+#define        IPV6_VERSION            0x60
 #endif
 #ifndef IPV6_VERSION_MASK
-#define IPV6_VERSION_MASK	0xf0
+#define IPV6_VERSION_MASK      0xf0
 #endif
 
 struct pim_hello_options {

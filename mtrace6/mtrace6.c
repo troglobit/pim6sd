@@ -455,11 +455,11 @@ ip6_validaddr(ifname, addr)
 	char *ifname;
 	struct sockaddr_in6 *addr;
 {
-	int s;
 #ifdef SIOCGIFAFLAG_IN6
+	int s;
 	struct in6_ifreq ifr6;
-#endif
 	u_int32_t flags6;
+#endif
 
 	/* we need a global address only...XXX: should be flexible? */
 	if (IN6_IS_ADDR_LOOPBACK(&addr->sin6_addr) ||
@@ -488,6 +488,7 @@ ip6_validaddr(ifname, addr)
 		      IN6_IFF_DUPLICATED | IN6_IFF_DETACHED))
 		return(0);
 #endif
+
 	return(1);
 }
 
@@ -505,7 +506,8 @@ get_my_sockaddr(family, addrp, l)
 	}
 
 	for (ifa = ifap; ifa; ifa = ifa->ifa_next) {
-		if (ifa->ifa_addr->sa_family != family)
+		if (ifa->ifa_addr == NULL ||
+		    ifa->ifa_addr->sa_family != family)
 			continue;
 		if (get_sa_len(ifa->ifa_addr) > l)
 			continue;

@@ -91,7 +91,6 @@ struct mld_hdr {
 #define mld_code	mld6_code
 #define mld_maxdelay	mld6_maxdelay
 #define mld_addr	mld6_addr
-
 #endif
 
 #define mld_cksum	mld6_cksum

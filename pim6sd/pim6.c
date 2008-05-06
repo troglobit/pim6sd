@@ -263,7 +263,7 @@ pim6_read(f, rfd)
 #else
     /* Use of omask taken from main() */
     omask = sigblock(sigmask(SIGALRM));
-#endif /* SYSV */
+#endif /* SYSV || Linux */
 
     accept_pim6(pim6_recvlen);
 
@@ -271,7 +271,7 @@ pim6_read(f, rfd)
     (void)sigprocmask(SIG_SETMASK, &oblock, (sigset_t *)NULL);
 #else
     (void)sigsetmask(omask);
-#endif /* SYSV */
+#endif /* SYSV || Linux */
 }
 
 static void

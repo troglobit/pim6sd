@@ -123,10 +123,11 @@ config_vifs_from_kernel()
 #ifdef SIOCGIFAFLAG_IN6
 		struct in6_ifreq ifr6;
 #endif
+
 		/*
 		 * Ignore any interface for an address family other than IPv6.
 		 */
-		if (!ifa->ifa_addr ||
+		if (ifa->ifa_addr == NULL ||
 		    ifa->ifa_addr->sa_family != AF_INET6) {
 			/* Eventually may have IPv6 address later */
 			total_interfaces++;
@@ -153,12 +154,12 @@ config_vifs_from_kernel()
 			rmt = NULL;
 		}
 
-#ifdef SIOCGIFAFLAG_IN6
 		/*
 		 * Get IPv6 specific flags, and ignore an anycast address.
 		 * XXX: how about a deprecated, tentative, duplicated or
 		 * detached address?
 		 */
+#ifdef SIOCGIFAFLAG_IN6
 #ifdef HAVE_STRLCPY
 		strlcpy(ifr6.ifr_name, ifa->ifa_name, sizeof(ifr6.ifr_name));
 #elif HAVE_STRNCPY
