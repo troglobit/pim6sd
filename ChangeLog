@@ -1,0 +1,71 @@
+Dec 4 2006	suz@kame.net
+	- pim6sd: fixed a compilation failure on netbsd (with gcc-4.1.2)
+
+Sep 20 2006	suz@kame.net
+	- pim6sd: supports GenID option
+	- mfc: sleep a while to prevent a CPU overload.
+	- mfc: provides a lower TTL threshold for IPv4 multicast routing to prevent
+	       an unexpected multicast routing failure. (*BSD kernel does not generate
+	       any error for TTL threshold violation)
+
+Jun 24 2006	suz@kame.net
+	- pmsft: build pmsft regardless of the existence of MLDv2-host functionality
+	  (if MLDv2-host functionality is not available, only MLDv1-join/leave would
+	   work)
+
+Mar 21 2006	suz@kame.net
+	- pim6sd: supports DR-priority option
+
+Mar 17 2006	suz@kame.net
+	- fixed a pim6sd crash when it receives an (*,G) join for SSM-range 
+	  prefix (ff3x::/96)
+
+Dec 10 2005	suz@kame.net
+	- fixed a compilation failure of yacc/lex files on netbsd
+
+Dec 08 2005	suz@kame.net
+	- fixed a bug that pim6sd/pim6dd does not start on non-RFC3542 OS
+
+Oct 23 2005	suz@kame.net
+	- pim6sd prefers the longest-match entry in static-MRIB search,
+	  instead of the first-match one.
+
+Oct 06 2005	suz@kame.net
+	- fixed a bug that pim6sd cannot specify static MRIB using link-local
+	  nexthop
+	- pim6sd skips a hello option 24/65001 with an unknown address family,
+	  instead of discarding the whole hello message.
+
+Sep 23 2005	suz@kame.net
+	- fixed a availability check failure of RFC3542 on freebsd4
+	- moved the location of configuration file from /etc to /usr/local/etc
+	- fixed a pim6sd crash when it does not have an upstream router for 
+	  the RP address embedded in MLD report message.
+
+Sep 21 2005	suz@kame.net
+	- automatically checks the availability of RFC3542 or RFC2292.
+	- automatically checks the availability of routing-socket or netlink
+	- added a netlink-based routing for pim6sd and pim6dd
+
+Sep 20 2005	suz@kame.net
+	- "configure --disable-mldv2" works properly
+	- separated the mldv2 configure option into two: host-side mldv2 and router-side mldv2.
+	- checks the existence of "struct mld_hdr" in configure script, and define it locally if necessary.
+	- checks the existence of "netinet6/pim6.h" and "netinet6/in6_var.h" in configure script
+
+Sep 16 2005	suz@kame.net
+	- make mcastread and mcastsend compilable on linux
+	- pim6sd supports embedded-RP
+
+Sep 10 2005	suz@kame.net
+	- supports OS without length field for sockaddr* (e.g. linux)
+	- prefer to using strlcpy() to strncpy() whereever possible.
+	- in linux, use linux/mroute6.h instead of netinet6/ip6_mroute.h
+
+Sep 8 2005	suz@kame.net
+	- supports autoconf
+	- moved mtrace6 from pim6sd/mtrace6 to top-directory
+
+Sep 3 2005	suz@kame.net
+	- initial version
+		- use configure script

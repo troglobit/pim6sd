@@ -1,0 +1,8 @@
+1. installation procedures
+# ./configure
+# make
+# make install
+
+2. configure options
+	--enable-mldv2 / --disable-mldv2
+		to enable/disable MLDv2 router-side functions
