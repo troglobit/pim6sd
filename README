@@ -1,0 +1,9 @@
+$Id$
+
+pim6sd		IPv6 PIM-SM routing protocol
+pim6dd		IPv6 PIM-DM routing protocol
+mfc		static IPv6 multicast routing command
+
+mcastread	MLDv1/v2 listener
+mcastsend	IPv6 UDP multicast packet sender
+pmsft		MLDv2 MSF-API tester
