@@ -807,3 +807,11 @@ restart(i)
     /* schedule timer interrupts */
     timer_setTimer(timer_interval, timer, NULL);
 }
+
+/**
+ * Local Variables:
+ *  indent-tabs-mode: t
+ *  c-file-style: "k&r"
+ *  c-basic-offset: 4
+ * End:
+ */
