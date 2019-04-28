@@ -7,6 +7,7 @@ AM_SILENT_RULES([yes])
 AM_CONFIG_HEADER(include/config.h)
 AC_CONFIG_FILES([Makefile
 		 man/Makefile
+		 include/Makefile
 		 src/Makefile])
 
 # Checks for programs.
