@@ -81,7 +81,6 @@
 #include "pim6.h"
 #include "pimd.h"
 #include "route.h"
-#include "config.h"
 #include "inet6.h"
 #include "kern.h"
 #include "mld6_proto.h"

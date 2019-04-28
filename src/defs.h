@@ -57,6 +57,8 @@
 #define	FALSE		0
 #define ELSE else           /* To make emacs cc-mode happy */
 
+#define EQUAL(s1, s2) ((strlen(s1) == strlen(s2)) && (strcmp((s1), (s2)) == 0))
+
 #define	max( a , b )				( ( a )<( b )?( b ):( a ) )
 
 typedef	void	( *ihfunc_t )		__P( ( int , fd_set * ) );
@@ -65,6 +67,8 @@ typedef	void	( *cfunc_t )		__P( ( void * ) );
 int register_input_handler __P((int fd,ihfunc_t func));
 
 /*  CONFIGCONFIGCONFIGCONFIG */
+void config_vifs_from_kernel __P((void));
+void config_vifs_from_file __P((void));
 
 #define RANDOM()	random()
 

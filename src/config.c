@@ -87,7 +87,6 @@
 #include <ctype.h>
 #include <stdio.h>
 #include "defs.h"
-#include "config.h"
 #include "vif.h"
 #include "pim6.h"
 #include "inet6.h"
