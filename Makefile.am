@@ -1,3 +1,5 @@
 SUBDIRS    = include src man
-EXTRA_DIST = pim6sd.conf.sample ssm.conf.sample LICENSE LICENSE.pim6dd LICENSE.pimd LICENSE.mrouted
+doc_DATA   = README.md LICENSE pim6sd.conf.sample
+EXTRA_DIST = README.md LICENSE LICENSE.pim6dd LICENSE.pimd LICENSE.mrouted \
+	     pim6sd.conf.sample ssm.conf.sample
 
