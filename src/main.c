@@ -268,15 +268,6 @@ main(argc, argv)
     char            c;
     int             tmpd;
 
-    log_fp = stderr;
-    setlinebuf(stderr);
-
-    if (geteuid() != 0)
-    {
-	fprintf(stderr, "pim6sd: must be root\n");
-	exit(1);
-    }
-
     progname = strrchr(argv[0], '/');
     if (progname)
 	progname++;
@@ -381,6 +372,15 @@ main(argc, argv)
 
     if (argc > 0)
 	    return usage(1);
+
+    log_fp = stderr;
+    setlinebuf(stderr);
+
+    if (geteuid() != 0)
+    {
+	fprintf(stderr, "pim6sd: must be root\n");
+	exit(1);
+    }
 
     if (debug != 0)
     {
