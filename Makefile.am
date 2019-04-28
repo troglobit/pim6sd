@@ -1,1 +1,1 @@
-SUBDIRS=pim6sd
+SUBDIRS=src

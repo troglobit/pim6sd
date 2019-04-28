@@ -157,5 +157,5 @@ dnl Checks for RFC3542
 AC_CHECK_LIB([c], [inet6_opt_init], [AC_DEFINE([HAVE_RFC3542], [1], [Define to 1 if you support RFC3542])], )
 
 AC_CONFIG_FILES([Makefile
-		 pim6sd/Makefile])
+		 src/Makefile])
 AC_OUTPUT
