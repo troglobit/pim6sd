@@ -6,6 +6,7 @@ man1_MANS=pim6stat.1
 man5_MANS=pim6sd.conf.5
 man8_MANS=pim6sd.8
 pim6sd_LIBS=@LIBS@ @LEXLIBS@
+pim6sd_CPPFLAGS=-D_GNU_SOURCE
 noinst_HEADERS=callout.h cfparse-defs.h cfparse.h config.h crc.h debug.h defs.h inet6.h kern.h mld6.h mld6_proto.h mld6v2.h mld6v2_proto.h mrt.h pathnames.h pim6.h pim6_proto.h pimd.h route.h routesock.h rp.h timer.h trace.h var.h vif.h vmbuf.h
 EXTRA_DIST = ${man1_MANS} ${man5_MANS} ${man8_MANS} pim6sd.conf.sample ssm.conf.sample pim6stat BUGS.TODO BUGS.V6 LICENSE.mrouted LICENSE.pim6sd LICENSE.pimd README README.SSM README.first
 DISTCLEANFILES = cftoken.c cfparse.c cfparse.h
