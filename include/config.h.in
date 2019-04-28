@@ -46,26 +46,35 @@
 /* Define to 1 if you have the `memset' function. */
 #undef HAVE_MEMSET
 
-/* Define to 1 if you have struct mld_hdr in your system */
-#undef HAVE_MLD_HDR
-
 /* Define to 1 if you enables router-side MLDv2 functionality */
 #undef HAVE_MLDV2
 
 /* Define to 1 if you have the host-side MLDv2 functionality */
 #undef HAVE_MLDV2HOST
 
+/* Define to 1 if you have struct mld_hdr in your system */
+#undef HAVE_MLD_HDR
+
 /* Define to 1 if you have the <netdb.h> header file. */
 #undef HAVE_NETDB_H
-
-/* Define to 1 if you have the <netinet/in.h> header file. */
-#undef HAVE_NETINET_IN_H
 
 /* Define to 1 if you have the <netinet6/in6_var.h> header file. */
 #undef HAVE_NETINET6_IN6_VAR_H
 
 /* Define to 1 if you have the <netinet6/pim6.h> header file. */
 #undef HAVE_NETINET6_PIM6_H
+
+/* Define to 1 if you have the <netinet/in.h> header file. */
+#undef HAVE_NETINET_IN_H
+
+/* Define to 1 if you support the 'netlink' function. */
+#undef HAVE_NETLINK
+
+/* Define to 1 if you have the <net/if.h> header file. */
+#undef HAVE_NET_IF_H
+
+/* Define to 1 if you have the <net/if_var.h> header file. */
+#undef HAVE_NET_IF_VAR_H
 
 /* Define to 1 if you have the <paths.h> header file. */
 #undef HAVE_PATHS_H
@@ -79,9 +88,6 @@
 
 /* Define to 1 if you support the 'routing socket' function. */
 #undef HAVE_ROUTING_SOCKETS
-
-/* Define to 1 if you support the 'netlink' function. */
-#undef HAVE_NETLINK
 
 /* Define to 1 if you have a length field in struct sockaddr */
 #undef HAVE_SA_LEN
@@ -143,6 +149,9 @@
 /* Define to 1 if you have the <sys/param.h> header file. */
 #undef HAVE_SYS_PARAM_H
 
+/* Define to 1 if you have the <sys/queue.h> header file. */
+#undef HAVE_SYS_QUEUE_H
+
 /* Define to 1 if you have the <sys/select.h> header file. */
 #undef HAVE_SYS_SELECT_H
 
@@ -194,6 +203,9 @@
 /* Define to the one symbol short name of this package. */
 #undef PACKAGE_TARNAME
 
+/* Define to the home page for this package. */
+#undef PACKAGE_URL
+
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
 
@@ -240,7 +252,7 @@
 /* Define to rpl_realloc if the replacement function should be used. */
 #undef realloc
 
-/* Define to `unsigned' if <sys/types.h> does not define. */
+/* Define to `unsigned int' if <sys/types.h> does not define. */
 #undef size_t
 
 /* Define as `fork' if `vfork' does not work. */

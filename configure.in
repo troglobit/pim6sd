@@ -145,16 +145,16 @@ main ()
   exit (0);
 #endif
 }],
-	[AC_DEFINE(HAVE_ROUTING_SOCKETS)
+	[AC_DEFINE([HAVE_ROUTING_SOCKETS], [1], [Define to 1 if you support the 'routing socket' function.])
 	 UK_METHOD=routesock
 	 AC_MSG_RESULT(routing socket)],
-	[AC_DEFINE(HAVE_NETLINK)
+	[AC_DEFINE([HAVE_NETLINK], [1], [Define to 1 if you support the 'netlink' function.])
 	 UK_METHOD=netlink
 	 AC_MSG_RESULT(netlink)])
 AC_SUBST(UK_METHOD)
 
 dnl Checks for RFC3542
-AC_CHECK_LIB([c], [inet6_opt_init], [AC_DEFINE(HAVE_RFC3542)], )
+AC_CHECK_LIB([c], [inet6_opt_init], [AC_DEFINE([HAVE_RFC3542], [1], [Define to 1 if you support RFC3542])], )
 
 AC_CONFIG_FILES([Makefile
 		 pim6sd/Makefile])
