@@ -219,6 +219,31 @@ register_input_handler(fd, func)
     return 0;
 }
 
+int usage(int rc)
+{
+    struct debugname *d;
+    char c;
+    int tmpd;
+
+    fprintf(stderr, "usage: pim6sd [-c configfile] [-d [debug_level][,debug_level]]\n");
+
+    fprintf(stderr, "debug levels: ");
+    c = '(';
+    tmpd = 0xffffffff;
+    for (d = debugnames; d < debugnames +
+	     sizeof(debugnames) / sizeof(debugnames[0]); d++)
+    {
+	if ((tmpd & d->level) == d->level)
+	{
+	    tmpd &= ~d->level;
+	    fprintf(stderr, "%c%s", c, d->name);
+	    c = ',';
+	}
+    }
+    fprintf(stderr, ")\n");
+    exit(rc);
+}
+
 int
 main(argc, argv)
     int             argc;
@@ -312,7 +337,7 @@ main(argc, argv)
 			    }
 			}
 			putc('\n', stderr);
-			goto usage;
+			return usage(1);
 		    }
 		    if(no)
 		    {
@@ -341,38 +366,21 @@ main(argc, argv)
 #endif
 		}
 		else
-		    goto usage;
+		    return usage(1);
 	}
 	else if (strcmp(*argv, "-f") == 0)
 		foreground = 1;
+	else if (strcmp(*argv, "-h") == 0)
+ 		return usage(0);
 	else
-		    goto usage;
+		return usage(1);
 
 	argv++;
 	argc--;
     }
 
     if (argc > 0)
-    {
-usage:
-	tmpd = 0xffffffff;
-	fprintf(stderr, "usage: pim6sd [-c configfile] [-d [debug_level][,debug_level]]\n");
-
-	fprintf(stderr, "debug levels: ");
-	c = '(';
-	for (d = debugnames; d < debugnames +
-	     sizeof(debugnames) / sizeof(debugnames[0]); d++)
-	{
-	    if ((tmpd & d->level) == d->level)
-	    {
-		tmpd &= ~d->level;
-		fprintf(stderr, "%c%s", c, d->name);
-		c = ',';
-	    }
-	}
-	fprintf(stderr, ")\n");
-	exit(1);
-    }
+	    return usage(1);
 
     if (debug != 0)
     {
