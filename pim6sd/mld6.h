@@ -67,6 +67,46 @@ int send_mld6 __P((int type, int code, struct sockaddr_in6 *src,
 		   struct sockaddr_in6 *dst, struct in6_addr *group,
 		   int index, int delay, int datalen, int alert));
 
+#ifndef MLD_LISTENER_QUERY
+#  ifdef MLD6_LISTENER_QUERY
+#    define MLD_LISTENER_QUERY		MLD6_LISTENER_QUERY
+#  else
+#    define MLD_LISTENER_QUERY		130
+#  endif
+#endif
+
+#ifndef MLD_LISTENER_REPORT
+#  ifdef MLD6_LISTENER_REPORT
+#    define MLD_LISTENER_REPORT		MLD6_LISTENER_REPORT
+#  else
+#    define MLD_LISTENER_REPORT		131
+#  endif
+#endif
+
+#ifndef MLD_LISTENER_DONE
+#  ifdef MLD6_LISTENER_DONE
+#    define MLD_LISTENER_DONE		MLD6_LISTENER_DONE
+#  else
+#    define MLD_LISTENER_DONE		132
+#  endif
+#endif
+
+#ifndef MLD_MTRACE_RESP
+#  ifdef MLD6_MTRACE_RESP
+#    define MLD_MTRACE_RESP		MLD6_MTRACE_RESP
+#  else
+#    define MLD_MTRACE_RESP		200
+#  endif
+#endif
+
+#ifndef MLD_MTRACE
+#  ifdef MLD6_MTRACE
+#    define MLD_MTRACE			MLD6_MTRACE
+#  else
+#    define MLD_MTRACE			201
+#  endif
+#endif
+
 /* portability with older KAME headers */
 #ifndef MLD_LISTENER_QUERY
 #define MLD_LISTENER_QUERY	130
