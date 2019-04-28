@@ -1,0 +1,6 @@
+*.o
+.deps/*
+cfparse.c
+cfparse.h
+cftoken.c
+pim6sd
