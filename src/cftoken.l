@@ -44,8 +44,6 @@
 #include <varargs.h>
 #endif
 
-#include "var.h"
-#include "vmbuf.h"
 #include "debug.h"
 #include "cfparse-defs.h"
 #include "cfparse.h"

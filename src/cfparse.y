@@ -55,8 +55,6 @@
 #include "routesock.h"
 #include "rp.h"
 
-#include "var.h"
-#include "vmbuf.h"
 #include "cfparse-defs.h"
 #include "debug.h"
 #include "pimd.h"

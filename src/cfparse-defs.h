@@ -41,6 +41,12 @@
 #  define PLOG(cmd)
 #endif /* defined(YIPS_DEBUG) */
 
+typedef struct {
+	u_int32_t t;	/* type of the value */
+	size_t l;	/* length of the value */
+	caddr_t v;	/* place holder to the value in buffer */
+} vchar_t;
+
 /* cfparse.y */
 extern void cf_init __P((int, int));
 #ifdef  notyet
