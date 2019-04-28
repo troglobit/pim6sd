@@ -26,3 +26,18 @@ pim6sd_SOURCES    = callout.c		callout.h			\
 		    trace.c		trace.h				\
 		    vif.c		vif.h
 DISTCLEANFILES    = cftoken.c cfparse.c cfparse.h
+
+# Config file parser (this is necessary because not all yacc generate y.tab.h)
+cftoken.o: cftoken.c cfparse.h
+	$(COMPILE) -c -o $@ $<
+
+cfparse.o: cfparse.c
+	$(COMPILE) -c -o $@ $<
+
+cftoken.c: cftoken.l
+	$(LEX) -ocftoken.c $<
+
+cfparse.h cfparse.c: cfparse.y
+	$(YACC) -d $< && \
+	mv y.tab.c cfparse.c && \
+	mv y.tab.h cfparse.h
