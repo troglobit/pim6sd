@@ -238,7 +238,6 @@ main(argc, argv)
                     n,
                     i,
                     secs;
-    extern char     todaysversion[];
     struct sigaction sa;
     struct debugname *d;
     char            c;
@@ -407,7 +406,7 @@ usage:
     setlinebuf(log_fp);
 
     snprintf(versionstring, sizeof(versionstring),
-	"pim6sd version %s", todaysversion);
+	"pim6sd version %s", VERSION);
 
     log_msg(LOG_INFO, 0, "%s starting", versionstring);
 
