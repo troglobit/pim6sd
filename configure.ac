@@ -16,7 +16,7 @@ AC_PROG_YACC
 AC_PROG_INSTALL
 AM_PROG_LEX
 
-CFLAGS_ADD="$CFLAGS_ADD -Wall -Werror -Wno-unused"
+CFLAGS_ADD="$CFLAGS_ADD -W -Wall -Wextra -Wno-unused"
 
 # Checks for libraries.
 AC_CHECK_LIB([fl], [main])
