@@ -1,6 +1,7 @@
 sbin_PROGRAMS     = pim6sd
 dist_sbin_SCRIPTS = pim6stat
 
+AM_YFLAGS         = -d
 pim6sd_LIBS       = @LIBS@ @LEXLIBS@
 pim6sd_CPPFLAGS   = -D_GNU_SOURCE -I$(top_srcdir)/include
 pim6sd_SOURCES    = callout.c		callout.h			\
@@ -25,19 +26,6 @@ pim6sd_SOURCES    = callout.c		callout.h			\
 		    timer.c		timer.h				\
 		    trace.c		trace.h				\
 		    vif.c		vif.h
+
+BUILT_SOURCES     = cfparse.h
 DISTCLEANFILES    = cftoken.c cfparse.c cfparse.h
-
-# Config file parser (this is necessary because not all yacc generate y.tab.h)
-cftoken.o: cftoken.c cfparse.h
-	$(COMPILE) -c -o $@ $<
-
-cfparse.o: cfparse.c
-	$(COMPILE) -c -o $@ $<
-
-cftoken.c: cftoken.l cfparse.h
-	$(LEX) -ocftoken.c $<
-
-cfparse.h cfparse.c: cfparse.y
-	$(YACC) -d $< && \
-	mv y.tab.c cfparse.c && \
-	mv y.tab.h cfparse.h
