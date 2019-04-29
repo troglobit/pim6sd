@@ -34,7 +34,7 @@ cftoken.o: cftoken.c cfparse.h
 cfparse.o: cfparse.c
 	$(COMPILE) -c -o $@ $<
 
-cftoken.c: cftoken.l
+cftoken.c: cftoken.l cfparse.h
 	$(LEX) -ocftoken.c $<
 
 cfparse.h cfparse.c: cfparse.y
