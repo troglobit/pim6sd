@@ -533,12 +533,19 @@ make_mld6_msg(type, code, src, dst, group, ifindex, delay, datalen, alert)
 		    log_msg(LOG_ERR, 0, "make_mld6_msg: malloc failed"); /* assert */
 	    ctlbuflen = ctllen;
     }
-    /* store ancillary data */
-    if ((sndmh.msg_controllen = ctllen) > 0) {
+
+    if (ctllen > 0) {
 	    struct cmsghdr *cmsgp;
 
+	    /* store ancillary data */
 	    sndmh.msg_control = sndcmsgbuf;
+	    sndmh.msg_controllen = ctllen;
+
 	    cmsgp = CMSG_FIRSTHDR(&sndmh);
+	    if (!cmsgp) {
+		    log_msg(LOG_WARNING, 0, "Too small control buffer for ancillary data, %zd bytes", ctllen);
+		    return;
+	    }
 
 	    if (ifindex != -1 || src) {
 		    struct in6_pktinfo *pktinfo;
