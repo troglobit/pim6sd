@@ -359,7 +359,7 @@ main(argc, argv)
 		else
 		    return usage(1);
 	}
-	else if (strcmp(*argv, "-f") == 0)
+	else if (strcmp(*argv, "-n") == 0)
 		foreground = 1;
 	else if (strcmp(*argv, "-h") == 0)
  		return usage(0);
