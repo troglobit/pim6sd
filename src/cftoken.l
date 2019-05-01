@@ -80,7 +80,7 @@ number		{integer}|({digit}*\.{integer})
 hexdigit	[0-9A-Fa-f]
 hexpair		{hexdigit}{hexdigit}
 hexstring	0[xX]{hexpair}+
-ifname		[a-zA-Z]+[0-9]+
+ifname		[a-zA-Z0-9][-a-zA-Z0-9:\._]*
 slash		\/
 
 %s S_CNF
@@ -522,7 +522,7 @@ slash		\/
 
 	/* phyint */
 <S_CNF>phyint { DP("begin phyint"); BEGIN S_PHYINT; return(PHYINT); }
-<S_PHYINT>{string} {
+<S_PHYINT>{ifname} {
 	YYD_ECHO;
 	BEGIN S_IFCONF;
 	yylval.val.l = strlen(yytext);
