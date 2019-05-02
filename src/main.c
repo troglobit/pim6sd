@@ -225,7 +225,7 @@ int usage(int rc)
     char c;
     int tmpd;
 
-    fprintf(stderr, "usage: pim6sd [-c configfile] [-d [LEVEL][,LEVEL]]\n");
+    fprintf(stderr, "usage: pim6sd [-hn] [-c configfile] [-d [LEVEL][,LEVEL]]\n");
 
     fprintf(stderr, "debug levels: ");
     c = '(';
