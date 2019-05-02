@@ -32,7 +32,7 @@ you don't need. Note that you need at least 2 physical interfaces enabled.
 Because there are many debug messages, you can specify only a subset of
 the messages to be printed out:
 
-usage: pimd [-c configfile] [-d [debug_level][,debug_level]]
+usage: pimd [-f FILE] [-d [LEVEL][,LEVEL]]
 
 Valid debug levels: dvmrp_prunes,dvmrp_mrt,dvmrp_neighbors,dvmrp_timers,igmp_proto,igmp_timers,igmp_members,trace,timeout,pkt,interfaces,kernel,cache,rsrr,pim_hello,pim_register,pim_join_prune,pim_bootstrap,pim_asserts,pim_cand_rp,pim_routes,pim_timers,pim_rpf
 

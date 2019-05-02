@@ -225,7 +225,7 @@ int usage(int rc)
     char c;
     int tmpd;
 
-    fprintf(stderr, "usage: pim6sd [-hn] [-c configfile] [-d [LEVEL][,LEVEL]]\n");
+    fprintf(stderr, "usage: pim6sd [-hn] [-f FILE] [-d [LEVEL][,LEVEL]]\n");
 
     fprintf(stderr, "debug levels: ");
     c = '(';
@@ -343,7 +343,7 @@ main(argc, argv)
 	    else
 		debug = DEBUG_DEFAULT;
 	}
-	else if (strcmp(*argv, "-c") == 0) {
+	else if (strcmp(*argv, "-f") == 0) {
 		if (argc > 1)
 		{
 		    argv++;

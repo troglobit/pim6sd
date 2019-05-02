@@ -35,7 +35,7 @@
 .Nd PIM for IPv6 sparse mode daemon
 .Sh SYNOPSIS
 .Nm
-.Op Fl c Ar configfile
+.Op Fl f Ar FILE
 .Op Fl d Op LEVEL Op ,LEVEL
 .Op Fl n
 .Sh DESCRIPTION
@@ -47,11 +47,8 @@ and SSM(Source-Specific-Multicast) for IPv6.
 Options supported by
 .Nm Ns :
 .Bl -tag -width Ds
-.It Fl c Ar configfile
-Specify alternate location,
-.Ar configfile ,
-for configuration file.
-By default,
+.It Fl f Ar FILE
+Specify alternate location for configuration file.  By default,
 .Pa /etc/pim6sd.conf
 is used.
 .It Fl d
