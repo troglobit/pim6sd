@@ -577,15 +577,13 @@ make_mld6_msg(type, code, src, dst, group, ifindex, delay, datalen, alert)
 		    if ((currentlen = inet6_opt_init(hbhbuf, hbhlen)) == -1)
 			    log_msg(LOG_ERR, 0, "inet6_opt_init(len = %d) failed",
 				hbhlen);
-		    if ((currentlen = inet6_opt_append(hbhbuf, hbhlen,
-						       currentlen,
-						       IP6OPT_ROUTER_ALERT, 2,
-						       2, &optp)) == -1)
-			    log_msg(LOG_ERR, 0,
-				"inet6_opt_append(len = %d/%d) failed",
-				currentlen, hbhlen);
-		    (void)inet6_opt_set_val(optp, 0, &rtalert_code,
-					    sizeof(rtalert_code));
+		    currentlen = inet6_opt_append(hbhbuf, hbhlen, currentlen,
+						  IP6OPT_ROUTER_ALERT, 2, 2, &optp);
+		    if (currentlen == -1)
+			    log_msg(LOG_ERR, 0, "inet6_opt_append(len = %d/%d) failed",
+				    currentlen, hbhlen);
+
+		    (void)inet6_opt_set_val(optp, 0, &rtalert_code, sizeof(rtalert_code));
 		    if (inet6_opt_finish(hbhbuf, hbhlen, currentlen) == -1)
 			    log_msg(LOG_ERR, 0, "inet6_opt_finish(buf) failed");
 #else  /* old advanced API */
