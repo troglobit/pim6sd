@@ -95,7 +95,7 @@
 
 char            	configfilename[256] = _PATH_PIM6D_CONF;
 char            	versionstring[100];
-char			logfilename[256] = _PATH_PIM6D_LOGFILE;
+char			logfilename[256] = "";
 
 /* TODO: not used 
 static char 		genidfilename[] = _PATH_PIM6D_GENID;
@@ -409,9 +409,12 @@ main(argc, argv)
     (void) openlog("pim6sd", LOG_PID);
 #endif				/* LOG_DAEMON */
     /* open a log file */
-    if ((log_fp = fopen(logfilename, "w")) == NULL)
+    if (!access(logfilename, W_OK)) {
+	log_fp = fopen(logfilename, "w");
+	if (!log_fp)
 	    log_msg(LOG_ERR, errno, "fopen(%s)", logfilename);
-    setlinebuf(log_fp);
+	setlinebuf(log_fp);
+    }
 
     snprintf(versionstring, sizeof(versionstring),
 	"pim6sd version %s", VERSION);
