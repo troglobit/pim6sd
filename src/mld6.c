@@ -531,7 +531,7 @@ make_mld6_msg(type, code, src, dst, group, ifindex, delay, datalen, alert)
 		    free(sndcmsgbuf);
 	    sndcmsgbuf = calloc(1, ctllen);
 	    if (!sndcmsgbuf)
-		    log_msg(LOG_ERR, 0, "make_mld6_msg: malloc failed"); /* assert */
+		    log_msg(LOG_ERR, errno, "Failed allocating send buffer"); /* assert */
 	    ctlbuflen = ctllen;
     }
 
@@ -594,10 +594,10 @@ make_mld6_msg(type, code, src, dst, group, ifindex, delay, datalen, alert)
 		        IPV6_HOPOPTS
 #endif
 			))
-			    log_msg(LOG_ERR, 0, /* assert */
+			    log_msg(LOG_ERR, errno, /* assert */
 				"make_mld6_msg: inet6_option_init failed");
 		    if (inet6_option_append(cmsgp, raopt, 4, 0))
-			    log_msg(LOG_ERR, 0, /* assert */
+			    log_msg(LOG_ERR, errno, /* assert */
 				"make_mld6_msg: inet6_option_append failed");
 #endif 
 		    cmsgp = CMSG_NXTHDR(&sndmh, cmsgp);
