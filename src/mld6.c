@@ -130,7 +130,7 @@ static int			rcvcmsglen;
 #ifndef HAVE_RFC3542
 u_int8_t raopt[IP6OPT_RTALERT_LEN];
 #endif 
-char *sndcmsgbuf;
+char *sndcmsgbuf = NULL;
 int ctlbuflen = 0;
 static u_int16_t rtalert_code;
 
@@ -529,7 +529,8 @@ make_mld6_msg(type, code, src, dst, group, ifindex, delay, datalen, alert)
     if (ctlbuflen < ctllen) {
 	    if (sndcmsgbuf)
 		    free(sndcmsgbuf);
-	    if ((sndcmsgbuf = malloc(ctllen)) == NULL)
+	    sndcmsgbuf = calloc(1, ctllen);
+	    if (!sndcmsgbuf)
 		    log_msg(LOG_ERR, 0, "make_mld6_msg: malloc failed"); /* assert */
 	    ctlbuflen = ctllen;
     }
@@ -538,14 +539,13 @@ make_mld6_msg(type, code, src, dst, group, ifindex, delay, datalen, alert)
 	    struct cmsghdr *cmsgp;
 
 	    /* store ancillary data */
+	    sndmh.msg_flags = 0;
 	    sndmh.msg_control = sndcmsgbuf;
 	    sndmh.msg_controllen = ctllen;
 
 	    cmsgp = CMSG_FIRSTHDR(&sndmh);
-	    if (!cmsgp) {
-		    log_msg(LOG_WARNING, 0, "Too small control buffer for ancillary data, %zd bytes", ctllen);
-		    return;
-	    }
+	    if (!cmsgp)
+		    log_msg(LOG_ERR, 0, "Internal error in %s", __func__);
 
 	    if (ifindex != -1 || src) {
 		    struct in6_pktinfo *pktinfo;
@@ -565,6 +565,9 @@ make_mld6_msg(type, code, src, dst, group, ifindex, delay, datalen, alert)
 #ifdef HAVE_RFC3542
 		    int currentlen;
 		    void *hbhbuf, *optp = NULL;
+
+		    if (!cmsgp)
+			    log_msg(LOG_ERR, 0, "Internal error in %s", __func__);
 
 		    cmsgp->cmsg_len = CMSG_LEN(hbhlen);
 		    cmsgp->cmsg_level = IPPROTO_IPV6;
