@@ -144,6 +144,8 @@ struct mld_hdr {
 
 #ifndef IP6OPT_ROUTER_ALERT
 #define IP6OPT_ROUTER_ALERT	IP6OPT_RTALERT
+#endif
+#ifndef IP6OPT_RTALERT_LEN
 #define	IP6OPT_RTALERT_LEN	4
 #endif
 
