@@ -742,7 +742,7 @@ va_dcl
      * probably actually want to log the debugging messages so they shouldn't
      * be rate-limited)
      */
-    if ((severity < LOG_WARNING) || (log_nmsgs < LOG_MAX_MSGS))
+    if ((severity <= LOG_WARNING) || (log_nmsgs < LOG_MAX_MSGS))
     {
 	if (severity < LOG_DEBUG)
 	    log_nmsgs++;
