@@ -76,6 +76,7 @@
 #include <sys/ioctl.h>
 #include <sys/uio.h>
 #include <sys/queue.h>
+#include <sys/time.h>
 #include <net/if.h>
 #ifdef __FreeBSD__
 #include <net/if_var.h>
