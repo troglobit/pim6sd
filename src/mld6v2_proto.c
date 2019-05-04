@@ -127,6 +127,9 @@ query_groupsV2(v)
 		"sending multicast listener general query V2 on : %s ",
 		v->uv_name);
 
+	if (!v->uv_linklocal)
+		return;
+
 	ret = send_mld6v2(MLD_LISTENER_QUERY, 0, &v->uv_linklocal->pa_addr,
 			  NULL, (struct sockaddr_in6 *) NULL, v->uv_ifindex,
 			  MLD6_QUERY_RESPONSE_INTERVAL, 0, TRUE, SFLAGNO,

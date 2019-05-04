@@ -152,6 +152,10 @@ query_groups(v)
 			v->uv_gq_timer = MLD6_STARTUP_QUERY_INTERVAL;
 		else
 			v->uv_gq_timer = MLD6_QUERY_INTERVAL;
+
+		if (!v->uv_linklocal)
+			return;
+
 		ret = send_mld6(MLD_LISTENER_QUERY, 0,
 			&v->uv_linklocal->pa_addr, NULL,
 			(struct in6_addr *)&in6addr_any, v->uv_ifindex,

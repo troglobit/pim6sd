@@ -367,6 +367,14 @@ start_vif(mifi_t vifi)
 			v->uv_querier = malloc(sizeof(struct listaddr));
 			memset(v->uv_querier, 0, sizeof(struct listaddr));
 		}
+
+		if (!v->uv_linklocal) {
+			log_msg(LOG_WARNING, 0, "Interface %s has no "
+				"link-local address, cannot send MLD query.",
+				v->uv_name);
+			return;
+		}
+
 		v->uv_querier->al_addr = v->uv_linklocal->pa_addr;
 		v->uv_querier->al_timer = MLD6_OTHER_QUERIER_PRESENT_INTERVAL;
 		time(&v->uv_querier->al_ctime); /* reset timestamp */
