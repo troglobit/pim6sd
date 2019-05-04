@@ -55,11 +55,14 @@
 
 #define	TRUE		1
 #define	FALSE		0
-#define ELSE else           /* To make emacs cc-mode happy */
+#define ELSE		else           /* To make emacs cc-mode happy */
 
-#define EQUAL(s1, s2) ((strlen(s1) == strlen(s2)) && (strcmp((s1), (s2)) == 0))
-
-#define	max( a , b )				( ( a )<( b )?( b ):( a ) )
+/* From The Practice of Programming, by Kernighan and Pike */
+#ifndef NELEMS
+#define NELEMS(array)	(sizeof(array) / sizeof(array[0]))
+#endif
+#define EQUAL(s1, s2)	((strlen(s1) == strlen(s2)) && (strcmp((s1), (s2)) == 0))
+#define	max(a, b)	((a) < (b) ? (b) : (a))
 
 typedef	void	( *ihfunc_t )		__P( ( int , fd_set * ) );
 typedef	void	( *cfunc_t )		__P( ( void * ) );
