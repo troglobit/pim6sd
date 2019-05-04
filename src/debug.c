@@ -574,7 +574,7 @@ dump_nbrs(fp)
 				if (n->options_bitmap & PIM_HELLO_GENID_BIT)
 					fprintf(fp, " %-8x", n->genid);
 				else
-					fprintf(fp, " %-8x", "-");
+					fprintf(fp, " %-8s", "-");
 				if (v->uv_pim_dr == n)
 					fprintf(fp, " D");
 				fprintf(fp, "\n");
