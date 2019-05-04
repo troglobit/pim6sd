@@ -6,7 +6,16 @@
 
 #granularity 5;
 
-#syntax : phyint <interface> <disable> <metric> [metric] <preference> [preference]
+#syntax default_phyint_status <disable | enable>;
+#
+# Systems with *many* interfaces may want to start with all disabled
+# and then explicitly enable each interface below with phynt enable
+#samples :
+#default_phyint_status disable;
+
+#syntax : phyint <interface> <disable | enable>
+#                <metric> [metric]
+#                <preference> [preference]
 #metric and pref are for the asserts messages
 #samples :
 
