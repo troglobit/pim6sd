@@ -55,8 +55,8 @@
  *
  */
 
-#ifndef VIF_H
-#define VIF_H
+#ifndef VIF_H_
+#define VIF_H_
 
 extern int total_interfaces;
 extern int default_vif_status;
@@ -82,22 +82,17 @@ extern mifi_t reg_vif_num;
 
 
 extern if_set if_nullset;
-#define IF_ISEMPTY(p) (memcmp((p), &if_nullset, sizeof(if_nullset)) == 0)
+#define IF_ISEMPTY(p)   (memcmp((p), &if_nullset, sizeof(if_nullset)) == 0)
 #define IF_SAME(p1, p2) (memcmp((p1),(p2),sizeof(*(p1))) == 0)
-#define IF_CLR_MASK(p, mask) \
-  {\
-    int idx;\
-    for (idx = 0; idx < sizeof(*(p))/sizeof(fd_mask); idx++) {\
-        (p)->ifs_bits[idx] &= ~((mask)->ifs_bits[idx]);\
-    }\
-  }
-#define IF_MERGE(p1, p2, result) \
-  {\
-    int idx;\
-    for (idx = 0; idx < sizeof(*(p1))/sizeof(fd_mask); idx++) {\
-        (result)->ifs_bits[idx] = (p1)->ifs_bits[idx]|(p2)->ifs_bits[idx]; \
-    }\
-  } 
+#define IF_CLR_MASK(p, mask)						\
+	for (int i = 0; i < sizeof(*(p)) / sizeof(fd_mask); i++) {	\
+		(p)->ifs_bits[i] &= ~((mask)->ifs_bits[i]);		\
+	}
+#define IF_MERGE(p1, p2, result)					\
+	for (int i = 0; i < sizeof(*(p1)) / sizeof(fd_mask); i++) {	\
+		(result)->ifs_bits[i] =					\
+			(p1)->ifs_bits[i] | (p2)->ifs_bits[i];		\
+	}
 
 typedef struct {
 	NBRTYPE hi;
@@ -105,10 +100,10 @@ typedef struct {
 } nbrbitmap_t;
 
 struct vf_element {
-	struct vf_element 			*vfe_next;
-	struct sockaddr_in6 		*vfe_addr;
-	struct in6_addr 			vfe_mask;
-	int							vfe_flags;
+	struct vf_element 	*vfe_next;
+	struct sockaddr_in6 	*vfe_addr;
+	struct in6_addr 	vfe_mask;
+	int			vfe_flags;
 #define VFRF_EXACT 0x0001
 };
 
@@ -117,8 +112,8 @@ struct vf_element {
 #define VFF_BIDIR 1
 
 struct vif_filter {
-	int 				vf_type;
-	int 				vf_flags;
+	int 			vf_type;
+	int 			vf_flags;
 	struct vf_element 	*vf_filter;
 };
 
@@ -264,7 +259,6 @@ struct phaddr {
 
 
 /* The Access Control List (list with scoped addresses) member */
-
 struct vif_acl {
 	struct vif_acl 		*acl_next;
 	struct sockaddr_in6 	acl_addr;
@@ -275,15 +269,11 @@ struct vif_acl {
  * Used to get the RPF neighbor and IIF info
  * for a given source from the unicast routing table.
  */
-
 struct rpfctl {
     struct sockaddr_in6 source; /* the source for which we want iif and rpfnbr */
     struct sockaddr_in6 rpfneighbor;/* next hop towards the source */
     mifi_t iif; /* the incoming interface to reach the next hop */
 }; 
-
-
-
 
 extern void    init_vifs __P((void));
 extern void    stop_all_vifs __P((void));
@@ -299,4 +289,5 @@ extern if_set *vif_and __P((if_set *p1, if_set *p2, if_set *result));
 extern if_set *vif_xor __P((if_set *p1, if_set *p2, if_set *result));
 extern struct uvif *find_vif __P((char *ifname, int, int));
 extern char *mif_name __P((mifi_t));
-#endif
+
+#endif /* VIF_H_ */
