@@ -925,7 +925,7 @@ find_vif(ifname, create, default_policy)
 	}
 
 	/* -1 because we need to space for the register tunnel */
-	if (numvifs >= MAXVIFS - 1) {
+	if (numvifs >= MAXMIFS - 1) {
 		errno = ENOBUFS;
 		return NULL;
 	}
