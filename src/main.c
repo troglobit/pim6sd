@@ -78,6 +78,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <paths.h>
+#include <time.h>
 #include "pathnames.h"
 #include "defs.h"
 #include "debug.h"

@@ -62,6 +62,7 @@
 #include <syslog.h>
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 #include "defs.h"
 #include "pim6.h"
 #include "pimd.h"

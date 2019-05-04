@@ -73,6 +73,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
 #include "defs.h"
 #include "vif.h"
 #include "mld6.h"

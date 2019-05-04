@@ -60,6 +60,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <netdb.h>
+#include <time.h>
 #include "defs.h"
 #include "vif.h"
 #include "mld6.h"

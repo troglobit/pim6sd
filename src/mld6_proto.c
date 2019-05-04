@@ -109,6 +109,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 #include "defs.h"
 #include "mld6.h"
 #include "vif.h"
