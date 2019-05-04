@@ -136,7 +136,7 @@ init_vifs(void)
 #endif
 
 	/* clean all the interfaces ... */
-	for (vifi = 0, v = uvifs; vifi < MAXMIFS; ++vifi, ++v) {
+	for (vifi = 0, v = uvifs; vifi < NELEMS(uvifs); ++vifi, ++v) {
 		memset(v, 0, sizeof(*v));
 		v->uv_metric = DEFAULT_METRIC;
 		v->uv_rate_limit = DEFAULT_PHY_RATE_LIMIT;
@@ -914,7 +914,7 @@ find_vif(ifname, create, default_policy)
 	}
 
 	/* -1 because we need to space for the register tunnel */
-	if (numvifs >= MAXMIFS - 1) {
+	if (numvifs >= NELEMS(uvifs) - 1) {
 		errno = ENOBUFS;
 		return NULL;
 	}

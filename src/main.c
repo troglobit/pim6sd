@@ -230,8 +230,7 @@ int usage(int rc)
     fprintf(stderr, "debug levels: ");
     c = '(';
     tmpd = 0xffffffff;
-    for (d = debugnames; d < debugnames +
-	     sizeof(debugnames) / sizeof(debugnames[0]); d++)
+    for (d = debugnames; d < debugnames + NELEMS(debugnames); d++)
     {
 	if ((tmpd & d->level) == d->level)
 	{
@@ -299,25 +298,24 @@ main(argc, argv)
 		    q = strchr(p, ',');
 		    if (q)
 			*q++ = '\0';
-		    if(p[0]=='-')
+		    if (p[0]=='-')
 		    {
 			no=1;
 			p++;
 		    }		
+
 		    len = strlen(p);
-		    for (i = 0, d = debugnames;
-			 i < sizeof(debugnames) / sizeof(debugnames[0]);
-			 i++, d++)
+		    for (i = 0, d = debugnames; i < NELEMS(debugnames); i++, d++) {
 			if (len >= d->nchars && strncmp(d->name, p, len) == 0)
 			    break;
-		    if (i == sizeof(debugnames) / sizeof(debugnames[0]))
+		    }
+		    if (i == NELEMS(debugnames))
 		    {
 			int             j = 0xffffffff;
 			int             k = 0;
+
 			fprintf(stderr, "Valid debug levels: ");
-			for (i = 0, d = debugnames;
-			     i < sizeof(debugnames) / sizeof(debugnames[0]);
-			     i++, d++)
+			for (i = 0, d = debugnames; i < NELEMS(debugnames); i++, d++)
 			{
 			    if ((j & d->level) == d->level)
 			    {
@@ -387,8 +385,7 @@ main(argc, argv)
 	tmpd = debug;
 	fprintf(stderr, "debug level 0x%lx ", debug);
 	c = '(';
-	for (d = debugnames; d < debugnames +
-	     sizeof(debugnames) / sizeof(debugnames[0]); d++)
+	for (d = debugnames; d < debugnames + NELEMS(debugnames); d++)
 	{
 	    if ((tmpd & d->level) == d->level)
 	    {

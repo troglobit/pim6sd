@@ -252,7 +252,7 @@ struct uvif {
 	u_quad_t uv_querier_timo;
 	u_quad_t uv_outif_timo;	/* outgoing interfaces timers */
 };
-extern struct uvif uvifs[];
+extern struct uvif uvifs[MAXMIFS];
 
 struct phaddr {
 	struct phaddr 		*pa_next;

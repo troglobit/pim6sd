@@ -778,7 +778,7 @@ param_config()
 	if (default_vif_status == -1) default_vif_status = VIFF_ENABLED;
 
 	/* set protocol parameters using the configuration variables */
-	for (vifi = 0, v = uvifs; vifi < MAXMIFS; ++vifi, ++v) {
+	for (vifi = 0, v = uvifs; vifi < NELEMS(uvifs); ++vifi, ++v) {
 		v->uv_local_metric = srcmetric;
 		v->uv_local_pref = srcpref;
 	}
