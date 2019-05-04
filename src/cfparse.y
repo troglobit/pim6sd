@@ -1358,6 +1358,7 @@ cf_post_config()
 /* initialize all the temporary variables */
 void
 cf_init(s, d)
+	int s, d;
 {
 	struct uvif *v;
 	mifi_t vifi;
