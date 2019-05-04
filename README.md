@@ -9,17 +9,68 @@ pim6sd stems from pim6dd, which was originally based on [pimd][], which
 in turn was based on [mrouted][].
 
 
+Troubleshooting
+---------------
+
+Having successfully built `pim6sd` (see below), starting it for the
+first time might be confusing:
+
+- What happened?
+- Where to look for status?
+- Why isn't it routing?
+
+First of all, `pim6sd` is a UNIX daemon.  By default it starts in the
+background and only logs warnings and errors to syslog.
+
+Second, you might want to start it in debug mode, with a reduced .conf
+file.  See the `pim6sd.conf.sample` and pim6sd.conf(5) man page for
+help.
+
+    cp pim6sd.conf.sample pim6sd.conf
+    sudo pim6sd -f pim6sd.conf -n -d all
+
+This starts `pim6sd` with the local `pim6sd.conf` in the foreground,
+enabling *all* debug messages.  When running in the foreground the debug
+messages are shown (unthrottled) in the same terminal.  Periodically the
+state of interfaces and routing tables are shown in this debug log.
+
+To see pim6sd status when running in the background, send `SIGUSR1` to
+the PID, it is saved in `/var/run/pim6sd.pid` when the daemon has
+started successfully.  The status is found in `/var/run/pim6sd.dump`.
+
+The single most common problem when dealing with multicast routing is
+the TTL of the multicast to be routed.  If the TTL is 1 the data will
+be dropped by the kernel -- this is not a problem of pim6sd.
+
+Another problem, which perhaps is not as common, is systems with lots of
+interfaces.  The kernel multicast routing stack is (usually) limited to
+MAX 32 "virtual" interfaces.  These "VIFs" are enumerated by the daemon
+at startup based on either the contents of the `pim6sd.conf` or querying
+the kernel for available interfaces.  Should you run into problems with
+this, use the following construct in your .conf file to ensure multicast
+routing is only enabled between your `foo` and `bar` interfaces:
+
+    default_phyint_status disable;
+    phyint foo enable;
+    phyint bar enable;
+
+More helpful tips and information is available in the man pages:
+
+- pim6sd(8)
+- pim6sd.conf(5)
+
+
 Build & Install
 ---------------
 
-The configure script and Makefile supports de facto standard settings
-and environment variables such as `--prefix=PATH` and `DESTDIR=` for the
-install process.  E.g., to install pim6sd to `/usr` instead of the default
-`/usr/local`, but redirect install to a package directory in `/tmp`:
+The configure script and Makefile supports de facto standard options
+such as `--prefix=PATH`.  E.g., to install pim6sd to `/usr` instead of
+the default `/usr/local`, with `/etc` for .conf file(s) and `/var` for
+PID and status dump files:
 
     ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var
-	make
-    make DESTDIR=/tmp/pim6sd-2.1.0-1 install-strip
+    make
+    sudo make install-strip
 
 
 Building from GIT
@@ -41,6 +92,7 @@ installed on your system.
     cd pim6sd/
     ./autogen.sh
     ./configure && make
+    sudo make install-strip
 
 GIT sources are a moving target and are not recommended for production
 systems, unless you know what you are doing!
