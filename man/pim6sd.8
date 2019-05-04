@@ -80,14 +80,14 @@ configuration commands may be placed in
 .Pa /etc/pim6sd.conf
 .Po
 or an alternative file, specified by the
-.Sq Fl c
+.Sq Fl f Ar FILE
 option
 .Pc .
+.Pp
 If the multicast group address is within SSM-range (ff20::/12 and ff30::/12),
 .Nm 
-will behaves as an SSM routing daemon; speaking MLDv2 toward hosts and 
-uses only Shortest Path Tree for these multicast addresses.
-Note that
+will behave as an SSM routing daemon; speaking MLDv2 toward hosts and
+uses only Shortest Path Tree for these multicast addresses.  Note that
 .Nm
 ignores interfaces that do not have an IPv6 address.
 Such interfaces should not appear in the configuration file.
@@ -101,36 +101,37 @@ signal.
 The information includes a list of PIM neighbors,
 .Nm
 internal multicast routing table, and
-BSR and RP related information. Also, the program dumps its internal
+BSR and RP related information.  Also, the program dumps its internal
 statistics to a file when it receives a SIGINFO signal.
 .Pp
 When
 .Nm
-receives a SIGUSR2 signal, it rereads the configuration file and
-reset its debug level.
+receives a SIGHUP signal it restarts and rereads its configuration file.
+The SIGUSR2 signal can also be used, but that also reset the debug level.
 .Pp
-The
-.Nm
-program puts its logs to a separate file
-.Pa Pq /var/log/pim6sd.log .
 The log level can be configured by the
 .Fl d
 command line option or the configuration file.
 .\"
 .Sh FILES
-.Bl -tag -width /etc/pim6sd.conf -compact
+.Bl -tag -width /var/run/pim6sd.stat -compact
 .It Pa /etc/pim6sd.conf
-The default configuration file.
+The default configuration file
 .It Pa /var/run/pim6sd.dump
 The file to which
 .Nm
-dumps its internal status.
+dumps its internal status
 .It Pa /var/run/pim6sd.stat
 The file to which
 .Nm
-dumps its internal statistics.
-.It Pa /var/log/pim6sd.log
-The pim6sd specific log file.
+dumps its internal statistics
+.El
+.Sh SIGNALS
+.Bl -tag -width SIGUSR1 -compact
+.It SIGHUP
+Reload the configuration file and restart
+.It SIGUSR1
+Dump internal status to the dump file
 .El
 .Sh SEE ALSO
 .Xr daemon 3 ,
