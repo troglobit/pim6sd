@@ -946,6 +946,7 @@ int
 SetTimerV1compat(mifi, g, interval)
 	mifi_t mifi;
 	struct listaddr *g;
+	int interval;
 {
 	cbk_t *cbk;
 
