@@ -192,10 +192,13 @@ getmsg(struct rtmsg *rtm, int msglen, struct rpfctl *rpf)
     if (rtm->rtm_type == RTN_LOCAL) {
 	/* tracef(TRF_NETLINK, "NETLINK: local address"); */
 	log_msg(LOG_DEBUG, 0, "NETLINK: local address");
-	if ((rpf->iif = local_address(&rpf->source)) != MAXMIFS) {
+
+	rpf->iif = local_address(&rpf->source);
+	if (rpf->iif != NO_VIF) {
 	    rpf->rpfneighbor = rpf->source;
 	    return TRUE;
 	}
+
 	return FALSE;
     }
     
