@@ -553,25 +553,21 @@ max_global_address()
 		 * take first the max global address of the interface
 		 * (without link local) => aliasing
 		 */
-		for(p=v->uv_addrs;p!=NULL;p=p->pa_next)
-		{
-			/*
-			 * If this is the first global address, take it anyway.
-			 */
-			if (pmax == NULL) {
-				if (!IN6_IS_ADDR_LINKLOCAL(&p->pa_addr.sin6_addr))
-					pmax = p;
-			}
-			else {
-				if (inet6_lessthan(&pmax->pa_addr,
-						   &p->pa_addr) &&
-				    !IN6_IS_ADDR_LINKLOCAL(&p->pa_addr.sin6_addr))
-					pmax=p;	
-			}
+		for (p = v->uv_addrs; p != NULL; p=p->pa_next) {
+			if (IN6_IS_ADDR_LINKLOCAL(&p->pa_addr.sin6_addr))
+				continue;
+
+			if (!pmax)
+				pmax = p;
+			if (inet6_lessthan(&pmax->pa_addr, &p->pa_addr))
+				pmax = p;
 		}
 	}
 
-	return(pmax ? &pmax->pa_addr : NULL);
+	if (pmax)
+		return &pmax->pa_addr;
+
+	return NULL;
 }
 
 struct sockaddr_in6 *
@@ -605,25 +601,26 @@ local_iface(char *ifname)
 	{
 		if (v->uv_flags & (VIFF_DISABLED | VIFF_DOWN | MIFF_REGISTER))
 			continue;
-		if(EQUAL(v->uv_name, ifname))
-		{
-			for(p=v->uv_addrs; p!=NULL; p=p->pa_next)
-			{
-				if (!IN6_IS_ADDR_LINKLOCAL(&p->pa_addr.sin6_addr)) {
-					/*
-					 * If this is the first global address
-					 * or larger than the current MAX global
-					 * address, remember it.
-					 */
-					if (pmax == NULL ||
-					    inet6_lessthan(&pmax->pa_addr,
-							   &p->pa_addr))
-						pmax = p;
-				}
-			}
-			if (pmax)
-				return(&pmax->pa_addr);
+
+		if (!EQUAL(v->uv_name, ifname))
+			continue;
+
+		for (p = v->uv_addrs; p != NULL; p = p->pa_next) {
+			if (IN6_IS_ADDR_LINKLOCAL(&p->pa_addr.sin6_addr))
+				continue;
+
+			/*
+			 * If first global address or better than the
+			 * current MAX global address, remember it.
+			 */
+			if (!pmax)
+				pmax = p;
+			if (inet6_lessthan(&pmax->pa_addr, &p->pa_addr))
+				pmax = p;
 		}
+
+		if (pmax)
+			return &pmax->pa_addr;
 	}
 
 	return NULL;
