@@ -112,10 +112,11 @@ extern void add_phaddr __P((struct uvif *, struct sockaddr_in6 *,
 		           struct in6_addr *, struct sockaddr_in6 *));
 extern int cfparse __P((int, int));
 
-void init_vifs()
+void
+init_vifs(void)
 {
-	mifi_t vifi;
 	struct uvif *v;
+	mifi_t vifi;
 	int enabled_vifs;
 
 	numvifs = 0;
@@ -135,7 +136,6 @@ void init_vifs()
 #endif
 
 	/* clean all the interfaces ... */
-
 	for (vifi = 0, v = uvifs; vifi < MAXMIFS; ++vifi, ++v) {
 		memset(v, 0, sizeof(*v));
 		v->uv_metric = DEFAULT_METRIC;
@@ -186,8 +186,8 @@ void init_vifs()
 			continue;
 		if (v->uv_linklocal == NULL)
 			log_msg(LOG_ERR, 0,
-			    "there is no link-local address on vif %s",
-			    v->uv_name);
+				"there is no link-local address on vif %s",
+				v->uv_name);
 
 		/* If this vif has a global address, set its id to phys_vif */
 		if (phys_vif != -1)
@@ -201,23 +201,24 @@ void init_vifs()
 	}
 	if (enabled_vifs < 2)
 		log_msg(LOG_ERR, 0, "can't forward: %s",
-		    enabled_vifs == 0 ? "no enabled vifs" :
-		     "only one enabled vif");
+			enabled_vifs == 0
+			? "no enabled vifs"
+			: "only one enabled vif");
 
 	memset(&if_nullset, 0, sizeof(if_nullset));
 	k_init_pim(mld6_socket);	
 	IF_DEBUG(DEBUG_PIM_DETAIL)
-		log_msg(LOG_DEBUG, 0, "Pim kernel initialization done");
+		log_msg(LOG_DEBUG, 0, "PIM kernel initialization done");
 
 
 	/* Add a dummy virtual interface to support Registers in the kernel. */
  	init_reg_vif();
 
 	start_all_vifs();
-
 }
 
-int init_reg_vif()
+int
+init_reg_vif(void)
 {
 	struct uvif *v;
 	mifi_t i;
@@ -235,7 +236,7 @@ int init_reg_vif()
 	 * copy the address of the first available physical interface to
 	 * create the register vif.
 	 */
-	for (i =0 ; i < numvifs ; i++) {
+	for (i = 0; i < numvifs ; i++) {
 		if (uvifs[i].uv_flags & (VIFF_DOWN | VIFF_DISABLED | MIFF_REGISTER))
 			continue;
 		break;
@@ -265,11 +266,11 @@ int init_reg_vif()
 
 	IF_DEBUG(DEBUG_IF)
 		log_msg(LOG_DEBUG, 0,
-		    "Interface %s (subnet %s), installed on vif #%u - rate = %d",
-		    v->uv_name,
-		    net6name(&v->uv_prefix.sin6_addr,&v->uv_subnetmask),
-		    reg_vif_num,
-		    v->uv_rate_limit);
+			"Interface %s (subnet %s), installed on vif #%u - rate = %d",
+			v->uv_name,
+			net6name(&v->uv_prefix.sin6_addr,&v->uv_subnetmask),
+			reg_vif_num,
+			v->uv_rate_limit);
 
 	numvifs++;
 	total_interfaces++;
@@ -277,12 +278,12 @@ int init_reg_vif()
 	return 0;	
 }
 
-void start_all_vifs()
+void
+start_all_vifs(void)
 {
-	mifi_t vifi;
 	struct uvif *v;
+	mifi_t vifi;
 	u_int action;
-
 
 	/* Start first the NON-REGISTER vifs */
 	for (action = 0; ; action = MIFF_REGISTER) {
@@ -298,14 +299,17 @@ void start_all_vifs()
 			if (v->uv_flags & (VIFF_DISABLED | VIFF_DOWN)) {
 				IF_DEBUG(DEBUG_IF)
 					log_msg(LOG_DEBUG, 0,
-					    "%s is %s; vif #%u out of service",
-					    v->uv_name,
-					    v->uv_flags & VIFF_DISABLED ? "DISABLED" : "DOWN",
-					    vifi); 
+						"%s is %s; vif #%u out of service",
+						v->uv_name,
+						v->uv_flags & VIFF_DISABLED
+						? "DISABLED"
+						: "DOWN",
+						vifi);
 				continue;
 			}
 			start_vif(vifi);
 		}
+
 		if (action == MIFF_REGISTER)
 			break;
 	}
@@ -316,89 +320,85 @@ void start_all_vifs()
  * physical, register or tunnel (tunnels will be used in the future
  * when this code becomes PIM multicast boarder router.
  */
-void start_vif (mifi_t vifi)
+void
+start_vif(mifi_t vifi)
 {
 	struct uvif *v;
 
-	v = &uvifs[vifi];
-
 	/* Initialy no router on any vif */
-
-	if( v-> uv_flags & MIFF_REGISTER)
+	v = &uvifs[vifi];
+	if (v->uv_flags & MIFF_REGISTER) {
 		v->uv_flags = v->uv_flags & ~VIFF_DOWN;
-	else
-	{
+	} else {
 		v->uv_flags = 
-		    (v->uv_flags | VIFF_NONBRS) & ~ VIFF_DOWN;
+			(v->uv_flags | VIFF_NONBRS) & ~ VIFF_DOWN;
 		v->uv_pim_hello_timer = 1 + RANDOM() % pim_hello_period;
 		v->uv_jp_timer = 1 + RANDOM() % pim_join_prune_period;
 		v->uv_genid = RANDOM() & 0xffffffff;
 	}
 
 	/* Tell kernel to add, i.e. start this vif */
-
 	k_add_vif(mld6_socket,vifi,&uvifs[vifi]);
 	IF_DEBUG(DEBUG_IF)
 		log_msg(LOG_DEBUG,0,"%s comes up ,vif #%u now in service",v->uv_name,vifi);
 
 	if (!(v->uv_flags & MIFF_REGISTER)) {
-	    /*
-	     * Join the PIM multicast group on the interface.
-	     */
-	    k_join(pim6_socket, &allpim6routers_group.sin6_addr,
-		   v->uv_ifindex);
+		/*
+		 * Join the PIM multicast group on the interface.
+		 */
+		k_join(pim6_socket, &allpim6routers_group.sin6_addr,
+		       v->uv_ifindex);
 
-	    /*
-	     * Join the ALL-ROUTERS multicast group on the interface.
-	     * This allows mtrace requests to loop back if they are run
-	     * on the multicast router.this allow receiving mld6 messages too.
-	     */
-	    k_join(mld6_socket, &allrouters_group.sin6_addr, v->uv_ifindex);
+		/*
+		 * Join the ALL-ROUTERS multicast group on the interface.
+		 * This allows mtrace requests to loop back if they are run
+		 * on the multicast router.this allow receiving mld6 messages too.
+		 */
+		k_join(mld6_socket, &allrouters_group.sin6_addr, v->uv_ifindex);
 
-	    /*
-	     * Until neighbors are discovered, assume responsibility for sending
-	     * periodic group membership queries to the subnet.  Send the first
-	     * query.
-	     */
-	    v->uv_flags |= VIFF_QUERIER;
-	    if (!v->uv_querier) {
-		v->uv_querier = (struct listaddr *)malloc(sizeof(struct listaddr));
-		memset(v->uv_querier, 0, sizeof(struct listaddr));
-	    }
-	    v->uv_querier->al_addr = v->uv_linklocal->pa_addr;
-	    v->uv_querier->al_timer = MLD6_OTHER_QUERIER_PRESENT_INTERVAL;
-	    time(&v->uv_querier->al_ctime); /* reset timestamp */
-	    v->uv_stquery_cnt = MLD6_STARTUP_QUERY_COUNT;
+		/*
+		 * Until neighbors are discovered, assume responsibility for sending
+		 * periodic group membership queries to the subnet.  Send the first
+		 * query.
+		 */
+		v->uv_flags |= VIFF_QUERIER;
+		if (!v->uv_querier) {
+			v->uv_querier = malloc(sizeof(struct listaddr));
+			memset(v->uv_querier, 0, sizeof(struct listaddr));
+		}
+		v->uv_querier->al_addr = v->uv_linklocal->pa_addr;
+		v->uv_querier->al_timer = MLD6_OTHER_QUERIER_PRESENT_INTERVAL;
+		time(&v->uv_querier->al_ctime); /* reset timestamp */
+		v->uv_stquery_cnt = MLD6_STARTUP_QUERY_COUNT;
 
 #ifdef HAVE_MLDV2
-	    if (v->uv_mld_version & MLDv2)
-		query_groupsV2(v);
-	    else
+		if (v->uv_mld_version & MLDv2)
+			query_groupsV2(v);
+		else
 #endif
-	        if (v->uv_mld_version & MLDv1)
-			query_groups(v);
+			if (v->uv_mld_version & MLDv1)
+				query_groups(v);
   
-	    /*
-	     * Send a probe via the new vif to look for neighbors.
-	     */
-	    send_pim6_hello(v, pim_hello_holdtime);
+		/*
+		 * Send a probe via the new vif to look for neighbors.
+		 */
+		send_pim6_hello(v, pim_hello_holdtime);
 	}
 }
+
 
 /*
  * Stop a vif (either physical interface, tunnel or
  * register.) If we are running only PIM we don't have tunnels.
  */ 
-
-
 void
 stop_vif(mifi_t vifi)
 {
-	struct uvif *v;
-	struct listaddr *a;
-	register pim_nbr_entry_t *n;
 	register pim_nbr_entry_t *next;
+	register pim_nbr_entry_t *n;
+	struct listaddr *a;
 	struct vif_acl *acl;
+	struct uvif *v;
  
 	/*
 	 * TODO: make sure that the kernel viftable is
@@ -420,26 +420,24 @@ stop_vif(mifi_t vifi)
 			v->uv_groups = a->al_next;
 
 			/* reset all the timers */
-			if (a->al_query) {
-			    timer_clearTimer(a->al_query);
-			}
-			if (a->al_comp) {
-			    timer_clearTimer(a->al_comp);
-			}
-			if (a->al_timerid) {
-			    timer_clearTimer(a->al_timerid);
-			}
+			if (a->al_query)
+				timer_clearTimer(a->al_query);
+			if (a->al_comp)
+				timer_clearTimer(a->al_comp);
+			if (a->al_timerid)
+				timer_clearTimer(a->al_timerid);
 
 			/* frees all the related sources */
 			while (a->sources != NULL) {
-			    struct listaddr *curr = a->sources;
-			    a->sources = a->sources->al_next;
-			    free((char *)curr);
+				struct listaddr *curr = a->sources;
+
+				a->sources = a->sources->al_next;
+				free(curr);
 			}
 			a->sources = NULL;
 
 			/* discard the group */
-			free((char *)a);
+			free(a);
 		}
 		v->uv_groups = NULL;
 	}
@@ -469,17 +467,18 @@ stop_vif(mifi_t vifi)
 		v->uv_pim_neighbors = NULL;
 	}
 	if (v->uv_querier != NULL) {
-	    free(v->uv_querier);
-	    v->uv_querier = NULL;
+		free(v->uv_querier);
+		v->uv_querier = NULL;
 	}
 
 	/* I/F address list */
 	{
-	    struct phaddr *pa, *pa_next;
-	    for (pa = v->uv_addrs; pa; pa = pa_next) {
-		pa_next = pa->pa_next;
-		free(pa);
-	    }
+		struct phaddr *pa, *pa_next;
+
+		for (pa = v->uv_addrs; pa; pa = pa_next) {
+			pa_next = pa->pa_next;
+			free(pa);
+		}
 	}
 	v->uv_addrs = NULL;
 	v->uv_linklocal = NULL; /* uv_linklocal must be in uv_addrs */
@@ -489,7 +488,7 @@ stop_vif(mifi_t vifi)
 	while (v->uv_acl != NULL) {
 		acl = v->uv_acl;
 		v->uv_acl = acl->acl_next;
-		free((char *)acl);
+		free(acl);
 	}
 
 	vifs_down = TRUE;
@@ -507,30 +506,33 @@ stop_vif(mifi_t vifi)
  * is UP (virtually :))
  */
 int
-update_reg_vif( mifi_t register_vifi )
+update_reg_vif(mifi_t register_vifi)
 {
-    register struct uvif *v;
-    register mifi_t vifi;
+	register struct uvif *v;
+	register mifi_t vifi;
 
-    /* Find the first useable vif with solid physical background */
-    for (vifi = 0, v = uvifs; vifi < numvifs; ++vifi, ++v) {
-	if (v->uv_flags & (VIFF_DISABLED | VIFF_DOWN | MIFF_REGISTER))
-	    continue;
-        /* Found. Stop the bogus Register vif first */
-	stop_vif(register_vifi);
-	add_phaddr(v, &uvifs[vifi].uv_linklocal->pa_addr,
-		   &uvifs[vifi].uv_linklocal->pa_subnetmask,
-		   &uvifs[vifi].uv_linklocal->pa_prefix); 
-	start_vif(register_vifi);
-	IF_DEBUG(DEBUG_PIM_REGISTER | DEBUG_IF)
-	    log_msg(LOG_NOTICE, 0, "%s has come up; vif #%u now in service",
-		uvifs[register_vifi].uv_name, register_vifi);
-	return 0;
-    }
-    vifs_down = TRUE;
-    log_msg(LOG_WARNING, 0, "Cannot start Register vif: %s",
-	uvifs[vifi].uv_name);
-    return(-1);
+	/* Find the first useable vif with solid physical background */
+	for (vifi = 0, v = uvifs; vifi < numvifs; ++vifi, ++v) {
+		if (v->uv_flags & (VIFF_DISABLED | VIFF_DOWN | MIFF_REGISTER))
+			continue;
+
+		/* Found. Stop the bogus Register vif first */
+		stop_vif(register_vifi);
+		add_phaddr(v, &uvifs[vifi].uv_linklocal->pa_addr,
+			   &uvifs[vifi].uv_linklocal->pa_subnetmask,
+			   &uvifs[vifi].uv_linklocal->pa_prefix);
+		start_vif(register_vifi);
+		IF_DEBUG(DEBUG_PIM_REGISTER | DEBUG_IF)
+			log_msg(LOG_NOTICE, 0, "%s has come up; vif #%u now in service",
+				uvifs[register_vifi].uv_name, register_vifi);
+		return 0;
+	}
+
+	vifs_down = TRUE;
+	log_msg(LOG_WARNING, 0, "Cannot start Register vif: %s",
+		uvifs[vifi].uv_name);
+
+	return -1;
 }
 
 /*
@@ -538,17 +540,17 @@ update_reg_vif( mifi_t register_vifi )
  * other than the MIFF_REGISTER interface.
 */
 struct sockaddr_in6 *
-max_global_address()
+max_global_address(void)
 {
-	mifi_t vifi;
-	struct uvif *v;
-	struct phaddr *p;
 	struct phaddr *pmax = NULL;
+	struct phaddr *p;
+	struct uvif *v;
+	mifi_t vifi;
 
-	for(vifi=0,v=uvifs;vifi< numvifs;++vifi,++v)
-	{
-		if(v->uv_flags & (VIFF_DISABLED | VIFF_DOWN | MIFF_REGISTER))
+	for (vifi = 0, v = uvifs; vifi < numvifs; ++vifi, ++v) {
+		if (v->uv_flags & (VIFF_DISABLED | VIFF_DOWN | MIFF_REGISTER))
 			continue;
+
 		/*
 		 * take first the max global address of the interface
 		 * (without link local) => aliasing
@@ -574,15 +576,15 @@ struct sockaddr_in6 *
 uv_global(vifi)
 	mifi_t vifi;
 {
-	struct uvif *v = &uvifs[vifi];
 	struct phaddr *p;
+	struct uvif *v = &uvifs[vifi];
 
 	for (p = v->uv_addrs; p; p = p->pa_next) {
 		if (!IN6_IS_ADDR_LINKLOCAL(&p->pa_addr.sin6_addr))
-			return(&p->pa_addr);
+			return &p->pa_addr;
 	}
 
-	return(NULL);
+	return NULL;
 }
 
 /*
@@ -592,13 +594,12 @@ uv_global(vifi)
 struct sockaddr_in6 *
 local_iface(char *ifname)
 {
+	struct phaddr *pmax = NULL;
+	struct phaddr *p;
 	register struct uvif *v;
 	mifi_t vifi;
-	struct phaddr *p;
-	struct phaddr *pmax = NULL;
 
-	for(vifi=0,v=uvifs;vifi<numvifs;++vifi,++v)
-	{
+	for (vifi = 0, v = uvifs; vifi < numvifs; ++vifi, ++v) {
 		if (v->uv_flags & (VIFF_DISABLED | VIFF_DOWN | MIFF_REGISTER))
 			continue;
 
@@ -633,102 +634,96 @@ local_iface(char *ifname)
  * disabled.
  */     
 void
-check_vif_state()
+check_vif_state(void)
 {
-    register mifi_t vifi;
-    register struct uvif *v;
-    struct ifreq ifr;
-    static int checking_vifs=0;
+	static int checking_vifs = 0;
+	register struct uvif *v;
+	struct ifreq ifr;
+	register mifi_t vifi;
 
-    /*
-     * XXX: TODO: True only for DVMRP?? Check.
-     * If we get an error while checking, (e.g. two interfaces go down
-     * at once, and we decide to send a prune out one of the failed ones)
-     * then don't go into an infinite loop!
-     */
-    if( checking_vifs )
-	return;
+	/*
+	 * XXX: TODO: True only for DVMRP?? Check.
+	 * If we get an error while checking, (e.g. two interfaces go down
+	 * at once, and we decide to send a prune out one of the failed ones)
+	 * then don't go into an infinite loop!
+	 */
+	if (checking_vifs)
+		return;
 
-    vifs_down=FALSE;
-    checking_vifs=TRUE;
+	vifs_down = FALSE;
+	checking_vifs = TRUE;
 
-    /* TODO: Check all potential interfaces!!! */
-    /* Check the physical and tunnels only */
-    for( vifi=0 , v=uvifs ; vifi<numvifs ; ++vifi , ++v )
-    {
-	if( v->uv_flags & ( VIFF_DISABLED|MIFF_REGISTER	) )
-	    continue;
+	/* TODO: Check all potential interfaces!!! */
+	/* Check the physical and tunnels only */
+	for (vifi = 0, v = uvifs; vifi < numvifs; ++vifi, ++v) {
+		if (v->uv_flags & (VIFF_DISABLED | MIFF_REGISTER))
+			continue;
 
 #ifdef HAVE_STRLCPY
-	strlcpy(ifr.ifr_name, v->uv_name, IFNAMSIZ);
+		strlcpy(ifr.ifr_name, v->uv_name, IFNAMSIZ);
 #elif HAVE_STRNCPY
-	strncpy(ifr.ifr_name, v->uv_name, IFNAMSIZ);
+		strncpy(ifr.ifr_name, v->uv_name, IFNAMSIZ);
 #else
-	strcpy(ifr.ifr_name, v->uv_name);
+		strcpy(ifr.ifr_name, v->uv_name);
 #endif
   
-	/* get the interface flags */
-	if( ioctl( udp_socket , SIOCGIFFLAGS , (char *)&ifr )<0 )
-	    log_msg(LOG_ERR, errno,
-        	"check_vif_state: ioctl SIOCGIFFLAGS for %s", ifr.ifr_name);
+		/* get the interface flags */
+		if (ioctl(udp_socket, SIOCGIFFLAGS, (char *)&ifr) < 0)
+			log_msg(LOG_ERR, errno,
+				"check_vif_state: ioctl SIOCGIFFLAGS for %s",
+				ifr.ifr_name);
 
-	if( v->uv_flags & VIFF_DOWN )
-	{
-	    if ( ifr.ifr_flags & IFF_UP )
-	    {
-		start_vif( vifi );
-	    }
-	    else
-		vifs_down=TRUE;
-	}
-	else
-	{
-	    if( !( ifr.ifr_flags & IFF_UP ))
-	    {
-		log_msg( LOG_NOTICE ,0,
-		     "%s has gone down ; vif #%u taken out of  service",
-		     v->uv_name , vifi );
-		stop_vif ( vifi );
-		vifs_down = TRUE;
-	    }
-	}
-    }
-
-    /* Check the register(s) vif(s) */
-    for( vifi=0 , v=uvifs ; vifi<numvifs ; ++vifi , ++v )
-    {
-	register mifi_t vifi2;
-	register struct uvif *v2;
-	int found;
-
-	if( !(v->uv_flags & MIFF_REGISTER ) )
-	    continue;
-	else
-	{
-	    found=0;
-
-	    /* Find a physical vif with the same IP address as the
-	     * Register vif.
-	     */
-	    for( vifi2=0 , v2=uvifs ; vifi2<numvifs ; ++vifi2 , ++v2 )
-	    {
-		if( v2->uv_flags & ( VIFF_DISABLED|VIFF_DOWN|MIFF_REGISTER ))
-		    continue;
-		if( IN6_ARE_ADDR_EQUAL( &v->uv_linklocal->pa_addr.sin6_addr,
-					&v2->uv_linklocal->pa_addr.sin6_addr ))
-		{
-		    found=1;
-		    break;
+		if (v->uv_flags & VIFF_DOWN) {
+			if (ifr.ifr_flags & IFF_UP)
+				start_vif(vifi);
+			else
+				vifs_down = TRUE;
+		} else {
+			if (!(ifr.ifr_flags & IFF_UP)) {
+				log_msg(LOG_NOTICE, 0, "%s has gone down; "
+					"vif #%u taken out of service",
+					v->uv_name, vifi);
+				stop_vif(vifi);
+				vifs_down = TRUE;
+			}
 		}
-	    }
-	    if(!found)
-		/* The physical interface with the IP address as the Register
-		 * vif is probably DOWN. Get a replacement.
-		 */
-		update_reg_vif( vifi );
 	}
-    }
-    checking_vifs=0;
+
+	/* Check the register(s) vif(s) */
+	for (vifi = 0, v = uvifs; vifi < numvifs; ++vifi, ++v) {
+		register struct uvif *v2;
+		register mifi_t vifi2;
+		int found;
+
+		if (!(v->uv_flags & MIFF_REGISTER))
+			continue;
+
+		found = 0;
+
+		/*
+		 * Find a physical vif with the same IP address as the
+		 * register vif.
+		 */
+		for (vifi2 = 0, v2 = uvifs; vifi2 < numvifs; ++vifi2, ++v2) {
+			if (v2->uv_flags & (VIFF_DISABLED | VIFF_DOWN | MIFF_REGISTER))
+				continue;
+
+			if (IN6_ARE_ADDR_EQUAL(&v->uv_linklocal->pa_addr.sin6_addr,
+					       &v2->uv_linklocal->pa_addr.sin6_addr)) {
+				found = 1;
+				break;
+			}
+		}
+
+		/*
+		 * The physical interface with the IP address as the
+		 * register vif is probably DOWN. Get a replacement.
+		 */
+		if (!found)
+			update_reg_vif(vifi);
+	}
+
+	checking_vifs = 0;
 }
 
 /*
@@ -737,58 +732,59 @@ check_vif_state()
  * Local addresses are excluded.
  * Return the vif number or NO_VIF if not found.
  */
-
 mifi_t
 find_vif_direct(src)
-    struct sockaddr_in6 *src;
+struct sockaddr_in6 *src;
 {
-    mifi_t vifi;
-    register struct uvif *v;
-    register struct phaddr *p;
+	register struct phaddr *p;
+	register struct uvif *v;
+	mifi_t vifi;
    
-    for (vifi = 0, v = uvifs; vifi < numvifs; ++vifi, ++v) 
-    {
-    	if (v->uv_flags & (VIFF_DISABLED | VIFF_DOWN | MIFF_REGISTER))
-        	continue;
-	for (p = v->uv_addrs; p; p = p->pa_next) 
-	{
-            if (inet6_equal(src, &p->pa_addr))
-                return(NO_VIF);
+	for (vifi = 0, v = uvifs; vifi < numvifs; ++vifi, ++v) {
+		if (v->uv_flags & (VIFF_DISABLED | VIFF_DOWN | MIFF_REGISTER))
+			continue;
 
-	    if (v->uv_flags & VIFF_POINT_TO_POINT)
-	    	if (inet6_equal(src, &p->pa_rmt_addr))
-		    return(vifi);
-            if (inet6_match_prefix(src, &p->pa_prefix, &p->pa_subnetmask))
-            	return(vifi);
-    	}
-    }
+		for (p = v->uv_addrs; p; p = p->pa_next) {
+			if (inet6_equal(src, &p->pa_addr))
+				return NO_VIF;
 
-    return (NO_VIF);
+			if (v->uv_flags & VIFF_POINT_TO_POINT) {
+				if (inet6_equal(src, &p->pa_rmt_addr))
+					return vifi;
+			}
+
+			if (inet6_match_prefix(src, &p->pa_prefix, &p->pa_subnetmask))
+				return vifi;
+		}
+	}
+
+	return NO_VIF;
 }
 
 /*
  * Checks if src is local address. If "yes" return the vif index,
  * otherwise return value is NO_VIF.
  */
-
 mifi_t
 local_address(src)
-    struct sockaddr_in6 *src;
+struct sockaddr_in6 *src;
 {
-    mifi_t vifi;
-    register struct uvif *v;
-    register struct phaddr *p;
+	register struct phaddr *p;
+	register struct uvif *v;
+	mifi_t vifi;
 
-    for (vifi = 0, v = uvifs; vifi < numvifs; ++vifi, ++v) {
-	if (v->uv_flags & (VIFF_DISABLED | VIFF_DOWN | MIFF_REGISTER))
-	    continue;
-	for (p = v->uv_addrs; p; p = p->pa_next) {
-	    if (inet6_equal(src, &p->pa_addr))
-		return(vifi);
+	for (vifi = 0, v = uvifs; vifi < numvifs; ++vifi, ++v) {
+		if (v->uv_flags & (VIFF_DISABLED | VIFF_DOWN | MIFF_REGISTER))
+			continue;
+
+		for (p = v->uv_addrs; p; p = p->pa_next) {
+			if (inet6_equal(src, &p->pa_addr))
+				return vifi;
+		}
 	}
-    }
-    /* Returning NO_VIF means not a local address */
-    return (NO_VIF);
+
+	/* Returning NO_VIF means not a local address */
+	return NO_VIF;
 }
 
 
@@ -798,92 +794,88 @@ local_address(src)
  * (tunnels excluded).
  * Return the vif number or NO_VIF if not found.
  */ 
-
 mifi_t
 find_vif_direct_local(src)
-    struct sockaddr_in6 *src;
+struct sockaddr_in6 *src;
 { 
-    mifi_t vifi;
-    register struct uvif *v; 
-    register struct phaddr *p;
+	register struct phaddr *p;
+	register struct uvif *v;
+	mifi_t vifi;
    
+	for (vifi = 0, v = uvifs; vifi < numvifs; ++vifi, ++v) {
+		if (v->uv_flags & (VIFF_DISABLED | VIFF_DOWN | MIFF_REGISTER))
+			continue;
 
-    for (vifi = 0, v = uvifs; vifi < numvifs; ++vifi, ++v) {
-    	if (v->uv_flags & (VIFF_DISABLED | VIFF_DOWN | MIFF_REGISTER))
-        	continue;
-    	for (p = v->uv_addrs; p; p = p->pa_next) {
-        	if (inet6_equal(src, &p->pa_addr) ||
-            	    inet6_match_prefix(src, &p->pa_prefix, &p->pa_subnetmask))
-        		return(vifi);
+		for (p = v->uv_addrs; p; p = p->pa_next) {
+			if (inet6_equal(src, &p->pa_addr) ||
+			    inet6_match_prefix(src, &p->pa_prefix, &p->pa_subnetmask))
+				return vifi;
 
-		if (v->uv_flags & VIFF_POINT_TO_POINT)
-		    if (inet6_equal(src, &p->pa_rmt_addr))
-			return(vifi);
-    	}
-    }
-    return (NO_VIF);
+			if (v->uv_flags & VIFF_POINT_TO_POINT)
+				if (inet6_equal(src, &p->pa_rmt_addr))
+					return vifi;
+		}
+	}
+
+	return NO_VIF;
 }
 
 int
-vif_forwarder(if_set *p1 , if_set *p2)
+vif_forwarder(if_set *p1, if_set *p2)
 {
 	int idx;
 
-	for(idx=0 ; idx < sizeof(*p1)/sizeof(fd_mask) ; idx++)
-	{
+	for (idx = 0; idx < sizeof(*p1) / sizeof(fd_mask); idx++) {
 		if (p1->ifs_bits[idx] & p2->ifs_bits[idx])
-			return(TRUE);
-		
+			return TRUE;
 	}
 
 	/* (p1 & p2) is empty. We're not the forwarder */
-	return(FALSE);
+	return FALSE;
 }
 
 if_set *
-vif_and(if_set *p1 , if_set *p2, if_set *result)
+vif_and(if_set *p1, if_set *p2, if_set *result)
 {
 	int idx;
 
 	IF_ZERO(result);
 
-	for(idx=0 ; idx < sizeof(*p1)/sizeof(fd_mask) ; idx++)
-	{
+	for (idx = 0; idx < sizeof(*p1) / sizeof(fd_mask); idx++) {
 		result->ifs_bits[idx] = p1->ifs_bits[idx] & p2->ifs_bits[idx];
 	}
 
-	return(result);
+	return result;
 }
 
 if_set *
-vif_xor(if_set *p1 , if_set *p2, if_set *result)
+vif_xor(if_set *p1, if_set *p2, if_set *result)
 {
 	int idx;
 
 	IF_ZERO(result);
 
-	for(idx=0 ; idx < sizeof(*p1)/sizeof(fd_mask) ; idx++)
-	{
+	for (idx = 0; idx < sizeof(*p1) / sizeof(fd_mask); idx++) {
 		result->ifs_bits[idx] =
 			p1->ifs_bits[idx] ^ p2->ifs_bits[idx];
 	}
 
-	return(result);
+	return result;
 }
 /*  
  * stop all vifs
  */ 
 void
-stop_all_vifs()
+stop_all_vifs(void)
 {
-    mifi_t vifi;
-    struct uvif *v;
+	struct uvif *v;
+	mifi_t vifi;
  
-    for (vifi = 0, v=uvifs; vifi < numvifs; ++vifi, ++v) {
-	if (v->uv_flags & (VIFF_DOWN | VIFF_DISABLED))
-		continue;
-	stop_vif(vifi);
-    }
+	for (vifi = 0, v = uvifs; vifi < numvifs; ++vifi, ++v) {
+		if (v->uv_flags & (VIFF_DOWN | VIFF_DISABLED))
+			continue;
+		stop_vif(vifi);
+	}
 }
 
 /* 
@@ -901,9 +893,9 @@ find_vif(ifname, create, default_policy)
 	int create;
 	int default_policy;	
 {
-	u_int ifindex;
 	struct uvif *v;
 	mifi_t vifi;
+	u_int ifindex;
 
 	/* rejects non-existing interface */
 	ifindex = if_nametoindex(ifname);
@@ -911,7 +903,7 @@ find_vif(ifname, create, default_policy)
 		return NULL; 	
 
 	/* not allocate same interface multiply */
-	for (vifi = 0, v = uvifs; vifi < numvifs ; ++vifi , ++v) {
+	for (vifi = 0, v = uvifs; vifi < numvifs ; ++vifi, ++v) {
 		if (ifindex == v->uv_ifindex)
 			return v;
 	}
@@ -946,7 +938,7 @@ mif_name(mifi)
 	mifi_t mifi;
 {
 	if (mifi < numvifs)
-		return(uvifs[mifi].uv_name);
-	else
-		return("???");
+		return uvifs[mifi].uv_name;
+
+	return "???";
 }
