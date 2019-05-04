@@ -222,23 +222,14 @@ int init_reg_vif()
 	struct uvif *v;
 	mifi_t i;
 
+	/* find_vif() guarantees there is at least one VIF for us */
 	v = &uvifs[numvifs];
-	if ((numvifs + 1) == MAXMIFS) {
-	     /* Exit the program! The PIM router must have a Register vif */
-	    log_msg(LOG_ERR, 0,
-		"cannot install the Register vif: too many interfaces");
-	    /* To make lint happy */
-	    return (FALSE);
-	}
 
 	/*
 	 * So far in PIM we need only one register vif and we save its number in
 	 * the global reg_vif_num.
 	 */
-
-
 	reg_vif_num = numvifs;
-
 
 	/* 
 	 * copy the address of the first available physical interface to
@@ -282,6 +273,7 @@ int init_reg_vif()
 
 	numvifs++;
 	total_interfaces++;
+
 	return 0;	
 }
 
@@ -927,8 +919,16 @@ find_vif(ifname, create, default_policy)
 			return v;
 	}
 
-	if (create == DONT_CREATE || default_policy != VIFF_ENABLED)
+	if (create == DONT_CREATE || default_policy != VIFF_ENABLED) {
+		errno = EPERM;
 		return NULL;
+	}
+
+	/* -1 because we need to space for the register tunnel */
+	if (numvifs >= MAXVIFS - 1) {
+		errno = ENOBUFS;
+		return NULL;
+	}
 
 	v = &uvifs[numvifs++];
 #ifdef HAVE_STRLCPY
@@ -940,6 +940,7 @@ find_vif(ifname, create, default_policy)
 #endif
 	v->uv_ifindex = ifindex;
 	v->uv_flags = VIFF_DOWN;
+
 	return v;
 }
 

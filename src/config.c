@@ -228,9 +228,9 @@ config_vifs_from_kernel()
 		 */
 		v = find_vif(ifa->ifa_name, CREATE, default_vif_status);
 		if (v == NULL) {
-			log_msg(LOG_DEBUG, 0,
-			    "ignored implicitly disabled interface %s",
-			     ifa->ifa_name);
+			log_msg(LOG_WARNING, 0,
+				"Not registering detected interface %s: %s",
+				ifa->ifa_name, strerror(errno));
 			continue;
 		}
 		v->uv_dst_addr = allpim6routers_group;

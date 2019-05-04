@@ -199,7 +199,7 @@ phyint_statement:
 		v = find_vif($2.v, CREATE, VIFF_ENABLED);
 		free($2.v);	/* XXX */
 		if (v == NULL) {
-			yywarn("unknown interface: %s", $2.v);
+			yywarn("Failed registering interface %s: %s", $2.v, strerror(errno));
 			free_attr_list($3);
 			if (strict)
 				return(-1);
