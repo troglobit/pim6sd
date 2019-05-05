@@ -160,4 +160,27 @@ AC_SUBST(UK_METHOD)
 dnl Checks for RFC3542
 AC_CHECK_LIB([c], [inet6_opt_init], [AC_DEFINE([HAVE_RFC3542], [1], [Define to 1 if you support RFC3542])], )
 
+# Generate all files
 AC_OUTPUT
+
+cat <<EOF
+
+------------------ Summary ------------------
+ $PACKAGE_NAME version $PACKAGE_VERSION
+  Prefix................: $prefix
+  Sysconfdir............: `eval echo $sysconfdir`
+  Localstatedir.........: `eval echo $localstatedir`
+  C Compiler............: $CC $CFLAGS $CPPFLAGS $LDFLAGS $LIBS
+
+Optional features:
+  Router-side MLDv2.....: $enable_mldv2router
+  Host-side MLDv2.......: $enable_mldv2host
+
+------------- Compiler version --------------
+$($CC --version || true)
+---------------------------------------------
+
+Check the above options and compile with:
+ ${MAKE-make}
+
+EOF
