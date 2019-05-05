@@ -53,7 +53,7 @@ pid_t pid;
 static int getmsg(struct rtmsg *rtm, int msglen, struct rpfctl *rpf);
 
 
-static int addattr32(struct nlmsghdr *n, int maxlen, int type, struct sockaddr_in6 data)
+static int addattr32(struct nlmsghdr *n, int maxlen, int type, struct in6_addr *data)
 {
 	struct rtattr *rta;
 	int len = RTA_LENGTH(16);
@@ -64,7 +64,7 @@ static int addattr32(struct nlmsghdr *n, int maxlen, int type, struct sockaddr_i
 	rta = (struct rtattr *)(((char *)n) + NLMSG_ALIGN(n->nlmsg_len));
 	rta->rta_type = type;
 	rta->rta_len = len;
-	memcpy(RTA_DATA(rta), &data, 16);
+	memcpy(RTA_DATA(rta), data, 16);
 	n->nlmsg_len = NLMSG_ALIGN(n->nlmsg_len) + len;
 
 	return 0;
@@ -150,7 +150,7 @@ int k_req_incoming(struct sockaddr_in6 *source, struct rpfctl *rpf)
 	memset(r, 0, sizeof(*r));
 	r->rtm_family = AF_INET6;
 	r->rtm_dst_len = 128;
-	addattr32(n, sizeof(buf), RTA_DST, rpf->source);
+	addattr32(n, sizeof(buf), RTA_DST, &rpf->source.sin6_addr);
 #ifdef CONFIG_RTNL_OLD_IFINFO
 	r->rtm_optlen = n->nlmsg_len - NLMSG_LENGTH(sizeof(*r));
 #endif
