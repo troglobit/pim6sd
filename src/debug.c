@@ -328,7 +328,7 @@ fdump(i)
 	dump_mldgroups(fp);
 	dump_pim_mrt(fp);
 	dump_rp_set(fp);
-	dump_callout_Q(fp);
+//	dump_callout_Q(fp);
 	(void) fclose(fp);
     }
 }
