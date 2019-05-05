@@ -427,11 +427,7 @@ send_pim6(char *buf, struct sockaddr_in6 *src,
 			    sa6_fmt(src));
 			return;
 		}
-		sndmhpim.msg_control=NULL;
-		sndmhpim.msg_controllen=0;
-		ifindex=src->sin6_scope_id;
 
-		k_set_if(pim6_socket , ifindex);
 		if( IN6_ARE_ADDR_EQUAL(&dst->sin6_addr,
 				       &allnodes_group.sin6_addr) ||
 		    IN6_ARE_ADDR_EQUAL(&dst->sin6_addr,
@@ -443,14 +439,13 @@ send_pim6(char *buf, struct sockaddr_in6 *src,
 			k_set_loop(pim6_socket, TRUE);
 		}
 	}
-	else
-	{
-		sndmhpim.msg_control = (caddr_t)sndcmsgbufpim;
-		sndmhpim.msg_controllen = sndcmsglen;
-		sndpktinfo->ipi6_ifindex=src->sin6_scope_id;
-		memcpy(&sndpktinfo->ipi6_addr, &src->sin6_addr,
-		       sizeof(sndpktinfo->ipi6_addr));
-	}
+
+	sndmhpim.msg_control = (caddr_t)sndcmsgbufpim;
+	sndmhpim.msg_controllen = sndcmsglen;
+	sndpktinfo->ipi6_ifindex=src->sin6_scope_id;
+	memcpy(&sndpktinfo->ipi6_addr, &src->sin6_addr,
+	       sizeof(sndpktinfo->ipi6_addr));
+
 	if (sendmsg(pim6_socket, &sndmhpim, 0) < 0) {
 		if (errno == ENETDOWN)
 			check_vif_state();
