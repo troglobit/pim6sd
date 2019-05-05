@@ -37,6 +37,7 @@ state of interfaces and routing tables are shown in this debug log.
 To see pim6sd status when running in the background, send `SIGUSR1` to
 the PID, it is saved in `/var/run/pim6sd.pid` when the daemon has
 started successfully.  The status is found in `/var/run/pim6sd.dump`.
+You can also use the `pim6stat` script, which does all this for you.
 
 The single most common problem when dealing with multicast routing is
 the TTL of the multicast to be routed.  If the TTL is 1 the data will
