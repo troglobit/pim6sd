@@ -118,10 +118,11 @@ extern FILE *log_fp;
 #define DEBUG_ASSERT          ( DEBUG_PIM_ASSERT )
 
 /* CONFIG related */
-#define DEBUG_CONF 0x01000000
+#define DEBUG_CONF            0x01000000
+#define DEBUG_SWITCH  	      0x02000000
 
 #define DEBUG_ALL             0xffffffff
-#define DEBUG_SWITCH  		  0x80000000
+#define DEBUG_PARSE_FAIL      0x80000000
 
 #define DEBUG_DEFAULT   0xffffffff/*  default if "-d" given without value */
 
@@ -135,6 +136,9 @@ extern char *packet_kind        __P((u_int proto, u_int type,
                          u_int code));
 extern int  debug_kind      __P((u_int proto, u_int type,
                          u_int code));
+extern int debug_list(int mask, char *buf, size_t len);
+extern int debug_parse(char *arg);
+extern void log_stack(void);
 extern void log_msg         __P((int, int, char *, ...))
 	__attribute__((__format__(__printf__, 3, 4)));
 extern int  log_level       __P((u_int proto, u_int type,

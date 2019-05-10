@@ -129,68 +129,6 @@ static struct ihandler
 
 static int      nhandlers = 0;
 
-static struct debugname
-{
-    char           *name;
-    int             level;
-    int             nchars;
-}               debugnames[] = {
-    {   "mld_proto",	DEBUG_MLD_PROTO,		5     },
-    {   "mld_timer",	DEBUG_MLD_TIMER,		5     },
-    {   "mld_member",	DEBUG_MLD_MEMBER,		5     },
-    {   "mld",			DEBUG_MLD,		3     },
-    {   "switch",		DEBUG_SWITCH,		2     },
-    {   "trace",		DEBUG_TRACE,		2     },
-    {   "mtrace",		DEBUG_TRACE,		2     },
-    {   "traceroute",		DEBUG_TRACE,		2     },
-    {   "timeout",		DEBUG_TIMEOUT,		2     },
-    {   "callout",		DEBUG_TIMEOUT,		3     },
-    {   "pkt",			DEBUG_PKT,		2     },
-    {   "packets",		DEBUG_PKT,		2     },
-    {   "interfaces",		DEBUG_IF,		2     },
-    {   "vif",			DEBUG_IF,		1     },
-    {   "kernel",		DEBUG_KERN,		2     },
-    {   "cache",		DEBUG_MFC,		1     },
-    {   "mfc",			DEBUG_MFC,		2     },
-    {   "k_cache",		DEBUG_MFC,		2     },
-    {   "k_mfc",		DEBUG_MFC,		2     },
-    {   "rsrr",			DEBUG_RSRR,		2     },
-    {   "pim_detail",		DEBUG_PIM_DETAIL,	5     },
-    {   "pim_hello",		DEBUG_PIM_HELLO,	5     },
-    {   "pim_neighbors",	DEBUG_PIM_HELLO,	5     },
-    {   "pim_register",		DEBUG_PIM_REGISTER,	5     },
-    {   "registers",		DEBUG_PIM_REGISTER,	2     },
-    {   "pim_join_prune",	DEBUG_PIM_JOIN_PRUNE,	5     },
-    {   "pim_j_p",		DEBUG_PIM_JOIN_PRUNE,	5     },
-    {   "pim_jp",		DEBUG_PIM_JOIN_PRUNE,	5     },
-    {   "pim_bootstrap",	DEBUG_PIM_BOOTSTRAP,	5     },
-    {   "pim_bsr",		DEBUG_PIM_BOOTSTRAP,	5     },
-    {   "bsr",			DEBUG_PIM_BOOTSTRAP,	1     },
-    {   "bootstrap",		DEBUG_PIM_BOOTSTRAP,	1     },
-    {   "pim_asserts",		DEBUG_PIM_ASSERT,	5     },
-    {   "pim_cand_rp",		DEBUG_PIM_CAND_RP,	5     },
-    {   "pim_c_rp",		DEBUG_PIM_CAND_RP,	5     },
-    {   "pim_rp",		DEBUG_PIM_CAND_RP,	6     },
-    {   "rp",			DEBUG_PIM_CAND_RP,	2     },
-    {   "pim_routes",		DEBUG_PIM_MRT,		6     },
-    {   "pim_routing",		DEBUG_PIM_MRT,		6     },
-    {   "pim_mrt",		DEBUG_PIM_MRT,		5     },
-    {   "pim_timers",		DEBUG_PIM_TIMER,	5     },
-    {   "pim_rpf",		DEBUG_PIM_RPF,		6     },
-    {   "rpf",			DEBUG_RPF,		3     },
-    {   "pim",			DEBUG_PIM,		1     },
-    {   "routes",		DEBUG_MRT,		1     },
-    {   "routing",		DEBUG_MRT,		1     },
-    {   "mrt",			DEBUG_MRT,		1     },
-    {   "routers",		DEBUG_NEIGHBORS,	6     },
-    {   "mrouters",		DEBUG_NEIGHBORS,	7     },
-    {   "neighbors",		DEBUG_NEIGHBORS,	1     },
-    {   "timers",		DEBUG_TIMER,		1     },
-    {   "asserts",		DEBUG_ASSERT,		1     },
-    {   "all",			DEBUG_ALL,		2     },
-    {   "3",			0xffffffff,		1     }    /* compat. */
-};
-
 
 /*
  * Forward declarations.
@@ -222,25 +160,13 @@ register_input_handler(fd, func)
 
 int usage(int rc)
 {
-    struct debugname *d;
-    char c;
-    int tmpd;
+    char buf[768];
 
     fprintf(stderr, "usage: pim6sd [-hn] [-f FILE] [-d [LEVEL][,LEVEL]]\n");
 
     fprintf(stderr, "debug levels: ");
-    c = '(';
-    tmpd = 0xffffffff;
-    for (d = debugnames; d < debugnames + NELEMS(debugnames); d++)
-    {
-	if ((tmpd & d->level) == d->level)
-	{
-	    tmpd &= ~d->level;
-	    fprintf(stderr, "%c%s", c, d->name);
-	    c = ',';
-	}
-    }
-    fprintf(stderr, ")\n");
+    debug_list(DEBUG_ALL, buf, sizeof(buf));
+    fprintf(stderr, "%s\n", buf);
     exit(rc);
 }
 
@@ -280,67 +206,15 @@ main(argc, argv)
     {
 	if (strcmp(*argv, "-d") == 0)
 	{
-	    if (argc > 1 && *(argv + 1)[0] != '-')
-	    {
-		char           *p,
-		               *q;
-		int             i,
-		                len;
-		struct debugname *d;
-		int 		no=0;
-
+	    if (argc > 1 && *(argv + 1)[0] != '-') {
 		argv++;
 		argc--;
-		debug = 0;
-		p = *argv;
-		q = NULL;
-		while (p)
-		{
-		    q = strchr(p, ',');
-		    if (q)
-			*q++ = '\0';
-		    if (p[0]=='-')
-		    {
-			no=1;
-			p++;
-		    }		
-
-		    len = strlen(p);
-		    for (i = 0, d = debugnames; i < NELEMS(debugnames); i++, d++) {
-			if (len >= d->nchars && strncmp(d->name, p, len) == 0)
-			    break;
-		    }
-		    if (i == NELEMS(debugnames))
-		    {
-			int             j = 0xffffffff;
-			int             k = 0;
-
-			fprintf(stderr, "Valid debug levels: ");
-			for (i = 0, d = debugnames; i < NELEMS(debugnames); i++, d++)
-			{
-			    if ((j & d->level) == d->level)
-			    {
-				if (k++)
-				    putc(',', stderr);
-				fputs(d->name, stderr);
-				j &= ~d->level;
-			    }
-			}
-			putc('\n', stderr);
-			return usage(1);
-		    }
-		    if(no)
-		    {
-			debug &=~d->level;
-			no=0;
-		    }
-		    else
-			debug |= d->level;
-		    p = q;
-		}
-	    }
-	    else
+		debug = debug_parse(*argv);
+		if (DEBUG_PARSE_FAIL == debug)
+		    return usage(1);
+	    } else {
 		debug = DEBUG_DEFAULT;
+	    }
 	}
 	else if (strcmp(*argv, "-f") == 0) {
 		if (argc > 1)
@@ -381,23 +255,12 @@ main(argc, argv)
 	exit(1);
     }
 
-    if (debug != 0)
-    {
-	tmpd = debug;
-	fprintf(stderr, "debug level 0x%lx ", debug);
-	c = '(';
-	for (d = debugnames; d < debugnames + NELEMS(debugnames); d++)
-	{
-	    if ((tmpd & d->level) == d->level)
-	    {
-		tmpd &= ~d->level;
-		fprintf(stderr, "%c%s", c, d->name);
-		c = ',';
-	    }
-	}
-	fprintf(stderr, ")\n");
-    }
+    if (debug != 0) {
+	char buf[768];
 
+	debug_list(debug, buf, sizeof(buf));
+	fprintf(stderr, "debug level 0x%lx: %s\n", debug, buf);
+    }
 #ifdef LOG_DAEMON
     (void) openlog("pim6sd", LOG_PID, LOG_DAEMON);
 #if 0

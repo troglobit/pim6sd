@@ -107,6 +107,68 @@ static char     dumpfilename[] = _PATH_PIM6D_DUMP;
 static char     cachefilename[] = _PATH_PIM6D_CACHE;	/* TODO: notused */
 static char	statfilename[] = _PATH_PIM6D_STAT;
 
+static struct debugname
+{
+    char           *name;
+    int             level;
+    int             nchars;
+}               debugnames[] = {
+    {   "mld_proto",	DEBUG_MLD_PROTO,		5     },
+    {   "mld_timer",	DEBUG_MLD_TIMER,		5     },
+    {   "mld_member",	DEBUG_MLD_MEMBER,		5     },
+    {   "mld",			DEBUG_MLD,		3     },
+    {   "switch",		DEBUG_SWITCH,		2     },
+    {   "trace",		DEBUG_TRACE,		2     },
+    {   "mtrace",		DEBUG_TRACE,		2     },
+    {   "traceroute",		DEBUG_TRACE,		2     },
+    {   "timeout",		DEBUG_TIMEOUT,		2     },
+    {   "callout",		DEBUG_TIMEOUT,		3     },
+    {   "pkt",			DEBUG_PKT,		2     },
+    {   "packets",		DEBUG_PKT,		2     },
+    {   "interfaces",		DEBUG_IF,		2     },
+    {   "vif",			DEBUG_IF,		1     },
+    {   "kernel",		DEBUG_KERN,		2     },
+    {   "cache",		DEBUG_MFC,		1     },
+    {   "mfc",			DEBUG_MFC,		2     },
+    {   "k_cache",		DEBUG_MFC,		2     },
+    {   "k_mfc",		DEBUG_MFC,		2     },
+    {   "rsrr",			DEBUG_RSRR,		2     },
+    {   "pim_detail",		DEBUG_PIM_DETAIL,	5     },
+    {   "pim_hello",		DEBUG_PIM_HELLO,	5     },
+    {   "pim_neighbors",	DEBUG_PIM_HELLO,	5     },
+    {   "pim_register",		DEBUG_PIM_REGISTER,	5     },
+    {   "registers",		DEBUG_PIM_REGISTER,	2     },
+    {   "pim_join_prune",	DEBUG_PIM_JOIN_PRUNE,	5     },
+    {   "pim_j_p",		DEBUG_PIM_JOIN_PRUNE,	5     },
+    {   "pim_jp",		DEBUG_PIM_JOIN_PRUNE,	5     },
+    {   "pim_bootstrap",	DEBUG_PIM_BOOTSTRAP,	5     },
+    {   "pim_bsr",		DEBUG_PIM_BOOTSTRAP,	5     },
+    {   "bsr",			DEBUG_PIM_BOOTSTRAP,	1     },
+    {   "bootstrap",		DEBUG_PIM_BOOTSTRAP,	1     },
+    {   "pim_asserts",		DEBUG_PIM_ASSERT,	5     },
+    {   "pim_cand_rp",		DEBUG_PIM_CAND_RP,	5     },
+    {   "pim_c_rp",		DEBUG_PIM_CAND_RP,	5     },
+    {   "pim_rp",		DEBUG_PIM_CAND_RP,	6     },
+    {   "rp",			DEBUG_PIM_CAND_RP,	2     },
+    {   "pim_routes",		DEBUG_PIM_MRT,		6     },
+    {   "pim_routing",		DEBUG_PIM_MRT,		6     },
+    {   "pim_mrt",		DEBUG_PIM_MRT,		5     },
+    {   "pim_timers",		DEBUG_PIM_TIMER,	5     },
+    {   "pim_rpf",		DEBUG_PIM_RPF,		6     },
+    {   "rpf",			DEBUG_RPF,		3     },
+    {   "pim",			DEBUG_PIM,		1     },
+    {   "routes",		DEBUG_MRT,		1     },
+    {   "routing",		DEBUG_MRT,		1     },
+    {   "mrt",			DEBUG_MRT,		1     },
+    {   "routers",		DEBUG_NEIGHBORS,	6     },
+    {   "mrouters",		DEBUG_NEIGHBORS,	7     },
+    {   "neighbors",		DEBUG_NEIGHBORS,	1     },
+    {   "timers",		DEBUG_TIMER,		1     },
+    {   "asserts",		DEBUG_ASSERT,		1     },
+    {   "all",			DEBUG_ALL,		2     },
+    {   "3",			0xffffffff,		1     }    /* compat. */
+};
+
 extern int dump_callout_Q __P((FILE *));
 static char *sec2str __P((time_t));
 
@@ -264,6 +326,71 @@ debug_kind(proto, type, code)
 	return 0;
     }
     return 0;
+}
+
+
+int
+debug_list(int mask, char *buf, size_t len)
+{
+    struct debugname *d;
+    size_t i;
+
+    memset(buf, 0, len);
+    for (i = 0, d = debugnames; i < NELEMS(debugnames); i++, d++) {
+	if (!(mask & d->level))
+	    continue;
+
+	if (mask != (int)DEBUG_ALL)
+	    mask &= ~d->level;
+
+	strcat(buf, d->name);
+
+	if (mask && i + 1 < NELEMS(debugnames))
+	    strcat(buf, ", ");
+    }
+
+    return 0;
+}
+
+int
+debug_parse(char *arg)
+{
+    struct debugname *d;
+    size_t i, len;
+    char *next = NULL;
+    int sys = 0;
+
+    if (!arg || !strlen(arg) || strstr(arg, "none"))
+	return sys;
+
+    while (arg) {
+	int no = 0;
+
+	next = strchr(arg, ',');
+	if (next)
+	    *next++ = '\0';
+	if (arg[0] == '-') {
+	    *arg++;
+	    no = 1;
+	}
+
+	len = strlen(arg);
+	for (i = 0, d = debugnames; i < NELEMS(debugnames); i++, d++) {
+	    if (len >= d->nchars && strncmp(d->name, arg, len) == 0)
+		break;
+	}
+
+	if (i == NELEMS(debugnames))
+	    return DEBUG_PARSE_FAIL;
+
+	if (no)
+	    sys &= d->level;
+	else
+	    sys |= d->level;
+	arg = next;
+    }
+
+    return sys;
 }
 
 
