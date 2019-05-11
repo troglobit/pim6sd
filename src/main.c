@@ -55,6 +55,7 @@
  *
  */
 
+#include <err.h>
 #include <sys/types.h>
 #include <sys/param.h>
 #include <sys/queue.h>
@@ -192,7 +193,7 @@ main(argc, argv)
     struct sigaction sa;
     struct debugname *d;
     char            c;
-    int             tmpd;
+    int             ch;
 
     progname = strrchr(argv[0], '/');
     if (progname)
@@ -200,60 +201,44 @@ main(argc, argv)
     else
 	progname = argv[0];
 
-    argv++;
-    argc--;
-    while (argc > 0 && *argv[0] == '-')
-    {
-	if (strcmp(*argv, "-d") == 0)
-	{
-	    if (argc > 1 && *(argv + 1)[0] != '-') {
-		argv++;
-		argc--;
-		debug = debug_parse(*argv);
-		if (DEBUG_PARSE_FAIL == debug)
-		    return usage(1);
-	    } else {
-		debug = DEBUG_DEFAULT;
-	    }
-	}
-	else if (strcmp(*argv, "-f") == 0) {
-		if (argc > 1)
-		{
-		    argv++;
-		    argc--;
-#ifdef HAVE_STRLCPY
-		    strlcpy(configfilename, *argv, sizeof(configfilename));
-#elif HAVE_STRNCPY
-		    strncpy(configfilename, *argv, sizeof(configfilename));
-#else
-		    strcpy(configfilename, *argv);
-#endif
-		}
-		else
-		    return usage(1);
-	}
-	else if (strcmp(*argv, "-n") == 0)
-		foreground = 1;
-	else if (strcmp(*argv, "-h") == 0)
- 		return usage(0);
-	else
+    while ((ch = getopt(argc, argv, "d:f:hn")) != EOF) {
+	switch (ch) {
+	case 'd':
+	    debug = debug_parse(optarg);
+	    if (DEBUG_PARSE_FAIL == debug)
 		return usage(1);
+	    break;
 
-	argv++;
-	argc--;
+	case 'f':
+#ifdef HAVE_STRLCPY
+	    strlcpy(configfilename, optarg, sizeof(configfilename));
+#elif HAVE_STRNCPY
+	    strncpy(configfilename, optarg, sizeof(configfilename));
+#else
+	    strcpy(configfilename, optarg);
+#endif
+	    break;
+
+	case 'n':
+	    foreground = 1;
+	    break;
+
+	case 'h':
+	    return usage(0);
+
+	default:
+	    return usage(1);
+	}
     }
 
-    if (argc > 0)
-	    return usage(1);
+    if (optind < argc)
+	return usage(1);
+
+    if (geteuid() != 0)
+	errx(1, "Need root privileges to start.");
 
     log_fp = stderr;
     setlinebuf(stderr);
-
-    if (geteuid() != 0)
-    {
-	fprintf(stderr, "pim6sd: must be root\n");
-	exit(1);
-    }
 
     if (debug != 0) {
 	char buf[768];
