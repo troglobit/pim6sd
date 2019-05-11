@@ -35,9 +35,9 @@
 .Nd PIM for IPv6 sparse mode daemon
 .Sh SYNOPSIS
 .Nm
+.Op Fl hn
 .Op Fl f Ar FILE
-.Op Fl d Op LEVEL Op ,LEVEL
-.Op Fl n
+.Op Fl d Ar LEVEL[,LEVEL]
 .Sh DESCRIPTION
 .Nm
 is an IPv6 multicast routing daemon, which supports
@@ -47,28 +47,31 @@ and SSM(Source-Specific-Multicast) for IPv6.
 Options supported by
 .Nm Ns :
 .Bl -tag -width Ds
+.It Fl d
+Specify debug levels.  Use
+.Fl d Ar all
+to enable all debug levels.  A subset of the messages to be printed out
+can be specified as arguments of the option, separate levels with comma
+-- no space.  Valid debug levels are:
+.Pp
+.Bl -tag -width pim_join_prune -compact -offset indent
+.It mld_proto, mld_timer, mld_member, mld, switch, trace, mtrace, traceroute,
+.It timeout, callout, pkt, packets, interfaces, vif, kernel, cache, mfc,
+.It k_cache, k_mfc, rsrr, pim_detail, pim_hello, pim_neighbors, pim_register,
+.It registers, pim_join_prune, pim_j_p, pim_jp, pim_bootstrap, pim_bsr, bsr,
+.It bootstrap, pim_asserts, pim_cand_rp, pim_c_rp, pim_rp, rp, pim_routes,
+.It pim_routing, pim_mrt, pim_timers, pim_rpf, rpf, pim, routes, routing,
+.It mrt, routers, mrouters, neighbors, timers, asserts
+.El
 .It Fl f Ar FILE
 Specify alternate location for configuration file.  By default,
 .Pa /etc/pim6sd.conf
 is used.
-.It Fl d
-Specify debug levels. If this option is specified without any arguments,
-all debug messages will be printed out.
-A subset of the messages to be printed out can be specified
-as arguments of the option.
-Valid debug levels are
-.Ic mld_proto, mld_timer, mld_member, mld, switch, trace, mtrace, traceroute,
-.Ic timeout, callout, pkt, packets, interfaces, vif, kernel, cache, mfc,
-.Ic k_cache, k_mfc, rsrr, pim_detail, pim_hello, pim_neighbors, pim_register,
-.Ic registers, pim_join_prune, pim_j_p, pim_jp, pim_bootstrap, pim_bsr, bsr,
-.Ic bootstrap, pim_asserts, pim_cand_rp, pim_c_rp, pim_rp, rp, pim_routes,
-.Ic pim_routing, pim_mrt, pim_timers, pim_rpf, rpf, pim, routes, routing,
-.Ic mrt, routers, mrouters, neighbors, timers,
-and
-.Ic asserts.
+.It Fl h
+Print a help message and exit.
 .It Fl n
-Do not become daemon, run in foreground. This option is for when started by
-service monitors like systemd or Finit.
+Do not become daemon, run in foreground.  This option is for when
+started by service monitors like systemd or Finit.
 .El
 .Pp
 .Nm
