@@ -1,7 +1,9 @@
+# Tell yacc/bison to also produce a header file
+AM_YFLAGS         = -d
+
 sbin_PROGRAMS     = pim6sd
 dist_sbin_SCRIPTS = pim6stat
 
-AM_YFLAGS         = -d
 pim6sd_LIBS       = @LIBS@ @LEXLIBS@
 pim6sd_CFLAGS     = -std=c99
 pim6sd_CPPFLAGS   = -DYIPS_DEBUG -D_GNU_SOURCE -I$(top_srcdir)/include
