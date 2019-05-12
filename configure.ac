@@ -85,14 +85,6 @@ fi
 
 
 # Checks for library functions.
-AC_FUNC_FORK
-AC_PROG_GCC_TRADITIONAL
-AC_FUNC_MALLOC
-AC_FUNC_MEMCMP
-AC_FUNC_REALLOC
-AC_FUNC_SELECT_ARGTYPES
-AC_FUNC_SETPGRP
-AC_FUNC_VPRINTF
 AC_CHECK_FUNCS([bzero dup2 gettimeofday isascii memset select socket strchr strdup strerror strrchr strlcpy strncpy])
 
 dnl Checks for other features
