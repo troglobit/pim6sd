@@ -325,13 +325,8 @@ net6name(struct in6_addr *prefix, struct in6_addr *mask)
 	p = inet6_fmt(prefix);
 	if (!p)
 		return NULL;
-#ifdef HAVE_STRLCPY
+
 	strlcpy(cp, p, sizeof(ip6buf[ip6round]));
-#elif HAVE_STRNCPY
-	strncpy(cp, p, sizeof(ip6buf[ip6round]));
-#else
-	strcpy(cp, p);
-#endif
 	cp += strlen(cp);
 	snprintf(cp, ep - cp, "/%d", inet6_mask2plen(mask));
 

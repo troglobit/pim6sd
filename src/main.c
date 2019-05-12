@@ -210,13 +210,7 @@ main(argc, argv)
 	    break;
 
 	case 'f':
-#ifdef HAVE_STRLCPY
 	    strlcpy(configfilename, optarg, sizeof(configfilename));
-#elif HAVE_STRNCPY
-	    strncpy(configfilename, optarg, sizeof(configfilename));
-#else
-	    strcpy(configfilename, optarg);
-#endif
 	    break;
 
 	case 'n':

@@ -86,4 +86,8 @@ typedef u_int8_t	u_int8;
 
 extern char configfilename[];
 
+#ifndef strlcpy
+size_t  strlcpy    (char *dst, const char *src, size_t siz);
 #endif
+
+#endif /* DEFS_H */

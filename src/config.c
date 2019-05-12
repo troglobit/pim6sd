@@ -159,13 +159,7 @@ config_vifs_from_kernel()
 		 * detached address?
 		 */
 #ifdef SIOCGIFAFLAG_IN6
-#ifdef HAVE_STRLCPY
 		strlcpy(ifr6.ifr_name, ifa->ifa_name, sizeof(ifr6.ifr_name));
-#elif HAVE_STRNCPY
-		strncpy(ifr6.ifr_name, ifa->ifa_name, sizeof(ifr6.ifr_name));
-#else
-		strcpy(ifr6.ifr_name, ifa->ifa_name);
-#endif
 		ifr6.ifr_addr = *(struct sockaddr_in6 *)ifa->ifa_addr;
 		if (ioctl(udp_socket, SIOCGIFAFLAG_IN6, &ifr6) < 0) {
 			log_msg(LOG_ERR, errno, "ioctl SIOCGIFAFLAG_IN6 for %s",
@@ -235,13 +229,7 @@ config_vifs_from_kernel()
 		}
 		v->uv_dst_addr = allpim6routers_group;
 		v->uv_subnetmask = mask;
-#ifdef HAVE_STRLCPY
-		strlcpy(v->uv_name, ifa->ifa_name, IFNAMSIZ);
-#elif HAVE_STRNCPY
-		strncpy(v->uv_name, ifa->ifa_name, IFNAMSIZ);
-#else
-		strcpy(v->uv_name, ifa->ifa_name);
-#endif
+		strlcpy(v->uv_name, ifa->ifa_name, sizeof(v->uv_name));
 		v->uv_ifindex = if_nametoindex(v->uv_name);
 		add_phaddr(v, &addr, &mask, rmt);
 	

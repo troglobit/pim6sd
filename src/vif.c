@@ -141,13 +141,6 @@ init_vifs(void)
 		memset(v, 0, sizeof(*v));
 		v->uv_metric = DEFAULT_METRIC;
 		v->uv_rate_limit = DEFAULT_PHY_RATE_LIMIT;
-#ifdef HAVE_STRLCPY
-		strlcpy(v->uv_name, "", IFNAMSIZ);
-#elif HAVE_STRNCPY
-		strncpy(v->uv_name, "", IFNAMSIZ);
-#else
-		strcpy(v->uv_name, "");
-#endif
 		v->uv_local_pref = default_source_preference;
 		v->uv_local_metric = default_source_metric;
 		v->uv_priority = PIM_DEFAULT_DR_PRIORITY;
@@ -251,13 +244,7 @@ init_reg_vif(void)
 		   &uvifs[i].uv_linklocal->pa_subnetmask,
 		   &uvifs[i].uv_linklocal->pa_prefix); 
 	v->uv_ifindex = uvifs[i].uv_ifindex;
-#ifdef HAVE_STRLCPY
-	strlcpy(v->uv_name, "register_mif0", IFNAMSIZ);
-#elif HAVE_STRNCPY
-	strncpy(v->uv_name, "register_mif0", IFNAMSIZ);
-#else
-	strcpy(v->uv_name, "register_mif0");
-#endif
+	strlcpy(v->uv_name, "register_mif0", sizeof(v->uv_name));
 	v->uv_flags = MIFF_REGISTER;
 	v->uv_mld_version = MLDv1;
 
@@ -668,13 +655,7 @@ check_vif_state(void)
 		if (v->uv_flags & (VIFF_DISABLED | MIFF_REGISTER))
 			continue;
 
-#ifdef HAVE_STRLCPY
-		strlcpy(ifr.ifr_name, v->uv_name, IFNAMSIZ);
-#elif HAVE_STRNCPY
-		strncpy(ifr.ifr_name, v->uv_name, IFNAMSIZ);
-#else
-		strcpy(ifr.ifr_name, v->uv_name);
-#endif
+		strlcpy(ifr.ifr_name, v->uv_name, sizeof(ifr.ifr_name));
   
 		/* get the interface flags */
 		if (ioctl(udp_socket, SIOCGIFFLAGS, (char *)&ifr) < 0)
@@ -929,13 +910,7 @@ find_vif(ifname, create, default_policy)
 	}
 
 	v = &uvifs[numvifs++];
-#ifdef HAVE_STRLCPY
-	strlcpy(v->uv_name, ifname, IFNAMSIZ);
-#elif HAVE_STRNCPY
-	strncpy(v->uv_name, ifname, IFNAMSIZ);
-#else
-	strcpy(v->uv_name, ifname);
-#endif
+	strlcpy(v->uv_name, ifname, sizeof(v->uv_name));
 	v->uv_ifindex = ifindex;
 	v->uv_flags = VIFF_DOWN;
 

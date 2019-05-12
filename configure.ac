@@ -85,7 +85,11 @@ fi
 
 
 # Checks for library functions.
-AC_CHECK_FUNCS([bzero dup2 gettimeofday isascii memset select socket strchr strdup strerror strrchr strlcpy strncpy])
+AC_CHECK_FUNCS([bzero dup2 gettimeofday isascii memset select socket strchr strdup strerror strrchr strncpy])
+
+# Check for usually missing API's, which we can replace
+AC_REPLACE_FUNCS([strlcpy])
+AC_CONFIG_LIBOBJ_DIR([lib])
 
 dnl Checks for other features
 AC_MSG_CHECKING(if you have a length field in struct sockaddr*)
