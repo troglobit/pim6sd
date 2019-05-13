@@ -159,12 +159,52 @@ int usage(int rc)
 {
     char buf[768];
 
-    fprintf(stderr, "usage: pim6sd [-hn] [-f FILE] [-d [LEVEL][,LEVEL]]\n");
+    printf("Usage: %s [-hnv] [-f FILE] [-d [LEVEL][,LEVEL]]\n"
+	   "\n"
+	   "Options:\n"
+	   " -d LVL     Debug subsystem(s), separate args with comma (no space)\n"
+	   " -f FILE    Configuration file, default: %s\n"
+	   " -h         Show this help text\n"
+	   " -n         Run in foreground, do not detach from controlling terminal\n"
+	   " -v         Show program version\n"
+	   "\n",
+	   progname, configfilename);
 
-    fprintf(stderr, "debug levels: ");
-    debug_list(DEBUG_ALL, buf, sizeof(buf));
-    fprintf(stderr, "%s\n", buf);
-    exit(rc);
+    printf("Available debug levels:\n");
+    if (!debug_list(DEBUG_ALL, buf, sizeof(buf))) {
+	char line[82] = "  ";
+	char *ptr;
+
+	ptr = strtok(buf, " ");
+	while (ptr) {
+	    char *sys = ptr;
+	    char buf[20];
+
+	    ptr = strtok(NULL, " ");
+
+	    /* Flush line */
+	    if (strlen(line) + strlen(sys) + 3 >= sizeof(line)) {
+		puts(line);
+		strlcpy(line, "  ", sizeof(line));
+	    }
+
+	    if (ptr)
+		snprintf(buf, sizeof(buf), "%s ", sys);
+	    else
+		snprintf(buf, sizeof(buf), "%s", sys);
+
+	    strlcat(line, buf, sizeof(line));
+	}
+
+	puts(line);
+    }
+
+    printf("\nBug report address: %-40s\n", PACKAGE_BUGREPORT);
+#ifdef PACKAGE_URL
+    printf("Project homepage: %s\n", PACKAGE_URL);
+#endif
+
+    return rc;
 }
 
 int
@@ -197,7 +237,9 @@ main(argc, argv)
     else
 	progname = argv[0];
 
-    while ((ch = getopt(argc, argv, "d:f:hn")) != EOF) {
+    snprintf(versionstring, sizeof(versionstring), "pim6sd version %s", VERSION);
+
+    while ((ch = getopt(argc, argv, "d:f:hnv")) != EOF) {
 	switch (ch) {
 	case 'd':
 	    debug = debug_parse(optarg);
@@ -215,6 +257,10 @@ main(argc, argv)
 
 	case 'h':
 	    return usage(0);
+
+	case 'v':
+	    puts(versionstring);
+	    return 0;
 
 	default:
 	    return usage(1);
@@ -251,8 +297,6 @@ main(argc, argv)
 	    log_msg(LOG_ERR, errno, "fopen(%s)", logfilename);
 	setlinebuf(log_fp);
     }
-
-    snprintf(versionstring, sizeof(versionstring), "pim6sd version %s", VERSION);
 
     log_msg(LOG_INFO, 0, "%s starting", versionstring);
 
