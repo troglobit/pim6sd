@@ -48,15 +48,15 @@ typedef struct {
 } vchar_t;
 
 /* cfparse.y */
-extern void cf_init __P((int, int));
+extern void cf_init (int, int);
 #ifdef  notyet
-extern int re_cfparse __P((void));
+extern int re_cfparse (void);
 #endif
-extern int cf_post_config __P((void));
-extern int yyparse __P((void));
-extern int grp_prefix_config __P((void));
+extern int cf_post_config (void);
+extern int yyparse (void);
+extern int grp_prefix_config (void);
 
 /* cftoken.l */
-extern void yyerror __P((char *, ...));
-extern void yywarn __P((char *, ...));
-extern int cfparse __P((int, int));
+extern void yyerror (char *, ...);
+extern void yywarn (char *, ...);
+extern int cfparse (int, int);

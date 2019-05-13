@@ -103,15 +103,15 @@ int total_interfaces;
 if_set			if_nullset;
 if_set			if_result;
 
-int init_reg_vif __P((void));
-void start_all_vifs __P((void));
-void start_vif __P((mifi_t vifi));
-void stop_vif __P((mifi_t vivi));
-int update_reg_vif __P((mifi_t register_vifi));
+int init_reg_vif (void);
+void start_all_vifs (void);
+void start_vif (mifi_t vifi);
+void stop_vif (mifi_t vivi);
+int update_reg_vif (mifi_t register_vifi);
 
 extern void add_phaddr __P((struct uvif *, struct sockaddr_in6 *,
 		           struct in6_addr *, struct sockaddr_in6 *));
-extern int cfparse __P((int, int));
+extern int cfparse (int, int);
 
 void
 init_vifs(void)
@@ -390,8 +390,8 @@ start_vif(mifi_t vifi)
 void
 stop_vif(mifi_t vifi)
 {
-	register pim_nbr_entry_t *next;
-	register pim_nbr_entry_t *n;
+	pim_nbr_entry_t *next;
+	pim_nbr_entry_t *n;
 	struct listaddr *a;
 	struct vif_acl *acl;
 	struct uvif *v;
@@ -504,8 +504,8 @@ stop_vif(mifi_t vifi)
 int
 update_reg_vif(mifi_t register_vifi)
 {
-	register struct uvif *v;
-	register mifi_t vifi;
+	struct uvif *v;
+	mifi_t vifi;
 
 	/* Find the first useable vif with solid physical background */
 	for (vifi = 0, v = uvifs; vifi < numvifs; ++vifi, ++v) {
@@ -592,7 +592,7 @@ local_iface(char *ifname)
 {
 	struct phaddr *pmax = NULL;
 	struct phaddr *p;
-	register struct uvif *v;
+	struct uvif *v;
 	mifi_t vifi;
 
 	for (vifi = 0, v = uvifs; vifi < numvifs; ++vifi, ++v) {
@@ -633,9 +633,9 @@ void
 check_vif_state(void)
 {
 	static int checking_vifs = 0;
-	register struct uvif *v;
+	struct uvif *v;
 	struct ifreq ifr;
-	register mifi_t vifi;
+	mifi_t vifi;
 
 	/*
 	 * XXX: TODO: True only for DVMRP?? Check.
@@ -681,8 +681,8 @@ check_vif_state(void)
 
 	/* Check the register(s) vif(s) */
 	for (vifi = 0, v = uvifs; vifi < numvifs; ++vifi, ++v) {
-		register struct uvif *v2;
-		register mifi_t vifi2;
+		struct uvif *v2;
+		mifi_t vifi2;
 		int found;
 
 		if (!(v->uv_flags & MIFF_REGISTER))
@@ -726,8 +726,8 @@ mifi_t
 find_vif_direct(src)
 struct sockaddr_in6 *src;
 {
-	register struct phaddr *p;
-	register struct uvif *v;
+	struct phaddr *p;
+	struct uvif *v;
 	mifi_t vifi;
    
 	for (vifi = 0, v = uvifs; vifi < numvifs; ++vifi, ++v) {
@@ -759,8 +759,8 @@ mifi_t
 local_address(src)
 struct sockaddr_in6 *src;
 {
-	register struct phaddr *p;
-	register struct uvif *v;
+	struct phaddr *p;
+	struct uvif *v;
 	mifi_t vifi;
 
 	for (vifi = 0, v = uvifs; vifi < numvifs; ++vifi, ++v) {
@@ -788,8 +788,8 @@ mifi_t
 find_vif_direct_local(src)
 struct sockaddr_in6 *src;
 { 
-	register struct phaddr *p;
-	register struct uvif *v;
+	struct phaddr *p;
+	struct uvif *v;
 	mifi_t vifi;
    
 	for (vifi = 0, v = uvifs; vifi < numvifs; ++vifi, ++v) {

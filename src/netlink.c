@@ -133,7 +133,7 @@ int k_req_incoming(struct sockaddr_in6 *source, struct rpfctl *rpf)
 	struct rtmsg *r;
 	char buf[512];
 	int rlen;
-	register int l;
+	int l;
 
 	rpf->source = *source;
 	rpf->iif = ALL_MIFS;

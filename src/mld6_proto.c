@@ -128,8 +128,8 @@
 /*
  * Forward declarations.
  */
-static int DeleteTimer __P((int id));
-static void SendQuery __P((void *arg));
+static int DeleteTimer (int id);
+static void SendQuery (void *arg);
 static int SetQueryTimer
 __P((struct listaddr * g, int mifi, int to_expire,
      int q_time));
@@ -139,7 +139,7 @@ __P((struct listaddr * g, int mifi, int to_expire,
  */
 void
 query_groups(v)
-	register struct uvif *v;
+	struct uvif *v;
 {
 	v->uv_gq_timer = MLD6_QUERY_INTERVAL;
 	if (v->uv_flags & VIFF_QUERIER &&
@@ -174,9 +174,9 @@ accept_listener_query(src, dst, group, tmo)
 	struct in6_addr *dst, *group;
 	int tmo;
 {
-	register int mifi;
-	register struct uvif *v;
-	register struct listaddr *g;
+	int mifi;
+	struct uvif *v;
+	struct listaddr *g;
 	struct sockaddr_in6 group_sa;
 
 	init_sin6(&group_sa);
@@ -348,7 +348,7 @@ recv_listener_report(mifi, src, grp, mld_version)
 	int mld_version;
 {
 	struct uvif *v = &uvifs[mifi];
-	register struct listaddr *g;
+	struct listaddr *g;
 
 	/*
 	 * Look for the group in our group list; if found,
@@ -501,7 +501,7 @@ recv_listener_done(mifi, src, grp)
 	struct sockaddr_in6 *src, *grp;
 {
 	struct uvif *v = &uvifs[mifi];
-	register struct listaddr *g;
+	struct listaddr *g;
 	int ret = FALSE;
 
 	/*
@@ -654,7 +654,7 @@ SendQuery(arg)
 	void *arg;
 {
 	cbk_t *cbk = (cbk_t *) arg;
-	register struct uvif *v = &uvifs[cbk->mifi];
+	struct uvif *v = &uvifs[cbk->mifi];
 
 	/* sanity check */
 	if (v->uv_mld_version & MLDv2) {

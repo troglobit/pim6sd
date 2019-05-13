@@ -103,12 +103,12 @@ void add_phaddr(struct uvif *v, struct sockaddr_in6 *addr,
 void
 config_vifs_from_kernel()
 {
-	register struct uvif *v;
-	int i;
 	struct sockaddr_in6 addr, rmt_addr, *rmt;
 	struct in6_addr mask;
-	short flags;
 	struct ifaddrs *ifap, *ifa;
+	struct uvif *v;
+	short flags;
+	int i;
 
 	total_interfaces= 0;	/* The total number of physical interfaces */
 

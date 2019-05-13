@@ -73,7 +73,6 @@
 #define IF_NOT_TIMEOUT(timer)	if (NOT_TIMEOUT(timer))
 
 
-
 extern u_int32 pim_reg_rate_bytes;
 extern u_int32 pim_reg_rate_check_interval;
 extern u_int32 pim_data_rate_bytes;
@@ -88,11 +87,10 @@ extern u_int32 pim_register_suppression_timeout;
 extern u_int32 pim_register_probe_time;
 extern u_int32 pim_assert_timeout;
 
-extern void init_timers     __P((void));
-extern void init_timers     __P((void)); 
-extern void age_vifs        __P((void)); 
-extern void age_routes      __P((void)); 
-extern void age_misc        __P((void));
+extern void init_timers     (void);
+extern void init_timers     (void);
+extern void age_vifs        (void);
+extern void age_routes      (void);
+extern void age_misc        (void);
 
-
-#endif
+#endif /* TIMER_H */

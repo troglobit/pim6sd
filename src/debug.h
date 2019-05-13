@@ -139,19 +139,19 @@ extern int  debug_kind      __P((u_int proto, u_int type,
 extern int debug_list(int mask, char *buf, size_t len);
 extern int debug_parse(char *arg);
 extern void log_stack(void);
-extern void log_msg         __P((int, int, char *, ...))
+extern void log_msg         (int, int, char *, ...)
 	__attribute__((__format__(__printf__, 3, 4)));
 extern int  log_level       __P((u_int proto, u_int type,
                          u_int code));
-extern void dump            __P((int i));
-extern void fdump           __P((int i));
-extern void cdump           __P((int i));
-extern void dump_vifs       __P((FILE *fp));
-extern void dump_nbrs       __P((FILE *fp));
-extern void dump_mldqueriers    __P((FILE *fp));
-extern void dump_mldgroups	__P((FILE *fp));
-extern void dump_pim_mrt        __P((FILE *fp));
-extern int  dump_rp_set     __P((FILE *fp));
-extern void dump_stat __P((void));
+extern void dump            (int i);
+extern void fdump           (int i);
+extern void cdump           (int i);
+extern void dump_vifs       (FILE *fp);
+extern void dump_nbrs       (FILE *fp);
+extern void dump_mldqueriers    (FILE *fp);
+extern void dump_mldgroups	(FILE *fp);
+extern void dump_pim_mrt        (FILE *fp);
+extern int  dump_rp_set     (FILE *fp);
+extern void dump_stat (void);
 
 #endif

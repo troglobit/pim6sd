@@ -50,12 +50,12 @@
 #ifndef CALLOUT_H
 #define CALLOUT_H
 
-extern void     callout_init      __P((void));
-extern void     free_all_callouts __P((void));
-extern void     age_callout_queue __P((int));
-extern int      timer_nextTimer   __P((void));
-extern int      timer_setTimer    __P((int, cfunc_t, void *));
-extern void     timer_clearTimer  __P((int));
-extern int      timer_leftTimer   __P((int));
+extern void     callout_init      (void);
+extern void     free_all_callouts (void);
+extern void     age_callout_queue (int);
+extern int      timer_nextTimer   (void);
+extern int      timer_setTimer    (int, cfunc_t, void *);
+extern void     timer_clearTimer  (int);
+extern int      timer_leftTimer   (int);
 
 #endif

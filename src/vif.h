@@ -275,19 +275,19 @@ struct rpfctl {
     mifi_t iif; /* the incoming interface to reach the next hop */
 }; 
 
-extern void    init_vifs __P((void));
-extern void    stop_all_vifs __P((void));
-extern void    check_vif_state __P((void));
-struct sockaddr_in6 * max_global_address __P((void));
-struct sockaddr_in6 * uv_global __P((mifi_t));
-extern mifi_t   local_address  __P((struct sockaddr_in6 *src));
-struct sockaddr_in6 * local_iface __P((char *ifname));
-extern mifi_t   find_vif_direct     __P((struct sockaddr_in6 *src));
-extern mifi_t  find_vif_direct_local   __P((struct sockaddr_in6 *src));
-extern int vif_forwarder __P((if_set *p1 ,if_set *p2));
-extern if_set *vif_and __P((if_set *p1, if_set *p2, if_set *result)); 
-extern if_set *vif_xor __P((if_set *p1, if_set *p2, if_set *result));
-extern struct uvif *find_vif __P((char *ifname, int, int));
-extern char *mif_name __P((mifi_t));
+extern void    init_vifs (void);
+extern void    stop_all_vifs (void);
+extern void    check_vif_state (void);
+struct sockaddr_in6 * max_global_address (void);
+struct sockaddr_in6 * uv_global (mifi_t);
+extern mifi_t   local_address  (struct sockaddr_in6 *src);
+struct sockaddr_in6 * local_iface (char *ifname);
+extern mifi_t   find_vif_direct     (struct sockaddr_in6 *src);
+extern mifi_t  find_vif_direct_local   (struct sockaddr_in6 *src);
+extern int vif_forwarder (if_set *p1 ,if_set *p2);
+extern if_set *vif_and (if_set *p1, if_set *p2, if_set *result); 
+extern if_set *vif_xor (if_set *p1, if_set *p2, if_set *result);
+extern struct uvif *find_vif (char *ifname, int, int);
+extern char *mif_name (mifi_t);
 
 #endif /* VIF_H_ */

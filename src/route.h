@@ -56,10 +56,10 @@ int change_interfaces(	mrtentry_t *mrtentry_ptr,mifi_t new_iif,
 						if_set *new_joined_oifs,if_set *new_pruned_oifs,if_set *new_leaves_ , if_set *asserted ,
 						u_int16 flags);
 
-extern void      process_kernel_call     __P((void));
+extern void      process_kernel_call     (void);
 extern int  set_incoming        __P((srcentry_t *srcentry_ptr,
                          int srctype));
-extern mifi_t   get_iif         __P((struct sockaddr_in6 *source));
+extern mifi_t   get_iif         (struct sockaddr_in6 *source);
 extern int  add_sg_oif      __P((mrtentry_t *mrtentry_ptr,
                          mifi_t vifi,
                          u_int16 holdtime,
@@ -72,12 +72,12 @@ extern void delete_leaf     __P((mifi_t vifi, struct sockaddr_in6 *source,
 
 
 
-extern pim_nbr_entry_t *find_pim6_nbr __P((struct sockaddr_in6 *source));
+extern pim_nbr_entry_t *find_pim6_nbr (struct sockaddr_in6 *source);
 extern void calc_oifs       __P((mrtentry_t *mrtentry_ptr,
                          if_set *oifs_ptr));
-extern void process_kernel_call __P((void));
-extern int  delete_vif_from_mrt __P((mifi_t vifi));
-extern mrtentry_t *switch_shortest_path __P((struct sockaddr_in6 *source, struct sockaddr_in6 *group));
+extern void process_kernel_call (void);
+extern int  delete_vif_from_mrt (mifi_t vifi);
+extern mrtentry_t *switch_shortest_path (struct sockaddr_in6 *source, struct sockaddr_in6 *group);
 
 
 #endif

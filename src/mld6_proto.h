@@ -98,7 +98,7 @@ typedef struct
 		MLD6_QUERY_INTERVAL + \
 		MLD6_QUERY_RESPONSE_INTERVAL / MLD6_TIMER_SCALE)
 
-extern void     query_groups            __P((struct uvif *v));
+extern void     query_groups            (struct uvif *v);
 extern int      check_grp_membership    __P((struct uvif *v,
 					     struct sockaddr_in6 *group));
 extern void     accept_listener_query   __P((struct sockaddr_in6 *src,
@@ -121,7 +121,7 @@ extern void     recv_listener_report	__P((mifi_t,
 extern void     recv_listener_done      __P((mifi_t,
 					     struct sockaddr_in6 *src,
 					     struct sockaddr_in6 *group));
-extern int	SetTimer __P((int mifi, struct listaddr * g));
-extern void	DelVif __P((void *));
+extern int	SetTimer (int mifi, struct listaddr * g);
+extern void	DelVif (void *);
 
 #endif

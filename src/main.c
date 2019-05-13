@@ -135,15 +135,11 @@ static int      nhandlers = 0;
  * Forward declarations.
  */
 
-static void handler __P((int));
-static void timer   __P((void *));
-static void restart __P((int));
-static void cleanup __P((void));
+static void handler (int);
+static void timer   (void *);
+static void restart (int);
+static void cleanup (void);
 
-
-/* To shut up gcc -Wstrict-prototypes */
-
-int main        __P((int argc, char **argv));
 
 int
 register_input_handler(fd, func)
@@ -256,8 +252,7 @@ main(argc, argv)
 	setlinebuf(log_fp);
     }
 
-    snprintf(versionstring, sizeof(versionstring),
-	"pim6sd version %s", VERSION);
+    snprintf(versionstring, sizeof(versionstring), "pim6sd version %s", VERSION);
 
     log_msg(LOG_INFO, 0, "%s starting", versionstring);
 

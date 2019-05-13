@@ -87,13 +87,13 @@ struct staticrp {
 	u_int8 priority;
 };
 
-extern void      init_rp6	__P((void));
-extern void      init_bsr6	__P((void));
+extern void      init_rp6	(void);
+extern void      init_bsr6	(void);
 void delete_rp_list( cand_rp_t **used_cand_rp_list , grp_mask_t **used_grp_mask_list );
-u_int16 bootstrap_initial_delay __P((void));
-extern rpentry_t *rp_match      __P((struct sockaddr_in6 *group));
-extern rp_grp_entry_t *rp_grp_match __P((struct sockaddr_in6 *group));
-extern int  create_pim6_bootstrap_message __P((char *send_buff));
+u_int16 bootstrap_initial_delay (void);
+extern rpentry_t *rp_match      (struct sockaddr_in6 *group);
+extern rp_grp_entry_t *rp_grp_match (struct sockaddr_in6 *group);
+extern int  create_pim6_bootstrap_message (char *send_buff);
 
 extern rp_grp_entry_t *add_rp_grp_entry __P((cand_rp_t  **used_cand_rp_list,
                          grp_mask_t **used_grp_mask_list,
@@ -117,12 +117,12 @@ extern void delete_rp       __P((cand_rp_t  **used_cand_rp_list,
                          struct sockaddr_in6 *rp_addr));
 extern void delete_rp_list      __P((cand_rp_t  **used_cand_rp_list,
                          grp_mask_t **used_grp_mask_list));
-extern rpentry_t *rp_match      __P((struct sockaddr_in6 *group)); 
-extern rp_grp_entry_t *rp_grp_match __P((struct sockaddr_in6 *group));
-extern rpentry_t *rp_find       __P((struct sockaddr_in6 *rp_address));
-extern int  remap_grpentry      __P((grpentry_t *grpentry_ptr));
+extern rpentry_t *rp_match      (struct sockaddr_in6 *group); 
+extern rp_grp_entry_t *rp_grp_match (struct sockaddr_in6 *group);
+extern rpentry_t *rp_find       (struct sockaddr_in6 *rp_address);
+extern int  remap_grpentry      (grpentry_t *grpentry_ptr);
 extern int  check_mrtentry_rp   __P((mrtentry_t *mrtentry_ptr,
                          struct sockaddr_in6 *rp_addr));
 
-extern void update_rp_neighbor __P((void));
+extern void update_rp_neighbor (void);
 #endif

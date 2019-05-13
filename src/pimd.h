@@ -293,35 +293,38 @@ typedef struct pim_jp_encod_grp_ {
 #define PIM_MESSAGE_REGISTER_BORDER_BIT         0x80000000
 #define PIM_MESSAGE_REGISTER_NULL_REGISTER_BIT  0x40000000
 
-#define MASK_TO_MASKLEN6(mask , masklen) \
-do { \
-			register u_int32 tmp_mask;							\
-			register u_int8  tmp_masklen = sizeof((mask)) <<3;	\
-			int i;  \
-			int kl; \
-			for(i=0;i<4;i++)									\
-			{													\
-				tmp_mask=ntohl(*(u_int32_t *)&mask.s6_addr[i * 4]); \
-				for(kl=32; tmp_masklen >0 && kl>0 ; tmp_masklen--, kl-- , tmp_mask >>=1) \
-					if( tmp_mask & 0x1)			\
-						break;   	\
-			} \
-			(masklen) =tmp_masklen;	\
-		} while (0) 
+#define MASK_TO_MASKLEN6(mask , masklen)				\
+	do {								\
+		u_int32 tmp;						\
+		u_int8  len = sizeof((mask)) << 3;			\
+		int i;							\
+		int j;							\
+									\
+		for (i = 0; i < 4; i++) {				\
+			tmp = ntohl(*(u_int32_t *)&mask.s6_addr[i * 4]); \
+			for (j = 32; len > 0 && j > 0;			\
+			     len--, j--, tmp >>= 1)			\
+				if (tmp & 0x1)				\
+					break;				\
+		}							\
+		(masklen) = len;					\
+	} while (0)
 
-#define MASKLEN_TO_MASK6(masklen, mask6) \
-     do {\
-         u_char maskarray[8] = \
-         {0x80, 0xc0, 0xe0, 0xf0, 0xf8, 0xfc, 0xfe, 0xff}; \
-         int bytelen, bitlen, i; \
-         memset(&(mask6), 0, sizeof(mask6));\
-         bytelen = (masklen) / 8;\
-         bitlen = (masklen) % 8;\
-         for (i = 0; i < bytelen; i++) \
-             (mask6).s6_addr[i] = 0xff;\
-         if (bitlen) \
-             (mask6).s6_addr[bytelen] = maskarray[bitlen - 1]; \
-     }while(0);
+#define MASKLEN_TO_MASK6(masklen, mask6)				\
+	do {								\
+		u_char maskarray[8] = {					\
+			0x80, 0xc0, 0xe0, 0xf0, 0xf8, 0xfc, 0xfe, 0xff	\
+		};							\
+		int bytelen, bitlen, i;					\
+									\
+		memset(&(mask6), 0, sizeof(mask6));			\
+		bytelen = (masklen) / 8;				\
+		bitlen = (masklen) % 8;					\
+		for (i = 0; i < bytelen; i++)				\
+			(mask6).s6_addr[i] = 0xff;			\
+		if (bitlen)						\
+			(mask6).s6_addr[bytelen] = maskarray[bitlen - 1]; \
+	} while(0);
 
 /*
  * A bunch of macros because of the lack of 32-bit boundary alignment.
@@ -344,31 +347,34 @@ do { \
 
 #define GET_HOSTSHORT(val, cp)                  \
         do {                                    \
-                register u_int16 Xv;            \
+                u_int16 Xv;			\
+						\
                 Xv = (*(cp)++) << 8;            \
                 Xv |= *(cp)++;                  \
                 (val) = Xv;                     \
         } while (0)
 
 #define PUT_HOSTSHORT(val, cp)                  \
-         do {                                    \
-                 register u_int16 Xv;            \
-                 Xv = (u_int16)(val);            \
-                 *(cp)++ = (u_int8)(Xv >> 8);    \
-                 *(cp)++ = (u_int8)Xv;           \
-         } while (0)
+	do {                                    \
+		u_int16 Xv;			\
+						\
+		Xv = (u_int16)(val);            \
+		*(cp)++ = (u_int8)(Xv >> 8);    \
+		*(cp)++ = (u_int8)Xv;           \
+	} while (0)
 
 #if defined(BYTE_ORDER) && (BYTE_ORDER == LITTLE_ENDIAN)
 #define GET_NETSHORT(val, cp)                   \
         do {                                    \
-                register u_int16 Xv;            \
+                u_int16 Xv;			\
+						\
                 Xv = *(cp)++;                   \
                 Xv |= (*(cp)++) << 8;           \
                 (val) = Xv;                     \
         } while (0)
 #define PUT_NETSHORT(val, cp)                   \
         do {                                    \
-                register u_int16 Xv;            \
+                u_int16 Xv;			\
                 Xv = (u_int16)(val);            \
                 *(cp)++ = (u_int8)Xv;           \
                 *(cp)++ = (u_int8)(Xv >> 8);    \
@@ -380,7 +386,8 @@ do { \
 
 #define GET_HOSTLONG(val, cp)                   \
         do {                                    \
-                register u_long Xv;             \
+                u_long Xv;			\
+						\
                 Xv  = (*(cp)++) << 24;          \
                 Xv |= (*(cp)++) << 16;          \
                 Xv |= (*(cp)++) <<  8;          \
@@ -390,7 +397,8 @@ do { \
 
 #define PUT_HOSTLONG(val, cp)                   \
         do {                                    \
-                register u_int32 Xv;            \
+                u_int32 Xv;			\
+						\
                 Xv = (u_int32)(val);            \
                 *(cp)++ = (u_int8)(Xv >> 24);   \
                 *(cp)++ = (u_int8)(Xv >> 16);   \
@@ -401,7 +409,8 @@ do { \
 #if defined(BYTE_ORDER) && (BYTE_ORDER == LITTLE_ENDIAN)
 #define GET_NETLONG(val, cp)                    \
         do {                                    \
-                register u_long Xv;             \
+                u_long Xv;			\
+						\
                 Xv  = *(cp)++;                  \
                 Xv |= (*(cp)++) <<  8;          \
                 Xv |= (*(cp)++) << 16;          \
@@ -411,7 +420,8 @@ do { \
 
 #define PUT_NETLONG(val, cp)                    \
         do {                                    \
-                register u_int32 Xv;            \
+                u_int32 Xv;			\
+						\
                 Xv = (u_int32)(val);            \
                 *(cp)++ = (u_int8)Xv;           \
                 *(cp)++ = (u_int8)(Xv >>  8);   \
@@ -423,68 +433,72 @@ do { \
 #define PUT_NETLONG(val, cp) PUT_HOSTLONG(val, cp)
 #endif /* {GET,PUT}_HOSTLONG */
 
-#define GET_ESADDR6(esa, cp)  /* XXX: hard coding */  \
-        do {                                    \
-            (esa)->addr_family = *(cp)++;       \
-            (esa)->encod_type  = *(cp)++;       \
-            (esa)->flags       = *(cp)++;       \
-            (esa)->masklen     = *(cp)++;       \
-             memcpy(&(esa)->src_addr, (cp), sizeof(struct in6_addr)); \
-         (cp) += sizeof(struct in6_addr);   \
+/* XXX: hard coding */
+#define GET_ESADDR6(esa, cp)						\
+        do {								\
+		(esa)->addr_family = *(cp)++;				\
+		(esa)->encod_type  = *(cp)++;				\
+		(esa)->flags       = *(cp)++;				\
+		(esa)->masklen     = *(cp)++;				\
+		memcpy(&(esa)->src_addr, (cp), sizeof(struct in6_addr)); \
+		(cp) += sizeof(struct in6_addr);			\
         } while(0)
 
-#define PUT_ESADDR6(addr, masklen, flags, cp)    \
-        do {                                    \
-            int i; \
-            struct in6_addr maskaddr; \
-        MASKLEN_TO_MASK6(masklen, maskaddr); \
-            *(cp)++ = ADDRF_IPv6; /* family */  \
-            *(cp)++ = ADDRT_IPv6; /* type   */  \
-            *(cp)++ = (flags);    /* flags  */  \
-            *(cp)++ = (masklen);                \
-            for (i = 0; i < sizeof(struct in6_addr); i++, (cp)++) \
-                *(cp) = maskaddr.s6_addr[i] & (addr).s6_addr[i]; \
+#define PUT_ESADDR6(addr, masklen, flags, cp)				\
+        do {								\
+		int i;							\
+		struct in6_addr maskaddr;				\
+									\
+		MASKLEN_TO_MASK6(masklen, maskaddr);			\
+		*(cp)++ = ADDRF_IPv6; /* family */			\
+		*(cp)++ = ADDRT_IPv6; /* type   */			\
+		*(cp)++ = (flags);    /* flags  */			\
+		*(cp)++ = (masklen);					\
+		for (i = 0; i < sizeof(struct in6_addr); i++, (cp)++)	\
+			*(cp) = maskaddr.s6_addr[i] & (addr).s6_addr[i]; \
         } while(0)
 
-#define GET_EGADDR6(ega, cp) /* XXX: hard coding */ \
-        do {                                    \
-            (ega)->addr_family = *(cp)++;       \
-            (ega)->encod_type  = *(cp)++;       \
-            (ega)->reserved    = *(cp)++;       \
-            (ega)->masklen     = *(cp)++;       \
-             memcpy(&(ega)->mcast_addr, (cp), sizeof(struct in6_addr)); \
-        (cp) += sizeof(struct in6_addr);    \
+/* XXX: hard coding */
+#define GET_EGADDR6(ega, cp)						\
+        do {								\
+		(ega)->addr_family = *(cp)++;				\
+		(ega)->encod_type  = *(cp)++;				\
+		(ega)->reserved    = *(cp)++;				\
+		(ega)->masklen     = *(cp)++;				\
+		memcpy(&(ega)->mcast_addr, (cp), sizeof(struct in6_addr)); \
+		(cp) += sizeof(struct in6_addr);			\
         } while(0)
 
-#define PUT_EGADDR6(addr, masklen, reserved, cp) \
-         do {                                    \
-             int i; \
-             struct in6_addr maskaddr; \
-         MASKLEN_TO_MASK6(masklen, maskaddr); \
-             *(cp)++ = ADDRF_IPv6; /* family */  \
-             *(cp)++ = ADDRT_IPv6; /* type   */  \
-             *(cp)++ = (reserved); /* reserved; should be 0 */  \
-             *(cp)++ = (masklen);                \
-             for (i = 0; i < sizeof(struct in6_addr); i++, (cp)++) \
-                 *(cp) = maskaddr.s6_addr[i] & (addr).s6_addr[i]; \
-         } while(0)
+#define PUT_EGADDR6(addr, masklen, reserved, cp)			\
+	do {								\
+		int i;							\
+		struct in6_addr maskaddr;				\
+									\
+		MASKLEN_TO_MASK6(masklen, maskaddr);			\
+		*(cp)++ = ADDRF_IPv6; /* family */			\
+		*(cp)++ = ADDRT_IPv6; /* type   */			\
+		*(cp)++ = (reserved); /* reserved; should be 0 */	\
+		*(cp)++ = (masklen);					\
+		for (i = 0; i < sizeof(struct in6_addr); i++, (cp)++)	\
+			*(cp) = maskaddr.s6_addr[i] & (addr).s6_addr[i]; \
+	} while(0)
 
-
-#define GET_EUADDR6(eua, cp)  /* XXX hard conding */    \
-        do {                                    \
-         (eua)->addr_family = *(cp)++;  \
-         (eua)->encod_type  = *(cp)++;  \
-             memcpy(&(eua)->unicast_addr, (cp), sizeof(struct in6_addr)); \
-         (cp) += sizeof(struct in6_addr);   \
+/* XXX hard conding */
+#define GET_EUADDR6(eua, cp)						\
+        do {								\
+		(eua)->addr_family = *(cp)++;				\
+		(eua)->encod_type  = *(cp)++;				\
+		memcpy(&(eua)->unicast_addr, (cp), sizeof(struct in6_addr)); \
+		(cp) += sizeof(struct in6_addr);			\
         } while(0)
 
-#define PUT_EUADDR6(addr, cp) \
-         do {                                    \
-             *(cp)++ = ADDRF_IPv6; /* family */  \
-             *(cp)++ = ADDRT_IPv6; /* type   */  \
-             memcpy((cp), &(addr), sizeof(struct in6_addr)); \
-             (cp) += sizeof(struct in6_addr); \
-         } while(0)
+#define PUT_EUADDR6(addr, cp)					\
+	do {							\
+		*(cp)++ = ADDRF_IPv6; /* family */		\
+		*(cp)++ = ADDRT_IPv6; /* type   */		\
+		memcpy((cp), &(addr), sizeof(struct in6_addr)); \
+		(cp) += sizeof(struct in6_addr);		\
+	} while(0)
 
 /* Used if no relaible unicast routing information available */
 #define UCAST_DEFAULT_SOURCE_METRIC     1024

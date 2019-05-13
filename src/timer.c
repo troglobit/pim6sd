@@ -205,8 +205,8 @@ void
 age_vifs()
 {
     mifi_t			vifi;
-    register struct uvif 	*v;
-    register pim_nbr_entry_t 	*next_nbr,
+    struct uvif 	*v;
+    pim_nbr_entry_t 	*next_nbr,
                    		*curr_nbr;
 
     /*

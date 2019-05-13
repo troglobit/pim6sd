@@ -78,9 +78,9 @@
 #include "inet6.h"
 #include "routesock.h"
 
-static void process_cache_miss __P((struct mrt6msg * im));
-static void process_wrong_iif __P((struct mrt6msg * im));
-static void process_whole_pkt __P((char *buf));
+static void process_cache_miss (struct mrt6msg * im);
+static void process_wrong_iif (struct mrt6msg * im);
+static void process_whole_pkt (char *buf);
 
 u_int32         default_source_metric = UCAST_DEFAULT_SOURCE_METRIC;
 u_int32         default_source_preference = UCAST_DEFAULT_SOURCE_PREFERENCE;
@@ -161,8 +161,8 @@ set_incoming(srcentry_ptr, srctype)
     struct rpfctl   	rpfc;
     struct sockaddr_in6	source = srcentry_ptr->address;
     struct sockaddr_in6	neighbor_addr;
-    register struct uvif *v;
-    register pim_nbr_entry_t *n;
+    struct uvif *v;
+    pim_nbr_entry_t *n;
 
     /* Preference will be 0 if directly connected */
 
@@ -906,7 +906,7 @@ delete_vif_from_mrt(vifi)
 void 
 process_kernel_call()
 {
-    register struct mrt6msg *im;	/* igmpmsg control struct */
+    struct mrt6msg *im;	/* igmpmsg control struct */
 
     im = (struct mrt6msg *) mld6_recv_buf;
 

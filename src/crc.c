@@ -53,8 +53,8 @@
 
 /* Make the table for a fast CRC. */ 
 
-static void make_crc_table __P((void));
-static unsigned long update_crc __P((unsigned long, unsigned char *, int));
+static void make_crc_table (void);
+static unsigned long update_crc (unsigned long, unsigned char *, int);
 
 static void make_crc_table(void)
 {

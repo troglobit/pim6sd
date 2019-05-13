@@ -189,12 +189,12 @@ struct pim6dstat pim6dstat;
 int
 receive_pim6_hello(src, pim_message, datalen)
     struct sockaddr_in6 *src;
-    register char       *pim_message;
+    char       *pim_message;
     int                 datalen;
 {
     mifi_t			mifi;
     struct uvif    		*v;
-    register pim_nbr_entry_t 	*nbr,
+    pim_nbr_entry_t 	*nbr,
                    		*prev_nbr,
                    		*new_nbr,
                    		*old_dr;
@@ -1127,7 +1127,7 @@ int
 send_pim6_register(pkt)
     char *pkt;
 {
-    register struct ip6_hdr *ip6;
+    struct ip6_hdr *ip6;
     static struct sockaddr_in6 source;
     static struct sockaddr_in6 group;
     mifi_t          		mifi;
@@ -1276,7 +1276,7 @@ receive_pim6_register_stop(reg_src, reg_dst, pim_message, datalen)
     struct sockaddr_in6 	*reg_src,
                     		*reg_dst;
     char           		*pim_message;
-    register int    		datalen;
+    int    		datalen;
 {
     pim_register_stop_t 	*pim_regstop_p;
     pim6_encod_grp_addr_t 	encod_grp;
@@ -1492,7 +1492,7 @@ receive_pim6_join_prune(src, dst, pim_message, datalen)
     struct sockaddr_in6		*src,
                     		*dst;
     char           		*pim_message;
-    register int    		datalen;
+    int    		datalen;
 {
     mifi_t          		mifi;
     struct uvif    		*v;
@@ -3077,7 +3077,7 @@ int
 receive_pim6_assert(src, dst, pim_message, datalen)
     struct sockaddr_in6 	*src,
                     		*dst;
-    register char  		*pim_message;
+    char  		*pim_message;
     int             		datalen;
 {
     mifi_t          		mifi;
@@ -4011,7 +4011,7 @@ int
 receive_pim6_cand_rp_adv(src, dst, pim_message, datalen)
     struct sockaddr_in6         *src, *dst;
     char           		*pim_message;
-    register int    		datalen;
+    int    		datalen;
 {
     u_int8          		prefix_cnt;
     u_int8          		priority;

@@ -55,10 +55,10 @@ int yy_first_time = 1;
 extern char configfilename[];
 
 #if 1
-static void cfdebug_print __P((char *, char *, int));
+static void cfdebug_print (char *, char *, int);
 #endif
 
-extern int yylex __P((void));
+extern int yylex (void);
 
 static void yyerror0(char *s, va_list ap)
 	__attribute__((__format__(__printf__, 1, 0)));

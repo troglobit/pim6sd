@@ -136,8 +136,8 @@ static u_int16_t rtalert_code;
 
 /* local functions */
 
-static void mld6_read __P((int i, fd_set * fds));
-static void accept_mld6 __P((int len));
+static void mld6_read (int i, fd_set * fds);
+static void accept_mld6 (int len);
 static void make_mld6_msg __P((int, int, struct sockaddr_in6 *,
 	struct sockaddr_in6 *, struct in6_addr *, int, int, int, int));
 
@@ -280,7 +280,7 @@ mld6_read(i, rfd)
     int             i;
     fd_set         *rfd;
 {
-    register int    mld6_recvlen;
+    int    mld6_recvlen;
 
     mld6_recvlen = recvmsg(i, &rcvmh, 0);
 

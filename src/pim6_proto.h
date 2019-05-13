@@ -57,16 +57,16 @@ extern struct sockaddr_in6 sockaddr6_d;
 extern int receive_pim6_hello         __P((struct sockaddr_in6 *src,
                        char *pim_message, int datalen));
 
-extern int send_pim6_hello            __P((struct uvif *v, u_int16 holdtime));
-extern void delete_pim6_nbr           __P((pim_nbr_entry_t *nbr_delete));
+extern int send_pim6_hello            (struct uvif *v, u_int16 holdtime);
+extern void delete_pim6_nbr           (pim_nbr_entry_t *nbr_delete);
 
 extern int  receive_pim6_register    __P((struct sockaddr_in6 *src, struct sockaddr_in6 *dst,
                          char *pim_message, int datalen));
-extern int  send_pim6_null_register  __P((mrtentry_t *r));
+extern int  send_pim6_null_register  (mrtentry_t *r);
 extern int  receive_pim6_register_stop __P((struct sockaddr_in6 *src, struct sockaddr_in6 *dst,
                            char *pim_message,
                            int datalen));
-extern int  send_pim6_register   __P((char *pkt));
+extern int  send_pim6_register   (char *pkt);
 extern int  receive_pim6_join_prune  __P((struct sockaddr_in6 *src, struct sockaddr_in6 *dst,
                          char *pim_message, int datalen));
 extern int  join_or_prune       __P((mrtentry_t *mrtentry_ptr,  
@@ -85,13 +85,13 @@ extern int  add_jp_entry        __P((pim_nbr_entry_t *pim_nbr,
                          u_int8 src_msklen,
                          u_int16 addr_flags,  
                          u_int8 join_prune));
-extern void pack_and_send_jp6_message __P((pim_nbr_entry_t *pim_nbr));
+extern void pack_and_send_jp6_message (pim_nbr_entry_t *pim_nbr);
 extern int  receive_pim6_cand_rp_adv __P((struct sockaddr_in6 *src, struct sockaddr_in6 *dst,
                          char *pim_message, int datalen));
 extern int  receive_pim6_bootstrap   __P((struct sockaddr_in6 *src, struct sockaddr_in6 *dst,
                          char *pim_message, int datalen));
-extern int  send_pim6_cand_rp_adv    __P((void));
-extern void send_pim6_bootstrap  __P((void));
+extern int  send_pim6_cand_rp_adv    (void);
+extern void send_pim6_bootstrap  (void);
 
 
 #endif

@@ -169,8 +169,8 @@ static struct debugname
     {   "3",			0xffffffff,		1     }    /* compat. */
 };
 
-extern int dump_callout_Q __P((FILE *));
-static char *sec2str __P((time_t));
+extern int dump_callout_Q (FILE *);
+static char *sec2str (time_t);
 
 static char *
 sec2str(total)
@@ -485,7 +485,7 @@ dump_stat()
 {
 	FILE *fp;
 	mifi_t vifi;
-	register struct uvif *v;
+	struct uvif *v;
 
 	fp = fopen(statfilename, "w");
 	if (fp == NULL) {
@@ -599,7 +599,7 @@ dump_vifs(fp)
     FILE           *fp;
 {
     mifi_t          vifi;
-    register struct uvif *v;
+    struct uvif *v;
     struct phaddr  *pa;
 
     fprintf(fp, "\nMulticast Interface Table\n %-4s %-6s %-43s %5s %-8s %-14s\n",
@@ -892,8 +892,8 @@ dump_pim_mrt(fp)
     FILE           *fp;
 {
     grpentry_t     *g;
-    register mrtentry_t *r;
-    register mifi_t vifi;
+    mrtentry_t *r;
+    mifi_t vifi;
     int i;
     u_int           number_of_cache_mirrors = 0;
     u_int           number_of_groups = 0;

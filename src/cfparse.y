@@ -108,21 +108,21 @@ static double helloperiod_coef, jpperiod_coef;
 
 static int debugonly;
 
-extern int yylex __P((void));
+extern int yylex (void);
 
 static struct attr_list *add_attribute_flag __P((struct attr_list *, int,
 	unsigned int));
 static struct attr_list *add_attribute_num __P((struct attr_list *, int,
 	double));
-static void free_attr_list __P((struct attr_list *));
-static int param_config __P((void));
-static int phyint_config __P((void));
-static int rp_config __P((void));
-static int bsr_config __P((void));
-static int static_rp_config __P((void));
-static int static_rt_config __P((void));
-static int regthres_config __P((void));
-static int datathres_config __P((void));
+static void free_attr_list (struct attr_list *);
+static int param_config (void);
+static int phyint_config (void);
+static int rp_config (void);
+static int bsr_config (void);
+static int static_rp_config (void);
+static int static_rt_config (void);
+static int regthres_config (void);
+static int datathres_config (void);
 
 %}
 

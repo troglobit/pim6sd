@@ -106,7 +106,7 @@ u_long          rtm_inits;
  * Local functions definitions.
  */
 static int getmsg 
-__P((register struct rt_msghdr *, int,
+__P((struct rt_msghdr *, int,
      struct rpfctl * rpfinfo));
 
 /*
@@ -175,11 +175,11 @@ k_req_incoming(source, rpfp)
     struct rpfctl  *rpfp;
 {
     int             flags = RTF_STATIC;
-    register sup    su;
+    sup    su;
     static int      seq;
     int             rlen;
-    register char  *cp = m_rtmsg.m_space;
-    register int    l;
+    char  *cp = m_rtmsg.m_space;
+    int    l;
     struct rpfctl   rpfinfo;
     struct staticrt *entry;
 
@@ -301,7 +301,7 @@ k_req_incoming(source, rpfp)
  */
 int
 getmsg(rtm, msglen, rpfinfop)
-    register struct rt_msghdr *rtm;
+    struct rt_msghdr *rtm;
     int             msglen;
     struct rpfctl  *rpfinfop;
 {
@@ -310,9 +310,9 @@ getmsg(rtm, msglen, rpfinfop)
                    *mask = NULL;
 					
     struct sockaddr_dl *ifp = NULL;
-    register struct sockaddr *sa;
-    register char  *cp;
-    register int    i;
+    struct sockaddr *sa;
+    char  *cp;
+    int    i;
     struct sockaddr_in6 *sin6;
     mifi_t          vifi;
     struct uvif    *v;

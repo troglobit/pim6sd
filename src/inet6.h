@@ -65,12 +65,12 @@ extern int  inet6_match_prefix __P((struct sockaddr_in6 *sa1,
 extern int inet6_same_prefix __P((struct sockaddr_in6 * sa1,
                     struct sockaddr_in6 *sa2,
                     struct in6_addr *mask));
-extern int  inet6_mask2plen    __P((struct in6_addr *mask));
-extern int  inet6_uvif2scopeid __P((struct sockaddr_in6 *sa, struct uvif *v));
-extern int  inet6_valid_host __P((struct sockaddr_in6 *addr));
-extern char *sa6_fmt  __P((struct sockaddr_in6 *sa6));
-extern char *inet6_fmt  __P((struct in6_addr *addr));
-extern char *ifindex2str    __P((int ifindex));
+extern int  inet6_mask2plen    (struct in6_addr *mask);
+extern int  inet6_uvif2scopeid (struct sockaddr_in6 *sa, struct uvif *v);
+extern int  inet6_valid_host (struct sockaddr_in6 *addr);
+extern char *sa6_fmt  (struct sockaddr_in6 *sa6);
+extern char *inet6_fmt  (struct in6_addr *addr);
+extern char *ifindex2str    (int ifindex);
 extern char *net6name   __P((struct in6_addr *prefix, 
                      struct in6_addr *mask));
 extern void init_sin6(struct sockaddr_in6 *);

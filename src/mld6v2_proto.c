@@ -95,8 +95,8 @@
 /*
  * Forward declarations.
  */
-static void Send_GSS_QueryV2 __P((void *arg));
-static void DelVifV2 __P((void *arg));
+static void Send_GSS_QueryV2 (void *arg);
+static void DelVifV2 (void *arg);
 
 static void accept_multicast_record(mifi_t, struct mld_group_record_hdr *,
 				    struct sockaddr_in6 *,
@@ -152,7 +152,7 @@ Send_GSS_QueryV2(arg)
     void           *arg;
 {
     cbk_t          *cbk = (cbk_t *) arg;
-    register struct uvif *v = &uvifs[cbk->mifi];
+    struct uvif *v = &uvifs[cbk->mifi];
     int ret;
 
     if ((v->uv_flags & VIFF_QUERIER) == 0 || (v->uv_flags & VIFF_NOLISTENER)) {
@@ -196,7 +196,7 @@ Send_GS_QueryV2(arg)
     void           *arg;
 {
     cbk_t          *cbk = (cbk_t *) arg;
-    register struct uvif *v = &uvifs[cbk->mifi];
+    struct uvif *v = &uvifs[cbk->mifi];
     int sflag = SFLAGNO;
     int ret;
 
@@ -240,11 +240,11 @@ void
 accept_listenerV2_query(src, dst, query_message, datalen)
     struct sockaddr_in6 *src;
     struct in6_addr *dst;
-    register char  *query_message;
+    char  *query_message;
     int             datalen;
 {
-    register int    vifi;
-    register struct uvif *v;
+    int    vifi;
+    struct uvif *v;
     struct sockaddr_in6 group_sa;
     struct sockaddr_in6 source_sa;
     struct listaddr *g = NULL, *s;
@@ -462,12 +462,12 @@ void
 accept_listenerV2_report(src, dst, report_message, datalen)
     struct sockaddr_in6 *src;
     struct in6_addr *dst;
-    register char  *report_message;
+    char  *report_message;
     int             datalen;
 {
 
-    register mifi_t vifi;
-    register struct uvif *v;
+    mifi_t vifi;
+    struct uvif *v;
     struct mld_report_hdr *report;
     struct mld_group_record_hdr *mard;
     int             i, nummard, numsrc, totsrc;

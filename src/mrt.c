@@ -81,7 +81,7 @@ grpentry_t     *grplist;
 /*
  * Local functions definition
  */
-static srcentry_t *create_srcentry 	__P((struct sockaddr_in6 *source));
+static srcentry_t *create_srcentry 	(struct sockaddr_in6 *source);
 static int search_srclist 			__P((struct sockaddr_in6 *source ,	
      								srcentry_t ** sourceEntry));
 
@@ -93,7 +93,7 @@ static void insert_srcmrtlink 		__P((mrtentry_t * elementPtr,
 				                    mrtentry_t * insertPtr,
 				                  	srcentry_t * srcListPtr));
 
-static grpentry_t *create_grpentry  __P((struct sockaddr_in6 *group));
+static grpentry_t *create_grpentry  (struct sockaddr_in6 *group);
 
 static int search_grplist 			__P((struct sockaddr_in6 *group,
 				                 		grpentry_t ** groupEntry));
@@ -738,9 +738,9 @@ delete_mrtentry(mrtentry_ptr)
 static int
 search_srclist(source, sourceEntry)
     struct sockaddr_in6         *source;
-    register srcentry_t 	**sourceEntry;
+    srcentry_t 	**sourceEntry;
 {
-    register srcentry_t 	*s_prev,
+    srcentry_t 	*s_prev,
                    		*s;
 
     for (s_prev = srclist, s = s_prev->next; s != (srcentry_t *) NULL;
@@ -768,9 +768,9 @@ search_srclist(source, sourceEntry)
 static int
 search_grplist(group, groupEntry)
     struct sockaddr_in6      	*group;
-    register grpentry_t 	**groupEntry;
+    grpentry_t 	**groupEntry;
 {
-    register grpentry_t *g_prev,
+    grpentry_t *g_prev,
                    *g;
 
     for (g_prev = grplist, g = g_prev->next; g != (grpentry_t *) NULL;
@@ -800,7 +800,7 @@ static srcentry_t *
 create_srcentry(source)
     struct sockaddr_in6		*source;
 {
-    register srcentry_t *srcentry_ptr;
+    srcentry_t *srcentry_ptr;
     srcentry_t     *srcentry_prev;
 
     if (search_srclist(source, &srcentry_prev) == TRUE)
@@ -844,7 +844,7 @@ static grpentry_t *
 create_grpentry(group)
     struct sockaddr_in6		*group;
 {
-    register grpentry_t *grpentry_ptr;
+    grpentry_t *grpentry_ptr;
     grpentry_t     *grpentry_prev;
 
     if (search_grplist(group, &grpentry_prev) == TRUE)
@@ -899,8 +899,8 @@ search_srcmrtlink(srcentry_ptr, group, mrtPtr)
     struct sockaddr_in6		*group;
     mrtentry_t    		**mrtPtr;
 {
-    register mrtentry_t *mrtentry_ptr;
-    register mrtentry_t *m_prev = (mrtentry_t *) NULL;
+    mrtentry_t *mrtentry_ptr;
+    mrtentry_t *m_prev = (mrtentry_t *) NULL;
 
     for (mrtentry_ptr = srcentry_ptr->mrtlink;
 	 mrtentry_ptr != (mrtentry_t *) NULL;
@@ -936,8 +936,8 @@ search_grpmrtlink(grpentry_ptr, source, mrtPtr)
     struct sockaddr_in6		*source;
     mrtentry_t    		**mrtPtr;
 {
-    register mrtentry_t *mrtentry_ptr;
-    register mrtentry_t *m_prev = (mrtentry_t *) NULL;
+    mrtentry_t *mrtentry_ptr;
+    mrtentry_t *m_prev = (mrtentry_t *) NULL;
 
     for (mrtentry_ptr = grpentry_ptr->mrtlink;
 	 mrtentry_ptr != (mrtentry_t *) NULL;
@@ -1023,7 +1023,7 @@ alloc_mrtentry(srcentry_ptr, grpentry_ptr)
     srcentry_t     *srcentry_ptr;
     grpentry_t     *grpentry_ptr;
 {
-    register mrtentry_t *mrtentry_ptr;
+    mrtentry_t *mrtentry_ptr;
     u_int16         	i,
                    	*i_ptr;
     u_int8          	vif_numbers;

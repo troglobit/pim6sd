@@ -135,8 +135,8 @@ static int rcvcmsglen;
 /*    
  * Local function definitions.
  */
-static void pim6_read   __P((int f, fd_set *rfd));
-static void accept_pim6 __P((int recvlen));
+static void pim6_read   (int f, fd_set *rfd);
+static void accept_pim6 (int recvlen);
 static int pim6_cksum __P((u_int16_t *, struct in6_addr *,
                struct in6_addr *, int));
 
@@ -239,12 +239,12 @@ pim6_read(f, rfd)
     int f;
     fd_set *rfd;
 {
-    register int pim6_recvlen;
+    int pim6_recvlen;
 
 #if defined(SYSV) || defined(__linux__)
     sigset_t block, oblock;
 #else
-    register int omask;
+    int omask;
 #endif
 
 	pim6_recvlen = recvmsg(f, &rcvmhpim,0);
@@ -278,7 +278,7 @@ static void
 accept_pim6(pimlen)
     int pimlen;
 {   
-    register struct pim *pim;
+    struct pim *pim;
     struct sockaddr_in6 dst;
     struct in6_pktinfo *pi=NULL;
     struct sockaddr_in6 *src = (struct sockaddr_in6 *)rcvmhpim.msg_name;
@@ -489,9 +489,9 @@ static union {
  */ 
 int pim6_cksum(u_int16_t *addr, struct in6_addr *src ,struct in6_addr *dst , int len )
 {   
-    register int nleft = len;
-    register u_int16_t *w;
-    register int32_t sum = 0;
+    int nleft = len;
+    u_int16_t *w;
+    int32_t sum = 0;
     u_int16_t answer = 0;
     
     /*
