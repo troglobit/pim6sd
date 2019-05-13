@@ -90,4 +90,8 @@ extern char configfilename[];
 size_t  strlcpy    (char *dst, const char *src, size_t siz);
 #endif
 
+#ifndef strlcat
+size_t  strlcat    (char *dst, const char *src, size_t siz);
+#endif
+
 #endif /* DEFS_H */

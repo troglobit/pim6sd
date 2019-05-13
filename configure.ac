@@ -88,7 +88,7 @@ fi
 AC_CHECK_FUNCS([bzero dup2 gettimeofday isascii memset select socket strchr strdup strerror strrchr strncpy])
 
 # Check for usually missing API's, which we can replace
-AC_REPLACE_FUNCS([strlcpy])
+AC_REPLACE_FUNCS([strlcpy strlcat])
 AC_CONFIG_LIBOBJ_DIR([lib])
 
 dnl Checks for other features

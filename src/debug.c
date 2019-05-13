@@ -343,10 +343,10 @@ debug_list(int mask, char *buf, size_t len)
 	if (mask != (int)DEBUG_ALL)
 	    mask &= ~d->level;
 
-	strcat(buf, d->name);
+	strlcat(buf, d->name, len);
 
 	if (mask && i + 1 < NELEMS(debugnames))
-	    strcat(buf, ", ");
+	    strlcat(buf, ", ", len);
     }
 
     return 0;
