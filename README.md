@@ -8,6 +8,8 @@ as PIM-SM and PIM-SSM.
 pim6sd stems from pim6dd, which was originally based on [pimd][], which
 in turn was based on [mrouted][].
 
+> **Note:** `pim6sd` currently requires a configuration file to start.
+
 
 Troubleshooting
 ---------------
