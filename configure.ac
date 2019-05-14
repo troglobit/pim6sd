@@ -1,6 +1,6 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
-AC_INIT([pim6sd], [2.1.0-alpha23], [https://github.com/troglobit/pim6sd/issues],, [https://github.com/troglobit/pim6sd])
+AC_INIT([pim6sd], [2.1.0-beta1], [https://github.com/troglobit/pim6sd/issues],, [https://github.com/troglobit/pim6sd])
 AM_INIT_AUTOMAKE([1.11 foreign])
 AM_SILENT_RULES([yes])
 
