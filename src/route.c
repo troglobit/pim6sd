@@ -204,6 +204,14 @@ set_incoming(srcentry_ptr, srctype)
 		log_msg(LOG_DEBUG, 0, "NO ROUTE found for %s", sa6_fmt(&source));
 	    return (FALSE);
 	}
+
+	/*
+	 * Kernel potentially returns router addresses with its sin6_scope_id.
+	 * However we only store the ifindex for link-local addresses.
+	 */
+	if (!IN6_IS_ADDR_LINKLOCAL(&rpfc.rpfneighbor.sin6_addr))
+		rpfc.rpfneighbor.sin6_scope_id = 0;
+
 	srcentry_ptr->incoming = rpfc.iif;
 	neighbor_addr = rpfc.rpfneighbor;
 	/* set the preference for sources that aren't directly connected. */
