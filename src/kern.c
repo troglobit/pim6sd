@@ -260,6 +260,8 @@ k_add_vif(int socket, mifi_t vifi, struct uvif * v)
 {
     struct mif6ctl  mc;
 
+    memset(&mc, 0, sizeof(mc));
+
     mc.mif6c_mifi = vifi;
     mc.mif6c_flags = v->uv_flags;
 
