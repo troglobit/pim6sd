@@ -217,6 +217,7 @@ init_pim6()
 	if (sndcmsgbufpim == NULL &&
 	    (sndcmsgbufpim = malloc(sndcmsglen)) == NULL)
 		log_msg(LOG_ERR, 0, "malloc failed");
+	memset(sndcmsgbufpim, 0, sndcmsglen);
 	sndmhpim.msg_control = (caddr_t)sndcmsgbufpim;
 	sndmhpim.msg_controllen = sndcmsglen;
 	cmsgp=(struct cmsghdr *)sndcmsgbufpim;
