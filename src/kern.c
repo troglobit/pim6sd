@@ -297,6 +297,7 @@ k_del_mfc(int socket, struct sockaddr_in6 * source, struct sockaddr_in6 * group)
 {
     struct mf6cctl  mc;
 
+    memset(&mc, 0, sizeof(mc));
     mc.mf6cc_origin = *source;
     mc.mf6cc_mcastgrp = *group;
 
