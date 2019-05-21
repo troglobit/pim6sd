@@ -355,6 +355,7 @@ void
 age_routes()
 {
     cand_rp_t      	*cand_rp_ptr;
+    cand_rp_t      	*cand_rp_ptr_next;
     grpentry_t     	*grpentry_ptr;
     grpentry_t     	*grpentry_ptr_next;
     mrtentry_t     	*mrtentry_grp;
@@ -373,6 +374,7 @@ age_routes()
     int             	dont_calc_action;
     int             	did_switch_flag;
     rp_grp_entry_t 	*rp_grp_entry_ptr;
+    rp_grp_entry_t 	*rp_grp_entry_ptr_next;
     kernel_cache_t 	*kernel_cache_ptr;
     kernel_cache_t 	*kernel_cache_next;
     u_long          	curr_bytecnt;
@@ -421,9 +423,9 @@ age_routes()
     /* Scan the (*,*,RP) entries */
 
     for (cand_rp_ptr = cand_rp_list; cand_rp_ptr != (cand_rp_t *) NULL;
-	 cand_rp_ptr = cand_rp_ptr->next)
+	 cand_rp_ptr = cand_rp_ptr_next)
     {
-	
+	cand_rp_ptr_next = cand_rp_ptr->next;
 	rpentry_ptr = cand_rp_ptr->rpentry;
 
 	/*
@@ -670,8 +672,9 @@ age_routes()
 
 	for (rp_grp_entry_ptr = cand_rp_ptr->rp_grp_next;
 	     rp_grp_entry_ptr != (rp_grp_entry_t *) NULL;
-	     rp_grp_entry_ptr = rp_grp_entry_ptr->rp_grp_next)
+	     rp_grp_entry_ptr = rp_grp_entry_ptr_next)
 	{
+	     rp_grp_entry_ptr_next = rp_grp_entry_ptr->rp_grp_next;
 
 	    for (grpentry_ptr = rp_grp_entry_ptr->grplink;
 		 grpentry_ptr != (grpentry_t *) NULL;
