@@ -260,6 +260,8 @@ k_add_vif(int socket, mifi_t vifi, struct uvif * v)
 {
     struct mif6ctl  mc;
 
+    memset(&mc, 0, sizeof(mc));
+
     mc.mif6c_mifi = vifi;
     mc.mif6c_flags = v->uv_flags;
 
@@ -295,6 +297,7 @@ k_del_mfc(int socket, struct sockaddr_in6 * source, struct sockaddr_in6 * group)
 {
     struct mf6cctl  mc;
 
+    memset(&mc, 0, sizeof(mc));
     mc.mf6cc_origin = *source;
     mc.mf6cc_mcastgrp = *group;
 
@@ -329,12 +332,11 @@ k_chg_mfc(socket, source, group, iif, oifs, rp_addr)
     mifi_t          vifi;
     struct uvif    *v;
 
+    memset(&mc, 0, sizeof(mc));
     mc.mf6cc_origin = *source;
     mc.mf6cc_mcastgrp = *group;
     mc.mf6cc_parent = iif;
 
-
-    IF_ZERO(&mc.mf6cc_ifset);
 
     for (vifi = 0, v = uvifs; vifi < numvifs; vifi++, v++)
     {
