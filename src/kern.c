@@ -332,12 +332,11 @@ k_chg_mfc(socket, source, group, iif, oifs, rp_addr)
     mifi_t          vifi;
     struct uvif    *v;
 
+    memset(&mc, 0, sizeof(mc));
     mc.mf6cc_origin = *source;
     mc.mf6cc_mcastgrp = *group;
     mc.mf6cc_parent = iif;
 
-
-    IF_ZERO(&mc.mf6cc_ifset);
 
     for (vifi = 0, v = uvifs; vifi < numvifs; vifi++, v++)
     {
