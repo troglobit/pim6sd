@@ -10,10 +10,27 @@ compiler:
   - gcc
   - clang
 
+env:
+  global:
+   # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
+   #   via the "travis encrypt" command using the project repo's public key
+   - secure: "Mz2tGg1t3WQBdsE5pH2NGR+sQgfKYvwlgFAhTwItJFopLDS2CUbBw3AOH+rJOH+VA60kInT164fgySHW+ZiB28aJAL/u72HoGn/AHWmJP3X+AQxP1UjyTGt+1NpqklEs3Xc4xWXwgA+lfTL3fTbGjZHCwX2fWxFjf3texLpduW+99jPqF1uHa8aQOk9kQWVbgxSWKf+Ys3ANaX6wYeRJ72WSh3YUCRNg8ZhlQGxpgzpA204doblBhfAI1CyR1AXudk64IIDKecfGfo9+sEXBekDJNBUAbwiw4LodSPsHCAg3Qr44Y+tvavuuRPbElC0gLrR+bbEEGnNAC56uBpSs3TeFKEXHGpgkMqiAJOnjD2rQH5wFL6Re900WWpcfzjrLFOFttJV3LIKJMqc2fPgC5ZwRfypA0QX6daqTDvNybMBioikbFFqVBcr4My8X2siiP0/VkW5GkY8lD5ItN/z8PUcr+gA6Q/Zlzk1/zX1ic0mEmGSH6Ns3ujJedtmASjJ9VopLMFFoL6eTzh8SPt8dqmlEJuAdxSfB6Plq8m/gkiMGzbg7RX/SmuGDgg6dkakl3owawkhAGBCWMb1UitV9LL4JNqwJ58xIjBxGoscT+rLU4S7RzjUxlDTHv+MyVRc3FkYbUBM1aVo190ajtXXK441OCPXCVR1hZqMrZqv7P2Y="
+
+before_install:
+  - echo -n | openssl s_client -connect https://scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-
+
 addons:
   apt:
     packages:
       - tree
+  coverity_scan:
+    project:
+      name: "troglobit/pim6sd"
+      description: "PIM for IPv6 sparse mode daemon"
+    notification_email: troglobit@gmail.com
+    build_command_prepend: "./autogen.sh && ./configure"
+    build_command:   "make clean all"
+    branch_pattern: dev
 
 script:
   - ./autogen.sh
