@@ -1,5 +1,11 @@
 /*	$KAME: cftoken.l,v 1.20 2005/07/14 12:39:04 suz Exp $	*/
 
+/*
+ * We don't have an yywrap() since we only have one .conf file, thus
+ * we don't need a default one from libfl either.
+ */
+%option noyywrap
+
 %{
 /*
  * Copyright (C) 1999 WIDE Project.

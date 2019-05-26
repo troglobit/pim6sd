@@ -19,7 +19,9 @@ AM_PROG_LEX
 CFLAGS_ADD="$CFLAGS_ADD -W -Wall -Wextra -Wno-unused"
 
 # Checks for libraries.
-AC_CHECK_LIB([fl], [main])
+# We don't need libfl at the moment, see '%option noyywrap'
+#AC_CHECK_LIB([fl], [main])
+
 # FIXME: Replace `main' with a function in `-ll':
 AC_CHECK_LIB([l], [main])
 AC_CHECK_LIB([y], [main])
