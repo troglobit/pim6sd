@@ -274,6 +274,14 @@ init_mld6()
 	    "Couldn't register mld6_read as an input handler");
 }
 
+void
+free_mld6()
+{
+	free(mld6_recv_buf);
+	free(mld6_send_buf);
+	free(rcvcmsgbuf);
+}
+
 /* Read an MLD message */
 static void
 mld6_read(i, rfd)
