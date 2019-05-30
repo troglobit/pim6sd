@@ -256,6 +256,12 @@ init_rp6()
 }
 
 void
+free_rp6()
+{
+	free(cand_rp_adv_message.buffer);
+}
+
+void
 init_bsr6()
 {
     struct sockaddr_in6 *sa6 = NULL;

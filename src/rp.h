@@ -88,6 +88,7 @@ struct staticrp {
 };
 
 extern void      init_rp6	(void);
+extern void      free_rp6	(void);
 extern void      init_bsr6	(void);
 void delete_rp_list( cand_rp_t **used_cand_rp_list , grp_mask_t **used_grp_mask_list );
 u_int16 bootstrap_initial_delay (void);
