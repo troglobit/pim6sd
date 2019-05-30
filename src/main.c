@@ -609,6 +609,7 @@ cleanup()
     k_stop_pim(mld6_socket);
 
     free_rp6();
+    free_pim6_mrt();
     free_pim6();
     free_mld6();
 }

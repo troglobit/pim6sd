@@ -304,6 +304,7 @@ extern srcentry_t *srclist;
 extern grpentry_t *grplist;
 
 extern void init_pim6_mrt (void);
+extern void free_pim6_mrt (void);
 extern mrtentry_t   *find_route  __P((struct sockaddr_in6 *source,
                           	      struct sockaddr_in6 *group,
                           	      u_int16 flags, char create)); 
