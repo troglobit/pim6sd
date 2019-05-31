@@ -606,6 +606,7 @@ cleanup()
      */
     ;
 
+    stop_all_vifs();
     k_stop_pim(mld6_socket);
 
     free_rp6();
