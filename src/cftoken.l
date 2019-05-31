@@ -686,6 +686,8 @@ cfparse(strict, debugonly)
 
 	if ((yyparse() || yyerrorcount) && strict) {
 		fclose(yyin);
+		yylex_destroy();
+
 		if (yyerrorcount) {
 			yyerror("fatal parse failure: exiting (%d errors)",
 				yyerrorcount);
@@ -695,6 +697,8 @@ cfparse(strict, debugonly)
 	}
 
 	fclose(yyin);
+	yylex_destroy();
+
 	YIPSDP(PLOG("parse successed.\n"));
 
 	return cf_post_config();

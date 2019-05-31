@@ -233,6 +233,15 @@ init_pim6()
 	build_jp_message_pool_counter = 0;
 }
 
+void
+free_pim6()
+{
+	free(pim6_recv_buf);
+	free(pim6_send_buf);
+	free(rcvcmsgbufpim);
+	free(sndcmsgbufpim);
+}
+
 /* Read a PIM message */
 
 static void

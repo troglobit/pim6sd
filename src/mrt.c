@@ -154,6 +154,12 @@ init_pim6_mrt()
     grplist->grp_route = (mrtentry_t *) NULL;
 }
 
+void
+free_pim6_mrt()
+{
+    free(srclist);
+    free(grplist);
+}
 
 grpentry_t     *
 find_group(group)
