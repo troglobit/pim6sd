@@ -280,6 +280,12 @@ free_mld6()
 	free(mld6_recv_buf);
 	free(mld6_send_buf);
 	free(rcvcmsgbuf);
+
+	if (sndcmsgbuf) {
+		free(sndcmsgbuf);
+		sndcmsgbuf = NULL;
+		ctlbuflen = 0;
+	}
 }
 
 /* Read an MLD message */
