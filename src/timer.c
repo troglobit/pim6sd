@@ -536,7 +536,7 @@ age_routes()
 		{
 		    kernel_cache_next = kernel_cache_ptr->next;
 		    curr_bytecnt = kernel_cache_ptr->sg_count.bytecnt;
-		    if (k_get_sg_cnt(udp_socket, &kernel_cache_ptr->source,
+		    if (k_get_sg_cnt(mld6_socket, &kernel_cache_ptr->source,
 				     &kernel_cache_ptr->group,
 				     &kernel_cache_ptr->sg_count)
 			|| (curr_bytecnt ==
@@ -724,7 +724,7 @@ age_routes()
 			    kernel_cache_next = kernel_cache_ptr->next;
 			    curr_bytecnt =
 				kernel_cache_ptr->sg_count.bytecnt;
-			    if (k_get_sg_cnt(udp_socket,
+			    if (k_get_sg_cnt(mld6_socket,
 					     &kernel_cache_ptr->source,
 					     &kernel_cache_ptr->group,
 					     &kernel_cache_ptr->sg_count)
@@ -982,7 +982,7 @@ age_routes()
 			{
 			    kernel_cache_next = kernel_cache_ptr->next;
 			    curr_bytecnt = kernel_cache_ptr->sg_count.bytecnt;
-			    if (k_get_sg_cnt(udp_socket,
+			    if (k_get_sg_cnt(mld6_socket,
 					     &kernel_cache_ptr->source,
 					     &kernel_cache_ptr->group,
 					     &kernel_cache_ptr->sg_count)
