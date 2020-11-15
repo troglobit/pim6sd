@@ -295,16 +295,18 @@ k_del_mfc(int socket, struct sockaddr_in6 * source, struct sockaddr_in6 * group)
     mc.mf6cc_origin = *source;
     mc.mf6cc_mcastgrp = *group;
 
-    pim6dstat.kern_del_cache++;
     if (setsockopt(socket, IPPROTO_IPV6, MRT6_DEL_MFC, &mc, sizeof(mc)) < 0)
     {
+	log_msg(LOG_WARNING, errno, "setsockopt MRT6_DEL_MFC %s, grp %s",
+		sa6_fmt(source), sa6_fmt(group));
 	pim6dstat.kern_del_cache_fail++;
-	log_msg(LOG_WARNING, errno, "setsockopt MRT6_DEL_MFC");	
+
 	return FALSE;
     }
+    pim6dstat.kern_del_cache++;
 
-    syslog(LOG_DEBUG, "Deleted MFC entry : src %s ,grp %s", sa6_fmt(source),
-	   sa6_fmt(group));
+    syslog(LOG_DEBUG, "Deleted MFC entry: src %s, grp %s",
+	   sa6_fmt(source), sa6_fmt(group));
 
     return TRUE;
 }
@@ -331,7 +333,6 @@ k_chg_mfc(socket, source, group, iif, oifs, rp_addr)
     mc.mf6cc_mcastgrp = *group;
     mc.mf6cc_parent = iif;
 
-
     for (vifi = 0, v = uvifs; vifi < numvifs; vifi++, v++)
     {
 	if (IF_ISSET(vifi, oifs))
@@ -350,8 +351,7 @@ k_chg_mfc(socket, source, group, iif, oifs, rp_addr)
 #endif
 
     pim6dstat.kern_add_cache++;
-    if (setsockopt(socket, IPPROTO_IPV6, MRT6_ADD_MFC, &mc,
-		   sizeof(mc)) < 0)
+    if (setsockopt(socket, IPPROTO_IPV6, MRT6_ADD_MFC, &mc, sizeof(mc)) < 0)
     {
 	pim6dstat.kern_add_cache_fail++;
 	log_msg(LOG_WARNING, errno,
@@ -359,6 +359,9 @@ k_chg_mfc(socket, source, group, iif, oifs, rp_addr)
 	    sa6_fmt(source), sa6_fmt(group));
 	return (FALSE);
     }
+
+    log_msg(LOG_DEBUG, 0, "Added MFC entry: src %s, grp %s, iif %d",
+	    sa6_fmt(source), sa6_fmt(group), iif);
 
     return (TRUE);
 }
