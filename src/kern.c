@@ -191,10 +191,7 @@ k_set_hlim(int socket, int h)
 void 
 k_set_loop(int socket, int flag)
 {
-    u_int           loop;
-
-    loop = flag;
-    if (setsockopt(socket, IPPROTO_IPV6, IPV6_MULTICAST_LOOP, &loop, sizeof(loop)) < 0)
+    if (setsockopt(socket, IPPROTO_IPV6, IPV6_MULTICAST_LOOP, &flag, sizeof(flag)) < 0)
 	log_msg(LOG_ERR, errno, "k_set_loop");
 }
 
@@ -219,7 +216,7 @@ k_set_if(int socket, u_int ifindex)
 void 
 k_join(int socket, struct in6_addr * grp, u_int ifindex)
 {
-    struct ipv6_mreq mreq;
+    struct ipv6_mreq mreq = { 0 };
 
     mreq.ipv6mr_multiaddr = *grp;
     mreq.ipv6mr_interface = ifindex;
@@ -236,7 +233,7 @@ k_join(int socket, struct in6_addr * grp, u_int ifindex)
 void 
 k_leave(int socket, struct in6_addr * grp, u_int ifindex)
 {
-    struct ipv6_mreq mreq;
+    struct ipv6_mreq mreq = { 0 };
 
     mreq.ipv6mr_multiaddr = *grp;
     mreq.ipv6mr_interface = ifindex;
@@ -253,16 +250,14 @@ k_leave(int socket, struct in6_addr * grp, u_int ifindex)
 void 
 k_add_vif(int socket, mifi_t vifi, struct uvif * v)
 {
-    struct mif6ctl  mc;
+    struct mif6ctl mc = { 0 };
 
-    memset(&mc, 0, sizeof(mc));
-
-    mc.mif6c_mifi = vifi;
+    mc.mif6c_mifi  = vifi;
     mc.mif6c_flags = v->uv_flags;
+    mc.mif6c_pifi  = v->uv_ifindex;
 
-    mc.mif6c_pifi = v->uv_ifindex;
-
-    if ((v->uv_flags & MIFF_REGISTER)) {
+    if ((v->uv_flags & MIFF_REGISTER))
+    {
 	IF_DEBUG(DEBUG_PIM_REGISTER)
 	    log_msg(LOG_DEBUG,0,"register vifi : %d , register pifi : %d ", vifi, v->uv_ifindex);
     }
@@ -289,10 +284,9 @@ k_del_vif(int socket, mifi_t vifi)
 int 
 k_del_mfc(int socket, struct sockaddr_in6 * source, struct sockaddr_in6 * group)
 {
-    struct mf6cctl  mc;
+    struct mf6cctl mc = { 0 };
 
-    memset(&mc, 0, sizeof(mc));
-    mc.mf6cc_origin = *source;
+    mc.mf6cc_origin   = *source;
     mc.mf6cc_mcastgrp = *group;
 
     if (setsockopt(socket, IPPROTO_IPV6, MRT6_DEL_MFC, &mc, sizeof(mc)) < 0)
@@ -324,11 +318,10 @@ k_chg_mfc(socket, source, group, iif, oifs, rp_addr)
     if_set         *oifs;
     struct sockaddr_in6 *rp_addr;
 {
-    struct mf6cctl  mc;
+    struct mf6cctl  mc = { 0 };
     mifi_t          vifi;
     struct uvif    *v;
 
-    memset(&mc, 0, sizeof(mc));
     mc.mf6cc_origin = *source;
     mc.mf6cc_mcastgrp = *group;
     mc.mf6cc_parent = iif;
@@ -381,7 +374,7 @@ k_get_vif_count(vifi, retval)
     mifi_t          vifi;
     struct vif_count *retval;
 {
-    struct sioc_mif_req6 mreq;
+    struct sioc_mif_req6 mreq = { 0 };
 
     mreq.mifi = vifi;
     if (ioctl(udp_socket, SIOCGETMIFCNT_IN6, &mreq) < 0)
@@ -412,7 +405,7 @@ k_get_sg_cnt(socket, source, group, retval)
     struct sockaddr_in6 *group;
     struct sg_count *retval;
 {
-    struct sioc_sg_req6 sgreq;
+    struct sioc_sg_req6 sgreq = { 0 };
 
     sgreq.src = *source;
     sgreq.grp = *group;
