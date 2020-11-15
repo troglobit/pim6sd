@@ -89,16 +89,15 @@
  *
  */
 
-
 void 
 k_init_pim(int socket)
 {
     int             v = 1;
 
-    if (setsockopt(socket, IPPROTO_IPV6, MRT6_INIT, (char *) &v, sizeof(int)) < 0)
+    if (setsockopt(socket, IPPROTO_IPV6, MRT6_INIT, &v, sizeof(int)) < 0)
 	log_msg(LOG_ERR, errno, "cannot enable multicast routing in kernel");
 
-    if (setsockopt(socket, IPPROTO_IPV6, MRT6_PIM, (char *) &v, sizeof(int)) < 0)
+    if (setsockopt(socket, IPPROTO_IPV6, MRT6_PIM, &v, sizeof(int)) < 0)
 	log_msg(LOG_ERR, errno, "Pim kernel initialization");
 }
 
@@ -113,11 +112,10 @@ k_stop_pim(socket)
 {
     int             v = 0;
 
-    if (setsockopt(socket, IPPROTO_IPV6, MRT6_PIM,
-		   (char *) &v, sizeof(int)) < 0)
+    if (setsockopt(socket, IPPROTO_IPV6, MRT6_PIM, &v, sizeof(int)) < 0)
 	log_msg(LOG_ERR, errno, "Cannot reset PIM flag in kernel");
 
-    if (setsockopt(socket, IPPROTO_IPV6, MRT6_DONE, (char *) NULL, 0) < 0)
+    if (setsockopt(socket, IPPROTO_IPV6, MRT6_DONE, NULL, 0) < 0)
 	log_msg(LOG_ERR, errno, "cannot disable multicast routing in kernel");
 
 }
@@ -140,8 +138,7 @@ k_set_rcvbuf(int socket, int bufsize, int minsize)
      * minsize is a fatal error. 
      */
 
-
-    if (setsockopt(socket, SOL_SOCKET, SO_RCVBUF, (char *) &bufsize, sizeof(bufsize)) < 0)
+    if (setsockopt(socket, SOL_SOCKET, SO_RCVBUF, &bufsize, sizeof(bufsize)) < 0)
     {
 	bufsize -= delta;
 	while (1)
@@ -149,7 +146,8 @@ k_set_rcvbuf(int socket, int bufsize, int minsize)
 	    iter++;
 	    if (delta > 1)
 		delta /= 2;
-	    if (setsockopt(socket, SOL_SOCKET, SO_RCVBUF, (char *) &bufsize, sizeof(bufsize)) < 0)
+
+	    if (setsockopt(socket, SOL_SOCKET, SO_RCVBUF, &bufsize, sizeof(bufsize)) < 0)
 		bufsize -= delta;
 	    else
 	    {
@@ -158,15 +156,16 @@ k_set_rcvbuf(int socket, int bufsize, int minsize)
 		bufsize += delta;
 	    }
 	}
+
 	if (bufsize < minsize)
         	log_msg(LOG_ERR, 0, "OS-allowed buffer size %u < app min %u",
         	bufsize, minsize);
         	/*NOTREACHED*/
-
-
     }
+
     IF_DEBUG(DEBUG_KERN)
-		log_msg(LOG_DEBUG,0,"Buffer reception size for socket %d : %d in %d iterations",socket, bufsize, iter);
+	log_msg(LOG_DEBUG, 0, "Buffer reception size for socket %d : %d in %d iterations",
+		socket, bufsize, iter);
 }
 
 /*  
@@ -179,8 +178,8 @@ k_set_hlim(int socket, int h)
 {
     int             hlim = h;
 
-    if (setsockopt(socket, IPPROTO_IPV6, IPV6_MULTICAST_HOPS, (char *) &hlim, sizeof(hlim)) < 0)
-		log_msg(LOG_ERR,errno,"k_set_hlim");
+    if (setsockopt(socket, IPPROTO_IPV6, IPV6_MULTICAST_HOPS, &hlim, sizeof(hlim)) < 0)
+	log_msg(LOG_ERR,errno,"k_set_hlim");
 
 }
 
@@ -195,8 +194,8 @@ k_set_loop(int socket, int flag)
     u_int           loop;
 
     loop = flag;
-    if (setsockopt(socket, IPPROTO_IPV6, IPV6_MULTICAST_LOOP, (char *) &loop, sizeof(loop)) < 0)
-		log_msg(LOG_ERR,errno,"k_set_loop");
+    if (setsockopt(socket, IPPROTO_IPV6, IPV6_MULTICAST_LOOP, &loop, sizeof(loop)) < 0)
+	log_msg(LOG_ERR, errno, "k_set_loop");
 }
 
 /*
@@ -208,11 +207,9 @@ k_set_loop(int socket, int flag)
 void 
 k_set_if(int socket, u_int ifindex)
 {
-    if (setsockopt(socket, IPPROTO_IPV6, IPV6_MULTICAST_IF,
-		   (char *) &ifindex, sizeof(ifindex)) < 0)
+    if (setsockopt(socket, IPPROTO_IPV6, IPV6_MULTICAST_IF, &ifindex, sizeof(ifindex)) < 0)
 	   log_msg(LOG_ERR, errno, "setsockopt IPV6_MULTICAST_IF for %s",
-        ifindex2str(ifindex));
-
+		   ifindex2str(ifindex));
 }
 
 /*
@@ -227,8 +224,7 @@ k_join(int socket, struct in6_addr * grp, u_int ifindex)
     mreq.ipv6mr_multiaddr = *grp;
     mreq.ipv6mr_interface = ifindex;
 
-    if (setsockopt(socket, IPPROTO_IPV6, IPV6_JOIN_GROUP,
-		   (char *) &mreq, sizeof(mreq)) < 0)
+    if (setsockopt(socket, IPPROTO_IPV6, IPV6_JOIN_GROUP, &mreq, sizeof(mreq)) < 0)
 	syslog(LOG_WARNING, "Cannot join group %s on interface %s",
 	       inet6_fmt(grp), ifindex2str(ifindex));
 }
@@ -245,8 +241,7 @@ k_leave(int socket, struct in6_addr * grp, u_int ifindex)
     mreq.ipv6mr_multiaddr = *grp;
     mreq.ipv6mr_interface = ifindex;
 
-    if (setsockopt(socket, IPPROTO_IPV6, IPV6_LEAVE_GROUP,
-		   (char *) &mreq, sizeof(mreq)) < 0)
+    if (setsockopt(socket, IPPROTO_IPV6, IPV6_LEAVE_GROUP, &mreq, sizeof(mreq)) < 0)
 	syslog(LOG_WARNING, "Cannot leave group %s on interface %s",
 	       inet6_fmt(grp), ifindex2str(ifindex));
 }
@@ -267,12 +262,12 @@ k_add_vif(int socket, mifi_t vifi, struct uvif * v)
 
     mc.mif6c_pifi = v->uv_ifindex;
 
-    if ((v->uv_flags & MIFF_REGISTER))
-		IF_DEBUG(DEBUG_PIM_REGISTER)
-			log_msg(LOG_DEBUG,0,"register vifi : %d , register pifi : %d ", vifi, v->uv_ifindex);
+    if ((v->uv_flags & MIFF_REGISTER)) {
+	IF_DEBUG(DEBUG_PIM_REGISTER)
+	    log_msg(LOG_DEBUG,0,"register vifi : %d , register pifi : %d ", vifi, v->uv_ifindex);
+    }
 
-    if (setsockopt(socket, IPPROTO_IPV6, MRT6_ADD_MIF,
-		   (char *) &mc, sizeof(mc)) < 0)
+    if (setsockopt(socket, IPPROTO_IPV6, MRT6_ADD_MIF, &mc, sizeof(mc)) < 0)
 	log_msg(LOG_ERR, errno, "setsockopt MRT6_ADD_MIF on mif %d", vifi);
 }
 
@@ -283,8 +278,7 @@ k_add_vif(int socket, mifi_t vifi, struct uvif * v)
 void 
 k_del_vif(int socket, mifi_t vifi)
 {
-    if (setsockopt(socket, IPPROTO_IPV6, MRT6_DEL_MIF,
-		   (char *) &vifi, sizeof(vifi)) < 0)
+    if (setsockopt(socket, IPPROTO_IPV6, MRT6_DEL_MIF, &vifi, sizeof(vifi)) < 0)
 	log_msg(LOG_ERR, errno, "setsockopt MRT6_DEL_MIF on mif %d", vifi);
 }
 
@@ -302,7 +296,7 @@ k_del_mfc(int socket, struct sockaddr_in6 * source, struct sockaddr_in6 * group)
     mc.mf6cc_mcastgrp = *group;
 
     pim6dstat.kern_del_cache++;
-    if (setsockopt(socket, IPPROTO_IPV6, MRT6_DEL_MFC, (char *) &mc, sizeof(mc)) < 0)
+    if (setsockopt(socket, IPPROTO_IPV6, MRT6_DEL_MFC, &mc, sizeof(mc)) < 0)
     {
 	pim6dstat.kern_del_cache_fail++;
 	log_msg(LOG_WARNING, errno, "setsockopt MRT6_DEL_MFC");	
@@ -356,7 +350,7 @@ k_chg_mfc(socket, source, group, iif, oifs, rp_addr)
 #endif
 
     pim6dstat.kern_add_cache++;
-    if (setsockopt(socket, IPPROTO_IPV6, MRT6_ADD_MFC, (char *) &mc,
+    if (setsockopt(socket, IPPROTO_IPV6, MRT6_ADD_MFC, &mc,
 		   sizeof(mc)) < 0)
     {
 	pim6dstat.kern_add_cache_fail++;
@@ -365,6 +359,7 @@ k_chg_mfc(socket, source, group, iif, oifs, rp_addr)
 	    sa6_fmt(source), sa6_fmt(group));
 	return (FALSE);
     }
+
     return (TRUE);
 }
 
@@ -386,13 +381,14 @@ k_get_vif_count(vifi, retval)
     struct sioc_mif_req6 mreq;
 
     mreq.mifi = vifi;
-    if (ioctl(udp_socket, SIOCGETMIFCNT_IN6, (char *) &mreq) < 0)
+    if (ioctl(udp_socket, SIOCGETMIFCNT_IN6, &mreq) < 0)
     {
 	log_msg(LOG_WARNING, errno, "SIOCGETMIFCNT_IN6 on vif %d", vifi);
 	retval->icount = retval->ocount = retval->ibytes =
 	    retval->obytes = 0xffffffff;
 	return (1);
     }
+
     retval->icount = mreq.icount;
     retval->ocount = mreq.ocount;
     retval->ibytes = mreq.ibytes;
@@ -417,7 +413,7 @@ k_get_sg_cnt(socket, source, group, retval)
 
     sgreq.src = *source;
     sgreq.grp = *group;
-    if (ioctl(socket, SIOCGETSGCNT_IN6, (char *) &sgreq) < 0)
+    if (ioctl(socket, SIOCGETSGCNT_IN6, &sgreq) < 0)
     {
 	pim6dstat.kern_sgcnt_fail++;
 	log_msg(LOG_WARNING, errno, "SIOCGETSGCNT_IN6 on (%s %s)",
@@ -425,6 +421,7 @@ k_get_sg_cnt(socket, source, group, retval)
 	retval->pktcnt = retval->bytecnt = retval->wrong_if = ~0;	/* XXX */
 	return (1);
     }
+
     retval->pktcnt = sgreq.pktcnt;
     retval->bytecnt = sgreq.bytecnt;
     retval->wrong_if = sgreq.wrong_if;
