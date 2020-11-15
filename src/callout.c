@@ -65,7 +65,7 @@ static void print_Q (void);
 void
 callout_init()
 {
-    Q = (struct timeout_q *) 0;
+    Q = NULL;
 }
 
 void
@@ -90,8 +90,7 @@ void
 age_callout_queue(elapsed_time)
     int             elapsed_time;
 {
-    struct timeout_q *ptr,
-                   *expQ;
+    struct timeout_q *ptr, *expQ;
 
 #ifdef CALLOUT_DEBUG
     IF_DEBUG(DEBUG_TIMEOUT)
@@ -114,12 +113,10 @@ age_callout_queue(elapsed_time)
 	    }
 	    return;
 	}
-	else
-	{
-	    elapsed_time -= Q->time;
-	    ptr = Q;
-	    Q = Q->next;
-	}
+
+	elapsed_time -= Q->time;
+	ptr = Q;
+	Q = Q->next;
     }
 
     /* handle queue of expired timers */
@@ -149,8 +146,10 @@ timer_nextTimer()
 		Q->time);
 	    return 0;
 	}
+
 	return Q->time;
     }
+
     return -1;
 }
 
@@ -164,9 +163,7 @@ timer_setTimer(delay, action, data)
     cfunc_t         action;	/* function to be called on timeout */
     void           *data;	/* what to call the timeout function with */
 {
-    struct timeout_q *ptr,
-                   *node,
-                   *prev;
+    struct timeout_q *ptr, *node, *prev;
 
 #ifdef CALLOUT_DEBUG
     IF_DEBUG(DEBUG_TIMEOUT)
@@ -175,8 +172,7 @@ timer_setTimer(delay, action, data)
 #endif
 
     /* create a node */
-
-    node = (struct timeout_q *) malloc(sizeof(struct timeout_q));
+    node = calloc(1, sizeof(struct timeout_q));
     if (node == 0)
     {
 	log_msg(LOG_WARNING, 0, "Malloc Failed in timer_settimer\n");
@@ -205,14 +201,11 @@ timer_setTimer(delay, action, data)
     else
     {
 	/* chase the pointer looking for the right place */
-
 	while (ptr)
 	{
-
 	    if (delay < ptr->time)
 	    {
 		/* right place */
-
 		node->next = ptr;
 		if (ptr == Q)
 		    Q = node;
@@ -222,19 +215,19 @@ timer_setTimer(delay, action, data)
 		print_Q();
 		return node->id;
 	    }
-	    else
-	    {
-		/* keep moving */
 
-		delay -= ptr->time;
-		node->time = delay;
-		prev = ptr;
-		ptr = ptr->next;
-	    }
+	    /* keep moving */
+	    delay      -= ptr->time;
+	    node->time  = delay;
+	    prev        = ptr;
+	    ptr         = ptr->next;
 	}
+
 	prev->next = node;
     }
+
     print_Q();
+
     return node->id;
 }
 
@@ -286,7 +279,6 @@ timer_clearTimer(timer_id)
 	    /* got the right node */
 
 	    /* unlink it from the queue */
-
 	    if (ptr == Q)
 		Q = Q->next;
 	    else
