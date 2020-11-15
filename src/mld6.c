@@ -200,15 +200,16 @@ init_mld6()
     /*
      * On Linux the IPV6_ROUTER_ALERT option can only be modified
      * if the socket() was created with SOCK_RAW && IPPROTO_RAW,
-     * i.e., on Linux this setsockopt() call will fail.  Maybe we
-     * should #ifndef __linux__ around it?  --Joachim
+     * i.e., on Linux this setsockopt() call will fail.
      */
+#ifndef __linux__    
     on = 0;	/* Accept Router Alert option with value 0 (RFC2711) */
     if (setsockopt(mld6_socket, IPPROTO_IPV6, IPV6_ROUTER_ALERT, &on,
 		   sizeof(on)) < 0) {
 	/* Note: some kernel might need this. */
 	log_msg(LOG_WARNING, errno, "setsockopt(IPV6_ROUTER_ALERT)");
     }
+#endif
 #endif
 
     /* filter all non-MLD ICMP messages */
