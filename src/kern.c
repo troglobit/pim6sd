@@ -291,9 +291,12 @@ k_del_mfc(int socket, struct sockaddr_in6 * source, struct sockaddr_in6 * group)
 
     if (setsockopt(socket, IPPROTO_IPV6, MRT6_DEL_MFC, &mc, sizeof(mc)) < 0)
     {
-	log_msg(LOG_WARNING, errno, "setsockopt MRT6_DEL_MFC %s, grp %s",
-		sa6_fmt(source), sa6_fmt(group));
-	pim6dstat.kern_del_cache_fail++;
+	if (errno != ENOENT)
+	{
+	    log_msg(LOG_WARNING, errno, "setsockopt MRT6_DEL_MFC %s, grp %s",
+		    sa6_fmt(source), sa6_fmt(group));
+	    pim6dstat.kern_del_cache_fail++;
+	}
 
 	return FALSE;
     }
