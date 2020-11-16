@@ -135,10 +135,11 @@ static int      nhandlers = 0;
  * Forward declarations.
  */
 
-static void handler (int);
-static void timer   (void *);
-static void restart (int);
-static void cleanup (void);
+static void sig_handler (int);
+static int  sig_check   (void);
+static void timer       (void *);
+static void restart     (int);
+static void cleanup     (void);
 
 
 int
@@ -212,8 +213,6 @@ main(argc, argv)
     int             argc;
     char           *argv[];
 {
-    int             dummy,
-                    dummysigalrm;
     FILE           *fp;
     struct timeval  tv,
                     difftime,
@@ -328,7 +327,7 @@ main(argc, argv)
     init_rp6();		/* Must be after init_vifs() */
     init_bsr6();	/* Must be after init_vifs() */
 
-    sa.sa_handler = handler;
+    sa.sa_handler = sig_handler;
     sa.sa_flags = 0;		/* Interrupt system calls */
     sigemptyset(&sa.sa_mask);
     sigaction(SIGALRM, &sa, NULL);
@@ -404,13 +403,14 @@ main(argc, argv)
     /*
      * Main receive loop.
      */
-    dummy = 0;
-    dummysigalrm = SIGALRM;
     difftime.tv_usec = 0;
     gettimeofday(&curtime, NULL);
     lasttime = curtime;
-    for (;;)
+    while (1)
     {
+	if (sig_check())
+	    break;
+
 	bcopy((char *) &readers, (char *) &rfds, sizeof(rfds));
 	secs = timer_nextTimer();
 	if (secs == -1)
@@ -420,46 +420,6 @@ main(argc, argv)
 	    timeout = &tv;
 	    timeout->tv_sec = secs;
 	    timeout->tv_usec = 0;
-	}
-
-	if (sighandled)
-	{
-	    if (sighandled & GOT_SIGINT)
-	    {
-		sighandled &= ~GOT_SIGINT;
-		break;
-	    }
-	    if (sighandled & GOT_SIGHUP)
-	    {
-		sighandled &= ~GOT_SIGHUP;
-		restart(SIGHUP);
-	    }
-#ifdef SIGINFO
-	    if (sighandled & GOT_SIGINFO)
-	    {
-		sighandled &= ~GOT_SIGINFO;
-		dump_stat();
-	    }
-#endif
-	    if (sighandled & GOT_SIGUSR1)
-	    {
-		sighandled &= ~GOT_SIGUSR1;
-		fdump(SIGUSR1);
-	    }
-	    if (sighandled & GOT_SIGUSR2)
-	    {
-		sighandled &= ~GOT_SIGUSR2;
-#ifdef notyet
-		cdump(SIGUSR2);
-#else
-		cfparse(0, 1);	/* reset debug level */
-#endif
-	    }
-	    if (sighandled & GOT_SIGALRM)
-	    {
-		sighandled &= ~GOT_SIGALRM;
-		timer(&dummysigalrm);
-	    }
 	}
 
 	n = select(nfds, &rfds, NULL, NULL, timeout);
@@ -620,11 +580,9 @@ cleanup()
  * Signal handler.  Take note of the fact that the signal arrived so that the
  * main loop can take care of it.
  */
-static void
-handler(sig)
-    int             sig;
+static void sig_handler(int signo)
 {
-    switch (sig)
+    switch (signo)
     {
     case SIGALRM:
 	sighandled |= GOT_SIGALRM;
@@ -651,6 +609,58 @@ handler(sig)
 	break;
 #endif
     }
+}
+
+static int sig_check(void)
+{
+    int dummysigalrm = SIGALRM;
+
+    if (!sighandled)
+	return 0;
+
+    if (sighandled & GOT_SIGINT)
+    {
+	sighandled &= ~GOT_SIGINT;
+	return 1;
+    }
+
+    if (sighandled & GOT_SIGHUP)
+    {
+	sighandled &= ~GOT_SIGHUP;
+	restart(SIGHUP);
+    }
+
+#ifdef SIGINFO
+    if (sighandled & GOT_SIGINFO)
+    {
+	sighandled &= ~GOT_SIGINFO;
+	dump_stat();
+    }
+#endif
+
+    if (sighandled & GOT_SIGUSR1)
+    {
+	sighandled &= ~GOT_SIGUSR1;
+	fdump(SIGUSR1);
+    }
+
+    if (sighandled & GOT_SIGUSR2)
+    {
+	sighandled &= ~GOT_SIGUSR2;
+#ifdef notyet
+	cdump(SIGUSR2);
+#else
+	cfparse(0, 1);	/* reset debug level */
+#endif
+    }
+
+    if (sighandled & GOT_SIGALRM)
+    {
+	sighandled &= ~GOT_SIGALRM;
+	timer(&dummysigalrm);
+    }
+
+    return 0;
 }
 
 
