@@ -33,6 +33,8 @@
 #include <syslog.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <sys/select.h>
+#include <sys/types.h>
 #include "defs.h"
 #include "debug.h"
 #include "callout.h"
