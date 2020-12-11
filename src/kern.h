@@ -53,23 +53,23 @@ extern void     k_set_rcvbuf    (int socket, int bufsize, int minsize);
 extern void     k_set_hlim       (int socket, int t);
 extern void     k_set_loop      (int socket, int l);
 extern void     k_set_if        (int socket, u_int ifindex);
-extern void     k_join          __P((int socket, struct in6_addr *grp,
-                     u_int ifindex));
-extern void     k_leave         __P((int socket, struct in6_addr *grp,
-                     u_int ifindex));
+extern void     k_join          (int socket, struct in6_addr *grp,
+                     u_int ifindex);
+extern void     k_leave         (int socket, struct in6_addr *grp,
+                     u_int ifindex);
 extern void     k_init_pim     (int);
 extern void     k_stop_pim      (int);
-extern int      k_del_mfc       __P((int socket, struct sockaddr_in6 *source,
-                     struct sockaddr_in6 *group));
-extern int      k_chg_mfc       __P((int socket, struct sockaddr_in6 *source,
+extern int      k_del_mfc       (int socket, struct sockaddr_in6 *source,
+                     struct sockaddr_in6 *group);
+extern int      k_chg_mfc       (int socket, struct sockaddr_in6 *source,
                      struct sockaddr_in6 *group, mifi_t iif, 
-                     if_set *oifs, struct sockaddr_in6 *rp_addr));
+                     if_set *oifs, struct sockaddr_in6 *rp_addr);
 extern void     k_add_vif       (int socket, mifi_t vifi, struct uvif *v);
 extern void     k_del_vif       (int socket, mifi_t vifi);
 extern int      k_get_vif_count (mifi_t vifi, struct vif_count *retval);
-extern int      k_get_sg_cnt    __P((int socket, struct sockaddr_in6 *source,
+extern int      k_get_sg_cnt    (int socket, struct sockaddr_in6 *source,
                      struct sockaddr_in6 *group,
-                     struct sg_count *retval));
+                     struct sg_count *retval);
 
 
 

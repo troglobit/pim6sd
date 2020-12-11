@@ -137,8 +137,8 @@ static int rcvcmsglen;
  */
 static void pim6_read   (int f, fd_set *rfd);
 static void accept_pim6 (int recvlen);
-static int pim6_cksum __P((u_int16_t *, struct in6_addr *,
-               struct in6_addr *, int));
+static int pim6_cksum (u_int16_t *, struct in6_addr *,
+               struct in6_addr *, int);
 
 
 

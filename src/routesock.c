@@ -106,8 +106,8 @@ u_long          rtm_inits;
  * Local functions definitions.
  */
 static int getmsg 
-__P((struct rt_msghdr *, int,
-     struct rpfctl * rpfinfo));
+(struct rt_msghdr *, int,
+     struct rpfctl * rpfinfo);
 
 /*
  * TODO: check again!

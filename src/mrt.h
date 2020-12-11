@@ -305,22 +305,22 @@ extern grpentry_t *grplist;
 
 extern void init_pim6_mrt (void);
 extern void free_pim6_mrt (void);
-extern mrtentry_t   *find_route  __P((struct sockaddr_in6 *source,
+extern mrtentry_t   *find_route  (struct sockaddr_in6 *source,
                           	      struct sockaddr_in6 *group,
-                          	      u_int16 flags, char create)); 
+                          	      u_int16 flags, char create); 
 extern grpentry_t *find_group (struct sockaddr_in6 *group);
 extern srcentry_t *find_source (struct sockaddr_in6 *source);
 extern void delete_mrtentry (mrtentry_t *mrtentry_ptr);
 extern void delete_srcentry (srcentry_t *srcentry_ptr);
 extern void delete_grpentry (grpentry_t *grpentry_ptr);
 extern void delete_mrtentry_all_kernel_cache (mrtentry_t *mrtentry_ptr);
-extern void delete_single_kernel_cache __P((mrtentry_t *mrtentry_ptr,
-                        		    	kernel_cache_t *kernel_cache_ptr));
-extern void delete_single_kernel_cache_addr __P((mrtentry_t *mrtentry_ptr,
+extern void delete_single_kernel_cache (mrtentry_t *mrtentry_ptr,
+                        		    	kernel_cache_t *kernel_cache_ptr);
+extern void delete_single_kernel_cache_addr (mrtentry_t *mrtentry_ptr,
                              			struct sockaddr_in6 *source,
-                             			struct sockaddr_in6 *group));
-extern void add_kernel_cache __P((mrtentry_t *mrtentry_ptr,
+                             			struct sockaddr_in6 *group);
+extern void add_kernel_cache (mrtentry_t *mrtentry_ptr,
                          	  struct sockaddr_in6 *source,
-				  struct sockaddr_in6 *group, u_int16 flags));
+				  struct sockaddr_in6 *group, u_int16 flags);
 
 #endif

@@ -49,20 +49,20 @@
 
 extern void query_groupsV2 (struct uvif * v);
 extern void Send_GS_QueryV2 (void *arg);
-extern void accept_listenerV2_query __P((struct sockaddr_in6 * src,
+extern void accept_listenerV2_query (struct sockaddr_in6 * src,
 					 struct in6_addr * dst,
 					 char *query_message,
-					 int datalen));
-extern void accept_listenerV2_report __P((struct sockaddr_in6 * src,
+					 int datalen);
+extern void accept_listenerV2_report (struct sockaddr_in6 * src,
 					  struct in6_addr * dst,
 					  char *report_message,
-					  int datalen));
-extern struct listaddr *check_multicastV2_listener __P((struct uvif * v,
+					  int datalen);
+extern struct listaddr *check_multicastV2_listener (struct uvif * v,
 							struct sockaddr_in6 *
 							group,
 							struct listaddr ** g,
 							struct sockaddr_in6 *
-							source));
+							source);
 extern int SetTimerV2 (int vifi, struct listaddr * g, struct listaddr * s);
 extern void mld_shift_to_v2mode (void * );
 extern int SetTimerV1compat (mifi_t, struct listaddr *, int);

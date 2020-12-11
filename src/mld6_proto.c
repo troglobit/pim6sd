@@ -131,8 +131,8 @@
 static int DeleteTimer (int id);
 static void SendQuery (void *arg);
 static int SetQueryTimer
-__P((struct listaddr * g, int mifi, int to_expire,
-     int q_time));
+(struct listaddr * g, int mifi, int to_expire,
+     int q_time);
 
 /*
  * Send group membership queries on that interface if I am querier.

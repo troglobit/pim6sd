@@ -138,8 +138,8 @@ static u_int16_t rtalert_code;
 
 static void mld6_read (int i, fd_set * fds);
 static void accept_mld6 (int len);
-static void make_mld6_msg __P((int, int, struct sockaddr_in6 *,
-	struct sockaddr_in6 *, struct in6_addr *, int, int, int, int));
+static void make_mld6_msg (int, int, struct sockaddr_in6 *,
+	struct sockaddr_in6 *, struct in6_addr *, int, int, int, int);
 
 #ifndef IP6OPT_ROUTER_ALERT	/* XXX to be compatible older systems */
 #define IP6OPT_ROUTER_ALERT IP6OPT_RTALERT
