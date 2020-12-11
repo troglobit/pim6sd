@@ -197,6 +197,6 @@ struct tr6_resp {
 
 #define NBR_VERS(n)	(((n)->al_pv << 8) + (n)->al_mv)
 
-void accept_mtrace __P((struct sockaddr_in6 *, struct in6_addr *,
-			struct in6_addr *, int, char *, u_int, int));
+void accept_mtrace (struct sockaddr_in6 *, struct in6_addr *,
+			struct in6_addr *, int, char *, u_int, int);
 #endif /* TRACE_H */

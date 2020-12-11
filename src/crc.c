@@ -41,7 +41,6 @@
  */
 /* CRC implantation : stolen from RFC 2083 section 15.*/
 
-#include <sys/cdefs.h>
 #include "crc.h"
 
 /* Table of CRCs of all 8-bit messages. */

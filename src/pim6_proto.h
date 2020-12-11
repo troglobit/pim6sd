@@ -54,42 +54,42 @@ extern int               build_jp_message_pool_counter;
 extern struct sockaddr_in6 sockaddr6_any;
 extern struct sockaddr_in6 sockaddr6_d;
 
-extern int receive_pim6_hello         __P((struct sockaddr_in6 *src,
-                       char *pim_message, int datalen));
+extern int receive_pim6_hello         (struct sockaddr_in6 *src,
+                       char *pim_message, int datalen);
 
 extern int send_pim6_hello            (struct uvif *v, u_int16 holdtime);
 extern void delete_pim6_nbr           (pim_nbr_entry_t *nbr_delete);
 
-extern int  receive_pim6_register    __P((struct sockaddr_in6 *src, struct sockaddr_in6 *dst,
-                         char *pim_message, int datalen));
+extern int  receive_pim6_register    (struct sockaddr_in6 *src, struct sockaddr_in6 *dst,
+                         char *pim_message, int datalen);
 extern int  send_pim6_null_register  (mrtentry_t *r);
-extern int  receive_pim6_register_stop __P((struct sockaddr_in6 *src, struct sockaddr_in6 *dst,
+extern int  receive_pim6_register_stop (struct sockaddr_in6 *src, struct sockaddr_in6 *dst,
                            char *pim_message,
-                           int datalen));
+                           int datalen);
 extern int  send_pim6_register   (char *pkt);
-extern int  receive_pim6_join_prune  __P((struct sockaddr_in6 *src, struct sockaddr_in6 *dst,
-                         char *pim_message, int datalen));
-extern int  join_or_prune       __P((mrtentry_t *mrtentry_ptr,  
-                         pim_nbr_entry_t *upstream_router));
-extern int  receive_pim6_assert  __P((struct sockaddr_in6 *src, struct sockaddr_in6 *dst,
-                         char *pim_message, int datalen));
-extern int  send_pim6_assert     __P((struct sockaddr_in6 *source, struct sockaddr_in6 *group,
+extern int  receive_pim6_join_prune  (struct sockaddr_in6 *src, struct sockaddr_in6 *dst,
+                         char *pim_message, int datalen);
+extern int  join_or_prune       (mrtentry_t *mrtentry_ptr,  
+                         pim_nbr_entry_t *upstream_router);
+extern int  receive_pim6_assert  (struct sockaddr_in6 *src, struct sockaddr_in6 *dst,
+                         char *pim_message, int datalen);
+extern int  send_pim6_assert     (struct sockaddr_in6 *source, struct sockaddr_in6 *group,
                          mifi_t vifi,
-                         mrtentry_t *mrtentry_ptr));
-extern int  send_periodic_pim6_join_prune __P((mifi_t vifi, 
+                         mrtentry_t *mrtentry_ptr);
+extern int  send_periodic_pim6_join_prune (mifi_t vifi, 
                           pim_nbr_entry_t *pim_nbr,
-                          u_int16 holdtime));
-extern int  add_jp_entry        __P((pim_nbr_entry_t *pim_nbr,
+                          u_int16 holdtime);
+extern int  add_jp_entry        (pim_nbr_entry_t *pim_nbr,
                          u_int16 holdtime, struct sockaddr_in6 *group,
                          u_int8 grp_msklen, struct sockaddr_in6 *source,  
                          u_int8 src_msklen,
                          u_int16 addr_flags,  
-                         u_int8 join_prune));
+                         u_int8 join_prune);
 extern void pack_and_send_jp6_message (pim_nbr_entry_t *pim_nbr);
-extern int  receive_pim6_cand_rp_adv __P((struct sockaddr_in6 *src, struct sockaddr_in6 *dst,
-                         char *pim_message, int datalen));
-extern int  receive_pim6_bootstrap   __P((struct sockaddr_in6 *src, struct sockaddr_in6 *dst,
-                         char *pim_message, int datalen));
+extern int  receive_pim6_cand_rp_adv (struct sockaddr_in6 *src, struct sockaddr_in6 *dst,
+                         char *pim_message, int datalen);
+extern int  receive_pim6_bootstrap   (struct sockaddr_in6 *src, struct sockaddr_in6 *dst,
+                         char *pim_message, int datalen);
 extern int  send_pim6_cand_rp_adv    (void);
 extern void send_pim6_bootstrap  (void);
 

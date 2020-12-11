@@ -109,8 +109,8 @@ void start_vif (mifi_t vifi);
 void stop_vif (mifi_t vivi);
 int update_reg_vif (mifi_t register_vifi);
 
-extern void add_phaddr __P((struct uvif *, struct sockaddr_in6 *,
-		           struct in6_addr *, struct sockaddr_in6 *));
+extern void add_phaddr (struct uvif *, struct sockaddr_in6 *,
+		           struct in6_addr *, struct sockaddr_in6 *);
 extern int cfparse (int, int);
 
 void

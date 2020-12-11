@@ -132,17 +132,17 @@ extern FILE *log_fp;
 #define YIPSDEBUG(lev,arg)
 #endif /* defined(YIPS_DEBUG) */
 
-extern char *packet_kind        __P((u_int proto, u_int type,
-                         u_int code));
-extern int  debug_kind      __P((u_int proto, u_int type,
-                         u_int code));
+extern char *packet_kind        (u_int proto, u_int type,
+                         u_int code);
+extern int  debug_kind      (u_int proto, u_int type,
+                         u_int code);
 extern int debug_list(int mask, char *buf, size_t len);
 extern int debug_parse(char *arg);
 extern void log_stack(void);
 extern void log_msg         (int, int, char *, ...)
 	__attribute__((__format__(__printf__, 3, 4)));
-extern int  log_level       __P((u_int proto, u_int type,
-                         u_int code));
+extern int  log_level       (u_int proto, u_int type,
+                         u_int code);
 extern void dump            (int i);
 extern void fdump           (int i);
 extern void cdump           (int i);

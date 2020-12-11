@@ -99,28 +99,28 @@ typedef struct
 		MLD6_QUERY_RESPONSE_INTERVAL / MLD6_TIMER_SCALE)
 
 extern void     query_groups            (struct uvif *v);
-extern int      check_grp_membership    __P((struct uvif *v,
-					     struct sockaddr_in6 *group));
-extern void     accept_listener_query   __P((struct sockaddr_in6 *src,
+extern int      check_grp_membership    (struct uvif *v,
+					     struct sockaddr_in6 *group);
+extern void     accept_listener_query   (struct sockaddr_in6 *src,
 					     struct in6_addr *dst,
 					     struct in6_addr *group,
-					     int tmo));
-extern void     accept_listener_report  __P((struct sockaddr_in6 *src,
+					     int tmo);
+extern void     accept_listener_report  (struct sockaddr_in6 *src,
 					     struct in6_addr *dst,
-					     struct in6_addr *group));
-extern void     accept_listener_done    __P((struct sockaddr_in6 *src,
+					     struct in6_addr *group);
+extern void     accept_listener_done    (struct sockaddr_in6 *src,
 					     struct in6_addr *dst,
-					     struct in6_addr *group));
-extern struct listaddr *check_multicast_listener __P((struct uvif *v,
-					     struct sockaddr_in6 *group));
+					     struct in6_addr *group);
+extern struct listaddr *check_multicast_listener (struct uvif *v,
+					     struct sockaddr_in6 *group);
 
-extern void     recv_listener_report	__P((mifi_t,
+extern void     recv_listener_report	(mifi_t,
 					     struct sockaddr_in6 *src,
 					     struct sockaddr_in6 *group,
-					     int mld_version));
-extern void     recv_listener_done      __P((mifi_t,
+					     int mld_version);
+extern void     recv_listener_done      (mifi_t,
 					     struct sockaddr_in6 *src,
-					     struct sockaddr_in6 *group));
+					     struct sockaddr_in6 *group);
 extern int	SetTimer (int mifi, struct listaddr * g);
 extern void	DelVif (void *);
 

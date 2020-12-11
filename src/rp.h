@@ -96,7 +96,7 @@ extern rpentry_t *rp_match      (struct sockaddr_in6 *group);
 extern rp_grp_entry_t *rp_grp_match (struct sockaddr_in6 *group);
 extern int  create_pim6_bootstrap_message (char *send_buff);
 
-extern rp_grp_entry_t *add_rp_grp_entry __P((cand_rp_t  **used_cand_rp_list,
+extern rp_grp_entry_t *add_rp_grp_entry (cand_rp_t  **used_cand_rp_list,
                          grp_mask_t **used_grp_mask_list,
                          struct sockaddr_in6 *rp_addr,
                          u_int8  rp_priority,
@@ -105,25 +105,25 @@ extern rp_grp_entry_t *add_rp_grp_entry __P((cand_rp_t  **used_cand_rp_list,
                          struct sockaddr_in6 *group_addr,
                          struct in6_addr group_mask,
                          struct in6_addr bsr_hash_mask,
-                         u_int16 fragment_tag));
-extern void delete_rp_grp_entry __P((cand_rp_t  **used_cand_rp_list,
+                         u_int16 fragment_tag);
+extern void delete_rp_grp_entry (cand_rp_t  **used_cand_rp_list,
                          grp_mask_t **used_grp_mask_list,
-                         rp_grp_entry_t *rp_grp_entry_delete));
-extern void delete_grp_mask     __P((cand_rp_t  **used_cand_rp_list, 
+                         rp_grp_entry_t *rp_grp_entry_delete);
+extern void delete_grp_mask     (cand_rp_t  **used_cand_rp_list, 
                          grp_mask_t **used_grp_mask_list,  
                          struct sockaddr_in6 *group_addr,
-                         struct in6_addr group_mask));
-extern void delete_rp       __P((cand_rp_t  **used_cand_rp_list,
+                         struct in6_addr group_mask);
+extern void delete_rp       (cand_rp_t  **used_cand_rp_list,
                          grp_mask_t **used_grp_mask_list,
-                         struct sockaddr_in6 *rp_addr));
-extern void delete_rp_list      __P((cand_rp_t  **used_cand_rp_list,
-                         grp_mask_t **used_grp_mask_list));
+                         struct sockaddr_in6 *rp_addr);
+extern void delete_rp_list      (cand_rp_t  **used_cand_rp_list,
+                         grp_mask_t **used_grp_mask_list);
 extern rpentry_t *rp_match      (struct sockaddr_in6 *group); 
 extern rp_grp_entry_t *rp_grp_match (struct sockaddr_in6 *group);
 extern rpentry_t *rp_find       (struct sockaddr_in6 *rp_address);
 extern int  remap_grpentry      (grpentry_t *grpentry_ptr);
-extern int  check_mrtentry_rp   __P((mrtentry_t *mrtentry_ptr,
-                         struct sockaddr_in6 *rp_addr));
+extern int  check_mrtentry_rp   (mrtentry_t *mrtentry_ptr,
+                         struct sockaddr_in6 *rp_addr);
 
 extern void update_rp_neighbor (void);
 #endif

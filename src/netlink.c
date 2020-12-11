@@ -35,7 +35,7 @@
 #include <linux/mroute6.h>
 #endif
 #include <syslog.h>
-#include <sys/errno.h>
+#include <errno.h>
 #include <time.h>
 #include "defs.h"
 #include "vif.h"

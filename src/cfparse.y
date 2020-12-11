@@ -110,10 +110,10 @@ static int debugonly;
 
 extern int yylex (void);
 
-static struct attr_list *add_attribute_flag __P((struct attr_list *, int,
-	unsigned int));
-static struct attr_list *add_attribute_num __P((struct attr_list *, int,
-	double));
+static struct attr_list *add_attribute_flag (struct attr_list *, int,
+	unsigned int);
+static struct attr_list *add_attribute_num (struct attr_list *, int,
+	double);
 static void free_attr_list (struct attr_list *);
 static int param_config (void);
 static int phyint_config (void);

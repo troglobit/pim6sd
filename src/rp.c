@@ -157,21 +157,21 @@ u_int8          		static_rp_flag;
 /*
  * Local functions definition.
  */
-static cand_rp_t *add_cand_rp __P((cand_rp_t **used_cand_rp_list ,
-     				   struct sockaddr_in6 *address));
+static cand_rp_t *add_cand_rp (cand_rp_t **used_cand_rp_list ,
+     				   struct sockaddr_in6 *address);
 
-static grp_mask_t *add_grp_mask __P((grp_mask_t ** used_grp_mask_list,
+static grp_mask_t *add_grp_mask (grp_mask_t ** used_grp_mask_list,
 		                     struct sockaddr_in6 *group_addr,
 				     struct in6_addr group_mask,
-				     struct in6_addr hash_mask));
+				     struct in6_addr hash_mask);
 
-static void delete_grp_mask_entry __P((cand_rp_t ** used_cand_rp_list,
+static void delete_grp_mask_entry (cand_rp_t ** used_cand_rp_list,
 			               grp_mask_t ** used_grp_mask_list,
-			               grp_mask_t * grp_mask_delete));
+			               grp_mask_t * grp_mask_delete);
 
-static void delete_rp_entry __P((cand_rp_t ** used_cand_rp_list,
+static void delete_rp_entry (cand_rp_t ** used_cand_rp_list,
 	                         grp_mask_t ** used_grp_mask_list,
-	                         cand_rp_t * cand_rp_ptr));
+	                         cand_rp_t * cand_rp_ptr);
 
 
 void

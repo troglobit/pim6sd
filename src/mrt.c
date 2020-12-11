@@ -82,39 +82,39 @@ grpentry_t     *grplist;
  * Local functions definition
  */
 static srcentry_t *create_srcentry 	(struct sockaddr_in6 *source);
-static int search_srclist 			__P((struct sockaddr_in6 *source ,	
-     								srcentry_t ** sourceEntry));
+static int search_srclist 			(struct sockaddr_in6 *source ,	
+     								srcentry_t ** sourceEntry);
 
-static int search_srcmrtlink 		__P((srcentry_t * srcentry_ptr,
+static int search_srcmrtlink 		(srcentry_t * srcentry_ptr,
 				                  	struct sockaddr_in6 *group,
-				                    mrtentry_t ** mrtPtr));
+				                    mrtentry_t ** mrtPtr);
 
-static void insert_srcmrtlink 		__P((mrtentry_t * elementPtr,
+static void insert_srcmrtlink 		(mrtentry_t * elementPtr,
 				                    mrtentry_t * insertPtr,
-				                  	srcentry_t * srcListPtr));
+				                  	srcentry_t * srcListPtr);
 
 static grpentry_t *create_grpentry  (struct sockaddr_in6 *group);
 
-static int search_grplist 			__P((struct sockaddr_in6 *group,
-				                 		grpentry_t ** groupEntry));
+static int search_grplist 			(struct sockaddr_in6 *group,
+				                 		grpentry_t ** groupEntry);
 
-static int search_grpmrtlink 		__P((grpentry_t * grpentry_ptr,
+static int search_grpmrtlink 		(grpentry_t * grpentry_ptr,
 				                      	 struct sockaddr_in6 *source,
-				                      	 mrtentry_t ** mrtPtr));
+				                      	 mrtentry_t ** mrtPtr);
 
-static void insert_grpmrtlink 		__P((mrtentry_t * elementPtr,
+static void insert_grpmrtlink 		(mrtentry_t * elementPtr,
 				                     	 mrtentry_t * insertPtr,
-				                  		 grpentry_t * grpListPtr));
+				                  		 grpentry_t * grpListPtr);
 
-static mrtentry_t *alloc_mrtentry 	__P((srcentry_t * srcentry_ptr,
-				                		grpentry_t * grpentry_ptr));
+static mrtentry_t *alloc_mrtentry 	(srcentry_t * srcentry_ptr,
+				                		grpentry_t * grpentry_ptr);
 
-static mrtentry_t *create_mrtentry 	__P((srcentry_t * srcentry_ptr,
+static mrtentry_t *create_mrtentry 	(srcentry_t * srcentry_ptr,
 				                  		grpentry_t * grpentry_ptr,
-					                    u_int16 flags));
+					                    u_int16 flags);
 
-static void move_kernel_cache 		__P((mrtentry_t * mrtentry_ptr,
-				                        u_int16 flags));
+static void move_kernel_cache 		(mrtentry_t * mrtentry_ptr,
+				                        u_int16 flags);
 
 void
 init_pim6_mrt()
