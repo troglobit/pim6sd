@@ -775,6 +775,9 @@ send_pim6_hello(v, holdtime)
 
     int             datalen;
 
+    if (!v->uv_linklocal)
+        return (FALSE);
+
     buf = pim6_send_buf + sizeof(struct pim);
     data_ptr = (u_int8 *) buf;
 
