@@ -283,8 +283,8 @@ make_mld6v2_msg(int type, int code, struct sockaddr_in6 *src,
 	cmsgp->cmsg_len = CMSG_LEN(sizeof(struct in6_pktinfo));
 	cmsgp->cmsg_level = IPPROTO_IPV6;
 	cmsgp->cmsg_type = IPV6_PKTINFO;
-	pktinfo = (struct in6_pktinfo *) CMSG_DATA(cmsgp);
-	memset((caddr_t) pktinfo, 0, sizeof(*pktinfo));
+	pktinfo = (struct in6_pktinfo *)CMSG_DATA(cmsgp);
+	memset((caddr_t)pktinfo, 0, sizeof(*pktinfo));
 	if (ifindex != -1)
 		pktinfo->ipi6_ifindex = ifindex;
 	if (src)

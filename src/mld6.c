@@ -81,13 +81,13 @@
 #include <net/if.h>
 #include <net/route.h>
 #include <netinet/in.h>
-#include <netinet/ip6.h>
 #include <netinet/icmp6.h>
 #ifdef __linux__
 #include <linux/mroute6.h>
 #else
 #include <netinet6/ip6_mroute.h>
 #endif
+#include <netinet/ip6.h>
 #include <arpa/inet.h>
 #include <stdlib.h>
 #include <syslog.h>
@@ -566,7 +566,7 @@ make_mld6_msg(type, code, src, dst, group, ifindex, delay, datalen, alert)
 
 	    cmsgp = CMSG_FIRSTHDR(&sndmh);
 	    if (!cmsgp)
-		    log_msg(LOG_ERR, 0, "Internal error in %s", __func__);
+		    log_msg(LOG_ERR, 0, "Internal error 1 in %s", __func__);
 
 	    if (ifindex != -1 || src) {
 		    struct in6_pktinfo *pktinfo;
@@ -588,7 +588,7 @@ make_mld6_msg(type, code, src, dst, group, ifindex, delay, datalen, alert)
 		    void *hbhbuf, *optp = NULL;
 
 		    if (!cmsgp)
-			    log_msg(LOG_ERR, 0, "Internal error in %s", __func__);
+			    log_msg(LOG_ERR, 0, "Internal error 2 in %s", __func__);
 
 		    cmsgp->cmsg_len = CMSG_LEN(hbhlen);
 		    cmsgp->cmsg_level = IPPROTO_IPV6;
