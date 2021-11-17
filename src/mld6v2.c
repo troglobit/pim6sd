@@ -263,19 +263,24 @@ make_mld6v2_msg(int type, int code, struct sockaddr_in6 *src,
     if (ctlbuflen < ctllen) {
 	if (sndcmsgbuf)
 	    free(sndcmsgbuf);
-	if ((sndcmsgbuf = malloc(ctllen)) == NULL)
-	    log_msg(LOG_ERR, 0, "make_mld6_msg: malloc failed");
+	sndcmsgbuf = calloc(1, ctllen);
+	if (!sndcmsgbuf)
+		log_msg(LOG_ERR, errno, "Failed allocating send buffer"); /* assert */
 	ctlbuflen = ctllen;
     }
-    /* store ancillary data */
-    sndmh.msg_controllen = ctllen;
+
     if (ctllen <= 0) {
 	sndmh.msg_control = NULL;	/* clear for safety */
 	return TRUE;
     }
 
+    /* store ancillary data */
+    sndmh.msg_flags = 0;
     sndmh.msg_control = sndcmsgbuf;
+    sndmh.msg_controllen = ctllen;
     cmsgp = CMSG_FIRSTHDR(&sndmh);
+    if (!cmsgp)
+	    log_msg(LOG_ERR, 0, "Internal error 1 in %s", __func__);
 
     if (ifindex != -1 || src) {
 	struct in6_pktinfo *pktinfo;
@@ -296,6 +301,9 @@ make_mld6v2_msg(int type, int code, struct sockaddr_in6 *src,
 	int             currentlen;
 	void           *hbhbuf, *optp = NULL;
 	u_int16_t rtalert_code;
+
+	if (!cmsgp)
+		log_msg(LOG_ERR, 0, "Internal error 2 in %s", __func__);
 
 	rtalert_code = htons(IP6OPT_RTALERT_MLD);
 
