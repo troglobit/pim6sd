@@ -1,0 +1,19 @@
+Source: pim6sd
+Section: net
+Priority: optional
+Maintainer: Marek Küthe <m.k@mk16.de>
+Rules-Requires-Root: no
+Build-Depends:
+ debhelper-compat (= 13),
+Standards-Version: 4.6.2
+Homepage: https://github.com/troglobit/pim6sd/tree/master
+Vcs-Browser: https://github.com/troglobit/pim6sd/tree/master
+Vcs-Git: https://github.com/troglobit/pim6sd.git
+
+Package: pim6sd
+Architecture: any
+Multi-Arch: foreign
+Depends:
+ ${shlibs:Depends},
+ ${misc:Depends},
+Description: IPv6 Protocol Independent Multicast routing daemon, which supports both Any-Source as well as Source-Specific Multicast, also known as PIM-SM and PIM-SSM.
