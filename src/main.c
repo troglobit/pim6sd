@@ -109,6 +109,7 @@ char           		*progname;
 
 static int		foreground = 0;
 static int      	sighandled = 0;
+static int      bypass_root_check = 0;
 
 #define GOT_SIGINT      0x01
 #define GOT_SIGHUP      0x02
@@ -168,6 +169,7 @@ int usage(int rc)
 	   " -f FILE    Configuration file, default: %s\n"
 	   " -h         Show this help text\n"
 	   " -n         Run in foreground, do not detach from controlling terminal\n"
+       " -r         Bypass root check on startup\n"
 	   " -v         Show program version\n"
 	   "\n",
 	   progname, configfilename);
@@ -234,7 +236,7 @@ main(argc, argv)
 
     snprintf(versionstring, sizeof(versionstring), "pim6sd version %s", VERSION);
 
-    while ((ch = getopt(argc, argv, "d:f:hnv")) != EOF) {
+    while ((ch = getopt(argc, argv, "d:f:hnrv")) != EOF) {
 	switch (ch) {
 	case 'd':
 	    debug = debug_parse(optarg);
@@ -256,6 +258,10 @@ main(argc, argv)
 	case 'v':
 	    puts(versionstring);
 	    return 0;
+    
+    case 'r':
+        bypass_root_check = 1;
+        break;
 
 	default:
 	    return usage(1);
@@ -265,7 +271,7 @@ main(argc, argv)
     if (optind < argc)
 	return usage(1);
 
-    if (geteuid() != 0)
+    if (geteuid() != 0 && !bypass_root_check)
 	errx(1, "Need root privileges to start.");
 
     log_fp = stderr;
