@@ -49,6 +49,7 @@
 static int routing_socket = -1;
 static __u32 seq;
 pid_t pid;
+int source_routing_table;
 
 static int getmsg(struct rtmsg *rtm, int msglen, struct rpfctl *rpf);
 
@@ -154,6 +155,7 @@ int k_req_incoming(struct sockaddr_in6 *source, struct rpfctl *rpf)
 #ifdef CONFIG_RTNL_OLD_IFINFO
 	r->rtm_optlen = n->nlmsg_len - NLMSG_LENGTH(sizeof(*r));
 #endif
+	r->rtm_table = source_routing_table;
 
 	addr.nl_family = AF_NETLINK;
 	addr.nl_groups = 0;

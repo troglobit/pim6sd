@@ -610,6 +610,7 @@ slash		\/
 <S_CNF>probe_time { YYD_ECHO; return(PROBETIME); }
 <S_CNF>assert_timeout { YYD_ECHO; return(ASSERTTIME); }
 <S_CNF>default_phyint_status { YYD_ECHO; return(DEFVIFSTAT); }
+<S_CNF>source_routing_table { YYD_ECHO; return(ROUTINGTABLE); }
 <S_CNF>disable { YYD_ECHO; return(DISABLE); }
 <S_CNF>enable { YYD_ECHO; return(ENABLE); }
 

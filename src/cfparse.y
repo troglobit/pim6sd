@@ -55,6 +55,7 @@
 #include "mrt.h"
 #include "routesock.h"
 #include "rp.h"
+#include "netlink.h"
 
 #include "cfparse-defs.h"
 #include "debug.h"
@@ -145,7 +146,7 @@ static int datathres_config (void);
 %token CANDRP CANDBSR TIME PRIORITY MASKLEN
 %token NUMBER STRING SLASH ANY
 %token REGTHRES DATATHRES RATE INTERVAL
-%token SRCMETRIC SRCPREF HELLOPERIOD GRANULARITY JPPERIOD
+%token SRCMETRIC SRCPREF HELLOPERIOD GRANULARITY JPPERIOD ROUTINGTABLE
 %token DATATIME REGSUPTIME PROBETIME ASSERTTIME DEFVIFSTAT
 
 %type <num> LOGLEV NOLOGLEV
@@ -701,6 +702,11 @@ param_statement:
 			set_param(default_vif_status, VIFF_DISABLED,
 				 "default_phyint_status");
 		}
+	|	ROUTINGTABLE NUMBER EOS
+		{
+			set_param(source_routing_table, $2,
+				 "source_routing_table");
+		}
 	;
 %%
 
@@ -776,6 +782,7 @@ param_config()
 	if (probetime == -1) probetime = PIM_REGISTER_PROBE_TIME;
 	if (asserttimo == -1) asserttimo = PIM_ASSERT_TIMEOUT;
 	if (default_vif_status == -1) default_vif_status = VIFF_ENABLED;
+	if (source_routing_table == -1) source_routing_table = DEFAULT_SOURCE_ROUTING_TABLE;
 
 	/* set protocol parameters using the configuration variables */
 	for (vifi = 0, v = uvifs; vifi < NELEMS(uvifs); ++vifi, ++v) {
@@ -823,6 +830,11 @@ param_config()
 		log_msg(LOG_DEBUG, 0,
 		    "PIM assert timeout set to: %u",
 		    pim_assert_timeout);
+	}
+	IF_DEBUG(DEBUG_PIM_ASSERT) {
+		log_msg(LOG_DEBUG, 0,
+		    "Source routing table: %u",
+		    source_routing_table);
 	}
 	return(0);
 }
@@ -1375,7 +1387,7 @@ cf_init(s, d)
 	srcmetric = srcpref = helloperiod = jpperiod = jpperiod_coef
 		= granularity = datatimo = regsuptimo = probetime
 		= asserttimo = -1;
-	helloperiod_coef = jpperiod_coef = default_vif_status = -1;
+	helloperiod_coef = jpperiod_coef = default_vif_status = source_routing_table = -1;
 
 	for (vifi = 0, v = uvifs; vifi < numvifs ; ++vifi , ++v)
 		v->config_attr = NULL;
