@@ -265,9 +265,6 @@ main(argc, argv)
     if (optind < argc)
 	return usage(1);
 
-    if (geteuid() != 0)
-	errx(1, "Need root privileges to start.");
-
     log_fp = stderr;
     setlinebuf(stderr);
 
