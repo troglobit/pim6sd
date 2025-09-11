@@ -266,7 +266,7 @@ main(argc, argv)
 	return usage(1);
 
     if (geteuid() != 0)
-	errx(1, "Need root privileges to start.");
+	fprintf(stderr, "Program was not started with root privileges. Issues may occur.");
 
     log_fp = stderr;
     setlinebuf(stderr);
