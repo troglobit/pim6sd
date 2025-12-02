@@ -345,6 +345,14 @@ start_vif(mifi_t vifi)
 		k_join(mld6_socket, &allrouters_group.sin6_addr, v->uv_ifindex);
 
 		/*
+		 * Join the ALL-MLDv2-CAPABLE_ROUTERS multicast group on the interface.
+		 * This allows receiving MLDv2 reports.
+		 */
+		if (v->uv_mld_version & MLDv2)
+			k_join(mld6_socket, &allmld2routers_group.sin6_addr,
+			       v->uv_ifindex);
+
+		/*
 		 * Until neighbors are discovered, assume responsibility for sending
 		 * periodic group membership queries to the subnet.  Send the first
 		 * query.
@@ -404,6 +412,9 @@ stop_vif(mifi_t vifi)
 	if (!(v->uv_flags & MIFF_REGISTER)) {
 		k_leave(pim6_socket, &allpim6routers_group.sin6_addr,
 			v->uv_ifindex);
+		if (v->uv_mld_version & MLDv2)
+			k_leave(mld6_socket, &allmld2routers_group.sin6_addr,
+				v->uv_ifindex);
 		k_leave(mld6_socket, &allrouters_group.sin6_addr,
 			v->uv_ifindex);
 
