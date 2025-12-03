@@ -116,6 +116,7 @@ char *mld6_recv_buf;		/* input packet buffer */
 char *mld6_send_buf;		/* output packet buffer */
 int mld6_socket;		/* socket for all network I/O */
 struct sockaddr_in6 allrouters_group;
+struct sockaddr_in6 allmld2routers_group;
 struct sockaddr_in6 allnodes_group;
 
 /* local variables. */
@@ -195,6 +196,11 @@ init_mld6()
     if (inet_pton(AF_INET6, "ff02::2",
 		  (void *) &allrouters_group.sin6_addr) != 1)
 	log_msg(LOG_ERR, 0, "inet_pton failed for ff02::2");
+
+    init_sin6(&allmld2routers_group);
+    if (inet_pton(AF_INET6, "ff02::16",
+		  (void *) &allmld2routers_group.sin6_addr) != 1)
+	log_msg(LOG_ERR, 0, "inet_pton failed for ff02::16");
 
 #ifdef IPV6_ROUTER_ALERT
     /*

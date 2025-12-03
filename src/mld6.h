@@ -59,6 +59,7 @@
 extern int mld6_socket;
 extern char *mld6_recv_buf;
 extern struct sockaddr_in6 allrouters_group;
+extern struct sockaddr_in6 allmld2routers_group;
 extern struct sockaddr_in6 allnodes_group;
 extern char *mld6_send_buf;
 
