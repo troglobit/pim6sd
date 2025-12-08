@@ -55,6 +55,7 @@
 #include "mrt.h"
 #include "routesock.h"
 #include "rp.h"
+#include "netlink.h"
 
 #include "cfparse-defs.h"
 #include "debug.h"
@@ -65,15 +66,18 @@
 #include "mld6v2_proto.h"
 #include "mld6v2.h"
 
-#define set_param(var,val,p) \
+#define set_xparam(var,val,p,undef) \
 	do {\
-		if ((var) != -1) {\
+		if ((var) != (undef)) {\
 			yywarn("%s doubly defined(ignore %d)", (p), (val));\
 		}\
 		else {\
 			(var) = val;\
 		}\
 	} while(0)
+
+#define set_param(var,val,p) set_xparam(var,val,p,-1)
+#define set_uparam(var,val,p) set_xparam(var,val,p,0)
 
 struct in6_prefix {
 	struct in6_addr paddr;
@@ -145,6 +149,7 @@ static int datathres_config (void);
 %token CANDRP CANDBSR TIME PRIORITY MASKLEN
 %token NUMBER STRING SLASH ANY
 %token REGTHRES DATATHRES RATE INTERVAL
+%token SOURCEOIF
 %token SRCMETRIC SRCPREF HELLOPERIOD GRANULARITY JPPERIOD
 %token DATATIME REGSUPTIME PROBETIME ASSERTTIME DEFVIFSTAT
 
@@ -172,6 +177,7 @@ statement:
 	|	grppfx_statement
 	|	regthres_statement
 	|	datathres_statement
+	|	sourceoif_statement
 	|	param_statement
 	;
 
@@ -641,6 +647,21 @@ datathres_statement:
 		}
 		else
 			datathres_attr = $2;
+	}
+	;
+
+/* source_outgoing_interface */
+sourceoif_statement:
+	SOURCEOIF IFNAME EOS {
+		u_int ifindex = if_nametoindex($2.v);
+
+		if (!ifindex) {
+			yywarn("source_outgoing_interface %s does not exist", $2.v);
+			return(-1);
+		}
+
+		set_uparam(source_outgoing_interface, ifindex,
+			  "source_outgoing_interface");
 	}
 	;
 
@@ -1376,6 +1397,7 @@ cf_init(s, d)
 		= granularity = datatimo = regsuptimo = probetime
 		= asserttimo = -1;
 	helloperiod_coef = jpperiod_coef = default_vif_status = -1;
+	source_outgoing_interface = 0;
 
 	for (vifi = 0, v = uvifs; vifi < numvifs ; ++vifi , ++v)
 		v->config_attr = NULL;

@@ -91,7 +91,7 @@ slash		\/
 
 %s S_CNF
 %s S_LOG
-%s S_PHYINT S_IFCONF S_CANDRP S_CANDBSR S_PREFIX
+%s S_PHYINT S_IFCONF S_CANDRP S_CANDBSR S_PREFIX S_SRCOIF
 %s S_THRES
 %s S_STATICRP
 %s S_STATIC
@@ -598,6 +598,16 @@ slash		\/
 	/* static route */
 <S_CNF>static { YYD_ECHO; BEGIN S_STATIC; return(STATIC); }
 <S_STATIC>{semi} { DP("end static"); BEGIN S_CNF; return(EOS); }
+
+	/* source_outgoing_interface */
+<S_CNF>source_outgoing_interface { DP("begin source_outgoing_interface"); BEGIN S_SRCOIF; return(SOURCEOIF); }
+<S_SRCOIF>{ifname} {
+	YYD_ECHO;
+	yylval.val.l = strlen(yytext);
+	yylval.val.v = strdup(yytext);
+	return(IFNAME);
+}
+<S_SRCOIF>{semi} { DP("end source_outgoing_interface"); BEGIN S_CNF; return(EOS); }
 
 	/* various parameters */
 <S_CNF>default_source_metric { YYD_ECHO; return(SRCMETRIC); }

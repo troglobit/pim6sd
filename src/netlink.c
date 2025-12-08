@@ -49,25 +49,36 @@
 static int routing_socket = -1;
 static __u32 seq;
 pid_t pid;
+u_int source_outgoing_interface;
 
 static int getmsg(struct rtmsg *rtm, int msglen, struct rpfctl *rpf);
 
-
-static int addattr32(struct nlmsghdr *n, int maxlen, int type, struct in6_addr *data)
+static int addattr_l(struct nlmsghdr *n, int maxlen, int type, const void *data, int alen)
 {
 	struct rtattr *rta;
-	int len = RTA_LENGTH(16);
+	int len = RTA_LENGTH(alen);
 
-	if (NLMSG_ALIGN(n->nlmsg_len) + len > maxlen)
+	if (NLMSG_ALIGN(n->nlmsg_len) + RTA_ALIGN(len) > maxlen)
 		return -1;
 
 	rta = (struct rtattr *)(((char *)n) + NLMSG_ALIGN(n->nlmsg_len));
 	rta->rta_type = type;
 	rta->rta_len = len;
-	memcpy(RTA_DATA(rta), data, 16);
-	n->nlmsg_len = NLMSG_ALIGN(n->nlmsg_len) + len;
+	if (alen)
+		memcpy(RTA_DATA(rta), data, alen);
+	n->nlmsg_len = NLMSG_ALIGN(n->nlmsg_len) + RTA_ALIGN(len);
 
 	return 0;
+}
+
+static int addattr32(struct nlmsghdr *n, int maxlen, int type, __u32 data)
+{
+	return addattr_l(n, maxlen, type, &data, sizeof(data));
+}
+
+static int addattr_in6(struct nlmsghdr *n, int maxlen, int type, struct in6_addr *data)
+{
+	return addattr_l(n, maxlen, type, data, sizeof(*data));
 }
 
 static int parse_rtattr(struct rtattr *tb[], int max, struct rtattr *rta, int len)
@@ -150,7 +161,12 @@ int k_req_incoming(struct sockaddr_in6 *source, struct rpfctl *rpf)
 	memset(r, 0, sizeof(*r));
 	r->rtm_family = AF_INET6;
 	r->rtm_dst_len = 128;
-	addattr32(n, sizeof(buf), RTA_DST, &rpf->source.sin6_addr);
+	addattr_in6(n, sizeof(buf), RTA_DST, &rpf->source.sin6_addr);
+	if (source_outgoing_interface) {
+		log_msg(LOG_DEBUG, 0, "NETLINK: Setting OIF to %u",
+			source_outgoing_interface);
+		addattr32(n, sizeof(buf), RTA_OIF, source_outgoing_interface);
+	}
 #ifdef CONFIG_RTNL_OLD_IFINFO
 	r->rtm_optlen = n->nlmsg_len - NLMSG_LENGTH(sizeof(*r));
 #endif
