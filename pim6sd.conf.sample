@@ -112,3 +112,11 @@
 #syntax : <default_source_preference> [number]
 
 #default_source_preference 123 ;
+
+#syntax : <source_outgoing_interface> <interface>
+#Set the outgoing interface attribute for determening the next hop
+#router for PIM join/prune/register messages. This is especially
+#useful with a VRF interface to use an alternative unicast routing
+#table. See the section "Multicast vs. Unicast Routes" for details.
+#samples:
+#source_outgoing_interface vrf42;

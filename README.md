@@ -101,6 +101,49 @@ GIT sources are a moving target and are not recommended for production
 systems, unless you know what you are doing!
 
 
+Multicast vs. Unicast Routes
+----------------------------
+
+Or: How/why/when to use an alternative unicast routing table
+
+PIM-SD relies on a pre-established unicast topology for any routing
+decision. PIM-SD is not capable of finding a best path between
+two multicast routers on its own.
+
+This makes it important for PIM-SD that each router on any unicast route
+between designated multicast routers is PIM-SD capable.
+Otherwise a unicast-only router might become a black hole for
+PIM-SD multicast. You might then see warnings in the pim6sd logs like
+`"NETLINK: ifindex=<number>, but no vif` or
+`next hop router is <router>: NOT A PIM ROUTER`.
+Especially when connecting to a larger, pre-existing unicast topology,
+like to the internet via BGP, this will become an issue: You will
+not be able to convince every router there to also run a PIM-SD
+implementation.
+
+One option to tackle this is to establish a separate unicast topology
+and unicast routing table dedicated to multicast payload. For instance
+M-BGP has dedicated "IPv4 multicast" and "IPv6 multicast" channels.
+BGP routers can then typically export unicast routes (these channels
+do NOT contain multicast routes, they contain unicast routes FOR a
+a multicast topology) to a separate unicast routing table.
+
+For pim6sd to use this separate routing table one option is to
+assign a VRF to this routing table. And then use the
+`source_outgoing_interface` parameter in the pim6sd.conf file. Example:
+
+```
+ip -6 route add table 42 unreachable default metric 4278198272
+ip link add dn42_mc6_vrf type vrf table 42
+ip link set dev dn42_mc6_vrf up
+echo "source_outgoing_interface dn42_mc6_vrf;" >> /etc/pim6sd.conf
+```
+
+Then make your BGP config in bird/FRRouting/etc. populate table 42
+from the "IPv6 multicast" channel with the same (and at least not more!)
+interfaces as configured in pim6sd.
+
+
 Origin & References
 -------------------
 
