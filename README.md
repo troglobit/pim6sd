@@ -1,9 +1,12 @@
 PIM-SM/SSM IPv6 Multicast Routing for UNIX
 ==========================================
 
-pim6sd is an IPv6 Protocol Independent Multicast routing daemon, which
-supports both Any-Source as well as Source-Specific Multicast, also known
-as PIM-SM and PIM-SSM.
+pim6sd is an IPv6 multicast routing daemon for PIM-SM
+(Protocol Independent Multicast - Sparse Mode,
+[RFC7761](https://www.rfc-editor.org/rfc/rfc7761)) and supports both
+Any-Source Multicast (ASM) as well as Source-Specific Multicast (SSM).
+Furthermore it supports ASM with "Embedded-RP" addresses
+([RFC3956](https://www.rfc-editor.org/rfc/rfc3956)).
 
 pim6sd stems from pim6dd, which was originally based on [pimd][], which
 in turn was based on [mrouted][].
