@@ -68,6 +68,7 @@ void free_mld6 (void);
 int send_mld6 (int type, int code, struct sockaddr_in6 *src,
 		   struct sockaddr_in6 *dst, struct in6_addr *group,
 		   int index, int delay, int datalen, int alert);
+void mld_fill_msg(int ifindex, struct sockaddr_in6 *src, int alert, int datalen);
 
 #ifndef MLD_LISTENER_QUERY
 #  ifdef MLD6_LISTENER_QUERY

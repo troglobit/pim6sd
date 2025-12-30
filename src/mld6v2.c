@@ -75,10 +75,6 @@
 
 #ifdef HAVE_MLDV2
 
-#ifndef HAVE_RFC3542
-extern u_int8_t raopt[IP6OPT_RTALERT_LEN];
-#endif
-
 /* uses buffer in mld6.c */
 extern char    *sndcmsgbuf;
 extern int      ctlbuflen;
@@ -120,7 +116,6 @@ make_mld6v2_msg(int type, int code, struct sockaddr_in6 *src,
 		int qrv, int qqic, int gss)
 {
     struct mldv2_hdr *mhp = (struct mldv2_hdr *) mld6_send_buf;
-    int             ctllen, hbhlen = 0;
     int             nbsrc = 0;
     struct listaddr *lstsrc = NULL;
     u_int8_t        misc = 0;	/*Resv+S flag + QRV */
@@ -128,7 +123,6 @@ make_mld6v2_msg(int type, int code, struct sockaddr_in6 *src,
     mifi_t vifi;
     struct uvif    *v;
     struct listaddr *g = NULL;
-    struct cmsghdr *cmsgp;
 
     init_sin6(&dst_sa);
     dst_sa.sin6_addr = allnodes_group.sin6_addr;
@@ -236,108 +230,7 @@ make_mld6v2_msg(int type, int code, struct sockaddr_in6 *src,
     mhp->mld_qqi = codafloat(qqic, &realnbr, 3, 4);
     mhp->mld_numsrc = htons(nbsrc);
 
-    sndiov[0].iov_len = datalen;
-
-    /* estimate total ancillary data length */
-    ctllen = 0;
-    if (ifindex != -1 || src)
-	ctllen += CMSG_SPACE(sizeof(struct in6_pktinfo));
-    if (alert) {
-#ifdef HAVE_RFC3542
-	if ((hbhlen = inet6_opt_init(NULL, 0)) == -1)
-	    log_msg(LOG_ERR, 0, "inet6_opt_init(0) failed");
-	if ((hbhlen =
-	     inet6_opt_append(NULL, 0, hbhlen, IP6OPT_ROUTER_ALERT, 2, 2,
-			      NULL)) == -1)
-	    log_msg(LOG_ERR, 0, "inet6_opt_append(0) failed");
-	if ((hbhlen = inet6_opt_finish(NULL, 0, hbhlen)) == -1)
-	    log_msg(LOG_ERR, 0, "inet6_opt_finish(0) failed");
-	ctllen += CMSG_SPACE(hbhlen);
-#else				/* old advanced API */
-	hbhlen = inet6_option_space(sizeof(raopt));
-	ctllen += hbhlen;
-#endif
-    }
-
-    /* extend ancillary data space (if necessary) */
-    if (ctlbuflen < ctllen) {
-	if (sndcmsgbuf)
-	    free(sndcmsgbuf);
-	sndcmsgbuf = calloc(1, ctllen);
-	if (!sndcmsgbuf)
-		log_msg(LOG_ERR, errno, "Failed allocating send buffer"); /* assert */
-	ctlbuflen = ctllen;
-    }
-
-    if (ctllen <= 0) {
-	sndmh.msg_control = NULL;	/* clear for safety */
-	return TRUE;
-    }
-
-    /* store ancillary data */
-    sndmh.msg_flags = 0;
-    sndmh.msg_control = sndcmsgbuf;
-    sndmh.msg_controllen = ctllen;
-    cmsgp = CMSG_FIRSTHDR(&sndmh);
-    if (!cmsgp)
-	    log_msg(LOG_ERR, 0, "Internal error 1 in %s", __func__);
-
-    if (ifindex != -1 || src) {
-	struct in6_pktinfo *pktinfo;
-
-	cmsgp->cmsg_len = CMSG_LEN(sizeof(struct in6_pktinfo));
-	cmsgp->cmsg_level = IPPROTO_IPV6;
-	cmsgp->cmsg_type = IPV6_PKTINFO;
-	pktinfo = (struct in6_pktinfo *)CMSG_DATA(cmsgp);
-	memset((caddr_t)pktinfo, 0, sizeof(*pktinfo));
-	if (ifindex != -1)
-		pktinfo->ipi6_ifindex = ifindex;
-	if (src)
-		pktinfo->ipi6_addr = src->sin6_addr;
-	cmsgp = CMSG_NXTHDR(&sndmh, cmsgp);
-    }
-    if (alert) {
-#ifdef HAVE_RFC3542
-	int             currentlen;
-	void           *hbhbuf, *optp = NULL;
-	u_int16_t rtalert_code;
-
-	if (!cmsgp)
-		log_msg(LOG_ERR, 0, "Internal error 2 in %s", __func__);
-
-	rtalert_code = htons(IP6OPT_RTALERT_MLD);
-
-	cmsgp->cmsg_len = CMSG_LEN(hbhlen);
-	cmsgp->cmsg_level = IPPROTO_IPV6;
-	cmsgp->cmsg_type = IPV6_HOPOPTS;
-	hbhbuf = CMSG_DATA(cmsgp);
-
-	if ((currentlen = inet6_opt_init(hbhbuf, hbhlen)) == -1)
-	    log_msg(LOG_ERR, 0, "inet6_opt_init(len = %d) failed", hbhlen);
-	if ((currentlen = inet6_opt_append(hbhbuf, hbhlen, currentlen,
-					   IP6OPT_ROUTER_ALERT, 2,
-					   2, &optp)) == -1)
-	    log_msg(LOG_ERR, 0,
-		    "inet6_opt_append(len = %d/%d) failed", currentlen, hbhlen);
-        (void) inet6_opt_set_val(optp, 0, &rtalert_code, sizeof(rtalert_code));
-	if (inet6_opt_finish(hbhbuf, hbhlen, currentlen) == -1)
-	    log_msg(LOG_ERR, 0, "inet6_opt_finish(buf) failed");
-#else	/* old advanced API */
-	if (inet6_option_init((void *) cmsgp, &cmsgp,
-#ifdef IPV6_2292HOPOPTS
-	    IPV6_2292HOPOPTS
-#else
-	    IPV6_HOPOPTS
-#endif
-	    ))
-	    log_msg(LOG_ERR, 0,	/* assert */
-		"make_mld6_msg: inet6_option_init failed");
-	if (inet6_option_append(cmsgp, raopt, 4, 0))
-	    log_msg(LOG_ERR, 0,	/* assert */
-		"make_mld6_msg: inet6_option_append failed");
-#endif
-	cmsgp = CMSG_NXTHDR(&sndmh, cmsgp);
-    }
+    mld_fill_msg(ifindex, src, alert, datalen);
 
     return TRUE;
 }
