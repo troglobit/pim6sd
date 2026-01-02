@@ -130,7 +130,11 @@ static int			rcvcmsglen;
 
 #ifndef HAVE_RFC3542
 u_int8_t raopt[IP6OPT_RTALERT_LEN];
-#endif 
+#ifndef HAVE_RFC2292
+#define HBHRTLEN (sizeof(struct ip6_hbh) + sizeof(raopt) + sizeof(u_int16_t))
+#endif /* ! HAVE_RFC2292 */
+#endif /* ! HAVE_RFC3542 */
+
 char *sndcmsgbuf = NULL;
 int ctlbuflen = 0;
 static u_int16_t rtalert_code;
@@ -512,8 +516,10 @@ static int mld_get_hbhlen(void)
     hbhlen = inet6_opt_finish(NULL, 0, hbhlen);
     if (hbhlen == -1)
         log_msg(LOG_ERR, 0, "inet6_opt_finish(0) failed");
-#else  /* old advanced API */
+#elif HAVE_RFC2292  /* old advanced API */
     hbhlen = inet6_option_space(sizeof(raopt));
+#else
+    hbhlen = HBHRTLEN;
 #endif
 
     return hbhlen;
@@ -546,7 +552,7 @@ mld_append_rtalert_rfc3542(struct cmsghdr *cmsgp, int hbhlen)
 
     return CMSG_NXTHDR(&sndmh, cmsgp);
 }
-#else
+#elif HAVE_RFC2292
 static struct cmsghdr *
 mld_append_rtalert_rfc2292(struct cmsghdr *cmsgp, int hbhlen)
 {
@@ -566,14 +572,37 @@ mld_append_rtalert_rfc2292(struct cmsghdr *cmsgp, int hbhlen)
 
     return CMSG_NXTHDR(&sndmh, cmsgp);
 }
+#else
+static struct cmsghdr *
+mld_append_rtalert_custom(struct cmsghdr *cmsgp, int hbhlen)
+{
+    uint8_t hbhbuf[HBHRTLEN] = { 0, 0, raopt[0], raopt[1], raopt[2], raopt[3],
+                                 IP6OPT_PAD1, IP6OPT_PAD1 };
+
+    if (hbhlen != sizeof(hbhbuf) && hbhlen != 8) {
+        log_msg(LOG_ERR, 0, "%s: invalid hbhlen, %i vs. %i vs. 8",
+		__func__, hbhlen, sizeof(hbhbuf));
+        return cmsgp;
+    }
+
+    cmsgp->cmsg_level = IPPROTO_IPV6;
+    cmsgp->cmsg_type = IPV6_HOPOPTS;
+    cmsgp->cmsg_len = CMSG_LEN(sizeof(hbhbuf));
+
+    memcpy(CMSG_DATA(cmsgp), hbhbuf, sizeof(hbhbuf));
+
+    return CMSG_NXTHDR(&sndmh, cmsgp);
+}
 #endif /* HAVE_RFC3542 */
 
 struct cmsghdr *mld_append_rtalert(struct cmsghdr *cmsgp, int hbhlen)
 {
 #ifdef HAVE_RFC3542
     return mld_append_rtalert_rfc3542(cmsgp, hbhlen);
-#else  /* old advanced API */
+#elif HAVE_RFC2292 /* old advanced API */
     return mld_append_rtalert_rfc2292(cmsgp, hbhlen);
+#else
+    return mld_append_rtalert_custom(cmsgp, hbhlen);
 #endif
 }
 
@@ -581,8 +610,10 @@ static int mld_ctllen(int len)
 {
 #ifdef HAVE_RFC3542
     return CMSG_SPACE(len);
-#else
+#elif HAVE_RFC2292
     return len;
+#else
+    return CMSG_SPACE(len);
 #endif
 }
 
