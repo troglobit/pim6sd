@@ -158,6 +158,9 @@ AC_SUBST(UK_METHOD)
 dnl Checks for RFC3542
 AC_CHECK_LIB([c], [inet6_opt_init], [AC_DEFINE([HAVE_RFC3542], [1], [Define to 1 if you support RFC3542])], )
 
+dnl Checks for RFC2292
+AC_CHECK_LIB([c], [inet6_option_append], [AC_DEFINE([HAVE_RFC2292], [1], [Define to 1 if you support RFC2292])], )
+
 # Generate all files
 AC_OUTPUT
 

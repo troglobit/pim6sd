@@ -130,7 +130,11 @@ static int			rcvcmsglen;
 
 #ifndef HAVE_RFC3542
 u_int8_t raopt[IP6OPT_RTALERT_LEN];
-#endif 
+#ifndef HAVE_RFC2292
+#define HBHRTLEN (sizeof(struct ip6_hbh) + sizeof(raopt) + sizeof(u_int16_t))
+#endif /* ! HAVE_RFC2292 */
+#endif /* ! HAVE_RFC3542 */
+
 char *sndcmsgbuf = NULL;
 int ctlbuflen = 0;
 static u_int16_t rtalert_code;
@@ -496,6 +500,191 @@ accept_mld6(recvlen)
 	}
 }
 
+static int mld_get_hbhlen(void)
+{
+    int hbhlen;
+
+#ifdef HAVE_RFC3542
+    hbhlen = inet6_opt_init(NULL, 0);
+    if (hbhlen == -1)
+        log_msg(LOG_ERR, 0, "inet6_opt_init(0) failed");
+
+    hbhlen = inet6_opt_append(NULL, 0, hbhlen, IP6OPT_ROUTER_ALERT, 2, 2, NULL);
+    if (hbhlen == -1)
+        log_msg(LOG_ERR, 0, "inet6_opt_append(0) failed");
+
+    hbhlen = inet6_opt_finish(NULL, 0, hbhlen);
+    if (hbhlen == -1)
+        log_msg(LOG_ERR, 0, "inet6_opt_finish(0) failed");
+#elif HAVE_RFC2292  /* old advanced API */
+    hbhlen = inet6_option_space(sizeof(raopt));
+#else
+    hbhlen = HBHRTLEN;
+#endif
+
+    return hbhlen;
+}
+
+#ifdef HAVE_RFC3542
+static struct cmsghdr *
+mld_append_rtalert_rfc3542(struct cmsghdr *cmsgp, int hbhlen)
+{
+    int currentlen;
+    void *hbhbuf, *optp = NULL;
+
+    cmsgp->cmsg_len = CMSG_LEN(hbhlen);
+    cmsgp->cmsg_level = IPPROTO_IPV6;
+    cmsgp->cmsg_type = IPV6_HOPOPTS;
+    hbhbuf = CMSG_DATA(cmsgp);
+
+    if ((currentlen = inet6_opt_init(hbhbuf, hbhlen)) == -1)
+	    log_msg(LOG_ERR, 0, "inet6_opt_init(len = %d) failed",
+		hbhlen);
+    currentlen = inet6_opt_append(hbhbuf, hbhlen, currentlen,
+				  IP6OPT_ROUTER_ALERT, 2, 2, &optp);
+    if (currentlen == -1)
+	    log_msg(LOG_ERR, 0, "inet6_opt_append(len = %d/%d) failed",
+		    currentlen, hbhlen);
+
+    (void)inet6_opt_set_val(optp, 0, &rtalert_code, sizeof(rtalert_code));
+    if (inet6_opt_finish(hbhbuf, hbhlen, currentlen) == -1)
+        log_msg(LOG_ERR, 0, "inet6_opt_finish(buf) failed");
+
+    return CMSG_NXTHDR(&sndmh, cmsgp);
+}
+#elif HAVE_RFC2292
+static struct cmsghdr *
+mld_append_rtalert_rfc2292(struct cmsghdr *cmsgp, int hbhlen)
+{
+    if (inet6_option_init((void *)cmsgp, &cmsgp,
+#ifdef IPV6_2292HOPOPTS
+        IPV6_2292HOPOPTS
+#else
+        IPV6_HOPOPTS
+#endif
+                    ))
+        log_msg(LOG_ERR, errno, /* assert */
+                "make_mld6_msg: inet6_option_init failed");
+
+    if (inet6_option_append(cmsgp, raopt, 4, 0))
+        log_msg(LOG_ERR, errno, /* assert */
+                "make_mld6_msg: inet6_option_append failed");
+
+    return CMSG_NXTHDR(&sndmh, cmsgp);
+}
+#else
+static struct cmsghdr *
+mld_append_rtalert_custom(struct cmsghdr *cmsgp, int hbhlen)
+{
+    uint8_t hbhbuf[HBHRTLEN] = { 0, 0, raopt[0], raopt[1], raopt[2], raopt[3],
+                                 IP6OPT_PAD1, IP6OPT_PAD1 };
+
+    if (hbhlen != sizeof(hbhbuf) && hbhlen != 8) {
+        log_msg(LOG_ERR, 0, "%s: invalid hbhlen, %i vs. %i vs. 8",
+		__func__, hbhlen, sizeof(hbhbuf));
+        return cmsgp;
+    }
+
+    cmsgp->cmsg_level = IPPROTO_IPV6;
+    cmsgp->cmsg_type = IPV6_HOPOPTS;
+    cmsgp->cmsg_len = CMSG_LEN(sizeof(hbhbuf));
+
+    memcpy(CMSG_DATA(cmsgp), hbhbuf, sizeof(hbhbuf));
+
+    return CMSG_NXTHDR(&sndmh, cmsgp);
+}
+#endif /* HAVE_RFC3542 */
+
+struct cmsghdr *mld_append_rtalert(struct cmsghdr *cmsgp, int hbhlen)
+{
+#ifdef HAVE_RFC3542
+    return mld_append_rtalert_rfc3542(cmsgp, hbhlen);
+#elif HAVE_RFC2292 /* old advanced API */
+    return mld_append_rtalert_rfc2292(cmsgp, hbhlen);
+#else
+    return mld_append_rtalert_custom(cmsgp, hbhlen);
+#endif
+}
+
+static int mld_ctllen(int len)
+{
+#ifdef HAVE_RFC3542
+    return CMSG_SPACE(len);
+#elif HAVE_RFC2292
+    return len;
+#else
+    return CMSG_SPACE(len);
+#endif
+}
+
+static struct cmsghdr *
+mld_fill_pktinfo(struct cmsghdr *cmsgp, int ifindex, struct sockaddr_in6 *src)
+{
+    struct in6_pktinfo *pktinfo;
+
+    cmsgp->cmsg_len = CMSG_LEN(sizeof(struct in6_pktinfo));
+    cmsgp->cmsg_level = IPPROTO_IPV6;
+    cmsgp->cmsg_type = IPV6_PKTINFO;
+    pktinfo = (struct in6_pktinfo *)CMSG_DATA(cmsgp);
+    memset((caddr_t)pktinfo, 0, sizeof(*pktinfo));
+    if (ifindex != -1)
+	    pktinfo->ipi6_ifindex = ifindex;
+    if (src)
+	    pktinfo->ipi6_addr = src->sin6_addr;
+
+    return CMSG_NXTHDR(&sndmh, cmsgp);
+}
+
+void mld_fill_msg(int ifindex, struct sockaddr_in6 *src, int alert, int datalen)
+{
+    struct cmsghdr *cmsgp;
+    int ctllen, hbhlen;
+
+    sndiov[0].iov_len = datalen;
+
+    /* estimate total ancillary data length */
+    ctllen = 0;
+    if (ifindex != -1 || src)
+	    ctllen += CMSG_SPACE(sizeof(struct in6_pktinfo));
+    if (alert) {
+        hbhlen = mld_get_hbhlen();
+        ctllen += mld_ctllen(hbhlen);
+    }
+    /* extend ancillary data space (if necessary) */
+    if (ctlbuflen < ctllen) {
+	    if (sndcmsgbuf)
+		    free(sndcmsgbuf);
+	    sndcmsgbuf = calloc(1, ctllen);
+	    if (!sndcmsgbuf)
+		    log_msg(LOG_ERR, errno, "Failed allocating send buffer"); /* assert */
+	    ctlbuflen = ctllen;
+    }
+
+    if (ctllen <= 0) {
+        sndmh.msg_control = NULL;	/* clear for safety */
+        return;
+    }
+
+    /* store ancillary data */
+    sndmh.msg_flags = 0;
+    sndmh.msg_control = sndcmsgbuf;
+    sndmh.msg_controllen = ctllen;
+
+    cmsgp = CMSG_FIRSTHDR(&sndmh);
+    if (!cmsgp)
+	    log_msg(LOG_ERR, 0, "Internal error 1 in %s", __func__);
+
+    if (ifindex != -1 || src)
+	    cmsgp = mld_fill_pktinfo(cmsgp, ifindex, src);
+
+    if (alert) {
+        if (!cmsgp)
+            log_msg(LOG_ERR, 0, "Internal error 2 in %s", __func__);
+
+        cmsgp = mld_append_rtalert(cmsgp, hbhlen);
+    }
+}
+
 static void
 make_mld6_msg(type, code, src, dst, group, ifindex, delay, datalen, alert)
     int type, code, ifindex, delay, datalen, alert;
@@ -503,7 +692,6 @@ make_mld6_msg(type, code, src, dst, group, ifindex, delay, datalen, alert)
     struct in6_addr *group;
 {
     struct mld_hdr *mhp = (struct mld_hdr *)mld6_send_buf;
-    int ctllen, hbhlen = 0;
 
     init_sin6(&dst_sa);
 
@@ -531,107 +719,7 @@ make_mld6_msg(type, code, src, dst, group, ifindex, delay, datalen, alert)
     mhp->mld_maxdelay = htons(delay);
     mhp->mld_addr = *group;
 
-    sndiov[0].iov_len = datalen;
-
-    /* estimate total ancillary data length */
-    ctllen = 0;
-    if (ifindex != -1 || src)
-	    ctllen += CMSG_SPACE(sizeof(struct in6_pktinfo));
-    if (alert) {
-#ifdef HAVE_RFC3542
-	if ((hbhlen = inet6_opt_init(NULL, 0)) == -1)
-		log_msg(LOG_ERR, 0, "inet6_opt_init(0) failed");
-	if ((hbhlen = inet6_opt_append(NULL, 0, hbhlen, IP6OPT_ROUTER_ALERT, 2,
-				       2, NULL)) == -1)
-		log_msg(LOG_ERR, 0, "inet6_opt_append(0) failed");
-	if ((hbhlen = inet6_opt_finish(NULL, 0, hbhlen)) == -1)
-		log_msg(LOG_ERR, 0, "inet6_opt_finish(0) failed");
-	ctllen += CMSG_SPACE(hbhlen);
-#else  /* old advanced API */
-	hbhlen = inet6_option_space(sizeof(raopt));
-	ctllen += hbhlen;
-#endif
-    }
-    /* extend ancillary data space (if necessary) */
-    if (ctlbuflen < ctllen) {
-	    if (sndcmsgbuf)
-		    free(sndcmsgbuf);
-	    sndcmsgbuf = calloc(1, ctllen);
-	    if (!sndcmsgbuf)
-		    log_msg(LOG_ERR, errno, "Failed allocating send buffer"); /* assert */
-	    ctlbuflen = ctllen;
-    }
-
-    if (ctllen > 0) {
-	    struct cmsghdr *cmsgp;
-
-	    /* store ancillary data */
-	    sndmh.msg_flags = 0;
-	    sndmh.msg_control = sndcmsgbuf;
-	    sndmh.msg_controllen = ctllen;
-
-	    cmsgp = CMSG_FIRSTHDR(&sndmh);
-	    if (!cmsgp)
-		    log_msg(LOG_ERR, 0, "Internal error 1 in %s", __func__);
-
-	    if (ifindex != -1 || src) {
-		    struct in6_pktinfo *pktinfo;
-
-		    cmsgp->cmsg_len = CMSG_LEN(sizeof(struct in6_pktinfo));
-		    cmsgp->cmsg_level = IPPROTO_IPV6;
-		    cmsgp->cmsg_type = IPV6_PKTINFO;
-		    pktinfo = (struct in6_pktinfo *)CMSG_DATA(cmsgp);
-		    memset((caddr_t)pktinfo, 0, sizeof(*pktinfo));
-		    if (ifindex != -1)
-			    pktinfo->ipi6_ifindex = ifindex;
-		    if (src)
-			    pktinfo->ipi6_addr = src->sin6_addr;
-		    cmsgp = CMSG_NXTHDR(&sndmh, cmsgp);
-	    }
-	    if (alert) {
-#ifdef HAVE_RFC3542
-		    int currentlen;
-		    void *hbhbuf, *optp = NULL;
-
-		    if (!cmsgp)
-			    log_msg(LOG_ERR, 0, "Internal error 2 in %s", __func__);
-
-		    cmsgp->cmsg_len = CMSG_LEN(hbhlen);
-		    cmsgp->cmsg_level = IPPROTO_IPV6;
-		    cmsgp->cmsg_type = IPV6_HOPOPTS;
-		    hbhbuf = CMSG_DATA(cmsgp);
-
-		    if ((currentlen = inet6_opt_init(hbhbuf, hbhlen)) == -1)
-			    log_msg(LOG_ERR, 0, "inet6_opt_init(len = %d) failed",
-				hbhlen);
-		    currentlen = inet6_opt_append(hbhbuf, hbhlen, currentlen,
-						  IP6OPT_ROUTER_ALERT, 2, 2, &optp);
-		    if (currentlen == -1)
-			    log_msg(LOG_ERR, 0, "inet6_opt_append(len = %d/%d) failed",
-				    currentlen, hbhlen);
-
-		    (void)inet6_opt_set_val(optp, 0, &rtalert_code, sizeof(rtalert_code));
-		    if (inet6_opt_finish(hbhbuf, hbhlen, currentlen) == -1)
-			    log_msg(LOG_ERR, 0, "inet6_opt_finish(buf) failed");
-#else  /* old advanced API */
-		    if (inet6_option_init((void *)cmsgp, &cmsgp,
-#ifdef IPV6_2292HOPOPTS
-		        IPV6_2292HOPOPTS
-#else
-		        IPV6_HOPOPTS
-#endif
-			))
-			    log_msg(LOG_ERR, errno, /* assert */
-				"make_mld6_msg: inet6_option_init failed");
-		    if (inet6_option_append(cmsgp, raopt, 4, 0))
-			    log_msg(LOG_ERR, errno, /* assert */
-				"make_mld6_msg: inet6_option_append failed");
-#endif 
-		    cmsgp = CMSG_NXTHDR(&sndmh, cmsgp);
-	    }
-    }
-    else
-	    sndmh.msg_control = NULL; /* clear for safety */
+    mld_fill_msg(ifindex, src, alert, datalen);
 }
 
 int
