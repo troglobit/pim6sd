@@ -205,9 +205,9 @@ phyint_statement:
 		struct uvif *v;
 
 		v = find_vif($2.v, CREATE, VIFF_ENABLED);
-		free($2.v);	/* XXX */
 		if (v == NULL) {
 			yywarn("Failed registering interface %s: %s", $2.v, strerror(errno));
+			free($2.v);
 			free_attr_list($3);
 			if (strict)
 				return(-1);
@@ -215,6 +215,7 @@ phyint_statement:
 		else {
 			struct attr_list *p;
 
+			free($2.v);
 			for (p = (struct attr_list *)v->config_attr;
 			     p && p->next; p = p->next)
 				;
