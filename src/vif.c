@@ -806,7 +806,7 @@ struct sockaddr_in6 *src;
 int
 vif_forwarder(if_set *p1, if_set *p2)
 {
-	int idx;
+	size_t idx;
 
 	for (idx = 0; idx < sizeof(*p1) / sizeof(fd_mask); idx++) {
 		if (p1->ifs_bits[idx] & p2->ifs_bits[idx])
@@ -820,7 +820,7 @@ vif_forwarder(if_set *p1, if_set *p2)
 if_set *
 vif_and(if_set *p1, if_set *p2, if_set *result)
 {
-	int idx;
+	size_t idx;
 
 	IF_ZERO(result);
 
@@ -834,7 +834,7 @@ vif_and(if_set *p1, if_set *p2, if_set *result)
 if_set *
 vif_xor(if_set *p1, if_set *p2, if_set *result)
 {
-	int idx;
+	size_t idx;
 
 	IF_ZERO(result);
 

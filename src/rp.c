@@ -449,7 +449,7 @@ add_grp_mask(used_grp_mask_list, group_addr, group_mask, hash_mask)
     grp_mask_t     	*grp_mask_tmp;
     struct sockaddr_in6	prefix_h;
     struct sockaddr_in6	prefix_h2;
-    int 		i;
+    size_t 		i;
 
     /* I compare on the adresses, inet6_equal use the scope, too */
     prefix_h.sin6_scope_id = prefix_h2.sin6_scope_id = 0;
@@ -828,7 +828,7 @@ delete_grp_mask(used_cand_rp_list, used_grp_mask_list, group_addr, group_mask)
     grp_mask_t     	*grp_mask_ptr;
     struct sockaddr_in6	prefix_h;
     struct sockaddr_in6 prefix_h2;
-	int i;
+	size_t i;
 
     for (i = 0; i < sizeof(struct in6_addr); i++)
 	prefix_h.sin6_addr.s6_addr[i] = group_addr->sin6_addr.s6_addr[i]&group_mask.s6_addr[i];
@@ -1136,7 +1136,7 @@ rp_grp_match(group)
 
     struct sockaddr_in6     prefix_h;
     struct sockaddr_in6	    prefix_h2;
-    int i;	
+    size_t i;
 
     if (grp_mask_list == NULL) {
 	if (IN6_IS_ADDR_EMBEDDED_RP(&group->sin6_addr))
@@ -1187,15 +1187,15 @@ rp_grp_match(group)
 #else
 	    {
 		    struct in6_addr masked_grp;
-		    int i;
+		    size_t i;
 
 		    for (i = 0; i < sizeof(struct in6_addr); i++)
 			    masked_grp.s6_addr[i] =
 				    group->sin6_addr.s6_addr[i] &
 				    grp_mask_ptr->hash_mask.s6_addr[i];
-		    curr_hash_value = RP_HASH_VALUE2(crc((char *)&masked_grp,
+		    curr_hash_value = RP_HASH_VALUE2(crc((unsigned char *)&masked_grp,
 							 sizeof(struct in6_addr)),
-						     crc((char *)&curr_address_h.sin6_addr,
+						     crc((unsigned char *)&curr_address_h.sin6_addr,
 							 sizeof(struct in6_addr)));
 	    }
 #endif

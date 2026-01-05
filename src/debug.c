@@ -80,7 +80,7 @@ static struct debugname
 {
     char           *name;
     int             level;
-    int             nchars;
+    size_t          nchars;
 }               debugnames[] = {
     {   "mld_proto",	DEBUG_MLD_PROTO,		5     },
     {   "mld_timer",	DEBUG_MLD_TIMER,		5     },

@@ -446,7 +446,7 @@ typedef struct pim_jp_encod_grp_ {
 
 #define PUT_ESADDR6(addr, masklen, flags, cp)				\
         do {								\
-		int i;							\
+		size_t i;						\
 		struct in6_addr maskaddr;				\
 									\
 		MASKLEN_TO_MASK6(masklen, maskaddr);			\
@@ -471,7 +471,7 @@ typedef struct pim_jp_encod_grp_ {
 
 #define PUT_EGADDR6(addr, masklen, reserved, cp)			\
 	do {								\
-		int i;							\
+		size_t i;						\
 		struct in6_addr maskaddr;				\
 									\
 		MASKLEN_TO_MASK6(masklen, maskaddr);			\

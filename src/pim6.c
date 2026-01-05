@@ -269,7 +269,7 @@ accept_pim6(pimlen)
     init_sin6(&dst);
 
     /* sanity check */
-    if (pimlen < sizeof(*pim)) {
+    if (pimlen < (int)sizeof(*pim)) {
         log_msg(LOG_WARNING, 0,
             "data field too short (%u bytes) for PIM header, from %s",
             pimlen, sa6_fmt(src));

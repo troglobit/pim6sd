@@ -327,7 +327,7 @@ accept_mld6(recvlen)
 	int ifindex = 0;
 	struct sockaddr_in6 *src = (struct sockaddr_in6 *) rcvmh.msg_name;
 
-	if (recvlen < sizeof(struct mld_hdr))
+	if (recvlen < (int)sizeof(struct mld_hdr))
 	{
 		log_msg(LOG_WARNING, 0,
 		    "received packet too short (%u bytes) for MLD header",
@@ -560,7 +560,7 @@ mld_append_rtalert_custom(struct cmsghdr *cmsgp, int hbhlen)
                                  IP6OPT_PAD1, IP6OPT_PAD1 };
 
     if (hbhlen != sizeof(hbhbuf) && hbhlen != 8) {
-        log_msg(LOG_ERR, 0, "%s: invalid hbhlen, %i vs. %i vs. 8",
+        log_msg(LOG_ERR, 0, "%s: invalid hbhlen, %i vs. %zu vs. 8",
 		__func__, hbhlen, sizeof(hbhbuf));
         return cmsgp;
     }

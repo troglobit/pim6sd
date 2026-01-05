@@ -842,8 +842,8 @@ receive_pim6_register(reg_src, reg_dst, pim_message, datalen)
      * the check for NULL register messages. Thus, we always check this for
      * safety.
      */
-    if (sizeof(struct pim) + sizeof(pim_register_t) +
-	sizeof(struct ip6_hdr) > datalen) {
+    if ((int)(sizeof(struct pim) + sizeof(pim_register_t) +
+	sizeof(struct ip6_hdr)) > datalen) {
 	    IF_DEBUG(DEBUG_PIM_REGISTER)
 		    log_msg(LOG_INFO, 0,
 			"PIM register: short packet (len = %d) from %s",
@@ -1556,7 +1556,7 @@ receive_pim6_join_prune(src, dst, pim_message, datalen)
 	int srclen;
 
 	/* group addr + #join + #src */
-	if (datalen < PIM6_ENCODE_GRP_ADDR_LEN + sizeof(u_int32_t)) {
+	if (datalen < (int)(PIM6_ENCODE_GRP_ADDR_LEN + sizeof(u_int32_t))) {
 	    log_msg(LOG_NOTICE, 0,
 		"receive_pim6_join_prune: Join/Prune message from %s on %s is"
 		" too short to contain enough data",
@@ -3510,7 +3510,7 @@ receive_pim6_bootstrap(src, dst, pim_message, datalen)
 				prefix_h2,
 				group_,
 				rpp_;
-    int i;
+    size_t i;
     struct uvif 		*v;
 
 

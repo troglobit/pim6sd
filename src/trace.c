@@ -169,7 +169,7 @@ accept_mtrace(src, dst, group, ifindex, data, no, datalen)
 	/*
 	 * if it is a packet with all reports filled, drop it
 	 */
-	if ((rcount = (datalen - QLEN)/RLEN) == no) {
+	if ((rcount = (datalen - QLEN)/RLEN) == (int)no) {
 		IF_DEBUG(DEBUG_TRACE)
 			log_msg(LOG_DEBUG, 0, "packet with all reports filled in");
 		return;
@@ -438,7 +438,7 @@ accept_mtrace(src, dst, group, ifindex, data, no, datalen)
 		log_msg(LOG_DEBUG, 0, "rcount:%d, no:%d", rcount, no);
 
 	ovifi = NO_VIF;		/* unspecified */
-	if ((rcount + 1 == no) || (mrt == NULL) || (mrt->metric == 1)) {
+	if ((rcount + 1 == (int)no) || (mrt == NULL) || (mrt->metric == 1)) {
 		resptype = MLD_MTRACE_RESP;
 		resp_sa6.sin6_addr = qry->tr_raddr;
 		if (IN6_IS_ADDR_LINKLOCAL(&resp_sa6.sin6_addr) ||

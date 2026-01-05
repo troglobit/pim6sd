@@ -85,11 +85,11 @@ extern if_set if_nullset;
 #define IF_ISEMPTY(p)   (memcmp((p), &if_nullset, sizeof(if_nullset)) == 0)
 #define IF_SAME(p1, p2) (memcmp((p1),(p2),sizeof(*(p1))) == 0)
 #define IF_CLR_MASK(p, mask)						\
-	for (int i = 0; i < sizeof(*(p)) / sizeof(fd_mask); i++) {	\
+	for (size_t i = 0; i < sizeof(*(p)) / sizeof(fd_mask); i++) {	\
 		(p)->ifs_bits[i] &= ~((mask)->ifs_bits[i]);		\
 	}
 #define IF_MERGE(p1, p2, result)					\
-	for (int i = 0; i < sizeof(*(p1)) / sizeof(fd_mask); i++) {	\
+	for (size_t i = 0; i < sizeof(*(p1)) / sizeof(fd_mask); i++) {	\
 		(result)->ifs_bits[i] =					\
 			(p1)->ifs_bits[i] | (p2)->ifs_bits[i];		\
 	}

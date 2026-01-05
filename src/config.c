@@ -77,7 +77,7 @@ config_vifs_from_kernel()
 	struct ifaddrs *ifap, *ifa;
 	struct uvif *v;
 	short flags;
-	int i;
+	size_t i;
 
 	total_interfaces= 0;	/* The total number of physical interfaces */
 
@@ -245,7 +245,7 @@ void
 add_phaddr(struct uvif *v, struct sockaddr_in6 *addr, struct in6_addr *mask, struct sockaddr_in6 *rmt)
 {
 	struct phaddr *pa;
-	int i;
+	size_t i;
 	
 	if ((pa = malloc(sizeof(*pa))) == NULL)
 	        log_msg(LOG_ERR, 0, "add_phaddr: memory exhausted");
