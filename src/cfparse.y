@@ -1205,7 +1205,7 @@ grp_prefix_config()
 			continue;
 		}
 
-		if (!(~(*cand_rp_adv_message.prefix_cnt_ptr))) {
+		if (*cand_rp_adv_message.prefix_cnt_ptr == 0xff) {
 			log_msg(LOG_WARNING, 0,
 			    "Too many group_prefix configured. Truncating...");
 			break;
