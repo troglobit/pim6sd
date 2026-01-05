@@ -49,6 +49,31 @@
 #ifndef ROUTE_H
 #define ROUTE_H
 
+#include <sys/queue.h>
+
+#ifndef TAILQ_FIRST
+#define TAILQ_FIRST(head)	((head)->tqh_first)
+#endif
+#ifndef TAILQ_EMPTY
+#define TAILQ_EMPTY(head)	(!TAILQ_FIRST(head))
+#endif
+#ifndef TAILQ_NEXT
+#define TAILQ_NEXT(elm,field)	((elm)->field.tqe_next)
+#endif
+#ifndef TAILQ_FOREACH
+#define TAILQ_FOREACH(var, head, field)			\
+	for ((var) = TAILQ_FIRST((head));		\
+	     (var);					\
+	     (var) = TAILQ_NEXT((var), field))
+#endif
+
+struct staticrt {
+	struct sockaddr_in6 paddr;
+	u_int8 plen;
+	struct sockaddr_in6 gwaddr;
+	TAILQ_ENTRY(staticrt) link;
+};
+
 extern u_int32 default_source_preference;
 extern u_int32 default_source_metric;
 
@@ -79,5 +104,7 @@ extern void process_kernel_call (void);
 extern int  delete_vif_from_mrt (mifi_t vifi);
 extern mrtentry_t *switch_shortest_path (struct sockaddr_in6 *source, struct sockaddr_in6 *group);
 
+extern struct staticrt * find_static_rt_entry (struct sockaddr_in6 *p);
+extern int add_static_rt_entry (struct sockaddr_in6 *p, int plen, struct sockaddr_in6 *gw);
 
 #endif

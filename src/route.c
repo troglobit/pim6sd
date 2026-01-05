@@ -48,7 +48,6 @@
 
 #include <sys/types.h>
 #include <sys/param.h>
-#include <sys/queue.h>
 #include <sys/socket.h>
 #include <net/if.h>
 #include <net/route.h>
@@ -62,6 +61,7 @@
 #endif
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <syslog.h>
 #include "defs.h"
 #include "pimd.h"
@@ -84,6 +84,9 @@ static void process_whole_pkt (char *buf);
 
 u_int32         default_source_metric = UCAST_DEFAULT_SOURCE_METRIC;
 u_int32         default_source_preference = UCAST_DEFAULT_SOURCE_PREFERENCE;
+
+TAILQ_HEAD(staticrt_list, staticrt);
+static struct staticrt_list staticrt_head;
 
 
 /* Return the iif for given address */
@@ -1263,4 +1266,62 @@ switch_shortest_path(source, group)
 	FIRE_TIMER(mrtentry_ptr->jp_timer);
     }
     return (mrtentry_ptr);
+}
+
+
+int
+add_static_rt_entry(paddr, plen, gwaddr)
+	struct sockaddr_in6 *paddr;
+	int plen;
+	struct sockaddr_in6 *gwaddr;
+{
+    struct staticrt *entry;
+    struct in6_addr mask;
+
+    memset(&mask, 0, sizeof(mask));
+    MASKLEN_TO_MASK6(plen, mask);
+
+    if (TAILQ_EMPTY(&staticrt_head))
+	TAILQ_INIT(&staticrt_head);
+
+    TAILQ_FOREACH(entry, &staticrt_head, link)
+    {
+	if (inet6_same_prefix(paddr, &entry->paddr, &mask))
+	    return -1;
+    }
+    entry = malloc(sizeof(struct staticrt));
+    entry->paddr = *paddr;
+    entry->plen = plen;
+    entry->gwaddr = *gwaddr;
+    TAILQ_INSERT_TAIL(&staticrt_head, entry, link);
+
+    return 0;
+}
+
+struct staticrt *
+find_static_rt_entry(addr)
+	struct sockaddr_in6 *addr;
+{
+    struct staticrt *entry, *bestentry = NULL;
+    int bestplen = -1;
+
+    if (TAILQ_EMPTY(&staticrt_head))
+	return NULL;
+
+    TAILQ_FOREACH(entry, &staticrt_head, link) {
+	struct in6_addr mask;
+
+	memset(&mask, 0, sizeof(mask));
+	MASKLEN_TO_MASK6(entry->plen, mask);
+
+	/* remembers the longest-match prefix */
+	if (!inet6_match_prefix(addr, &entry->paddr, &mask))
+	    continue;
+	if (bestplen > entry->plen)
+	    continue;
+
+	bestplen = entry->plen;
+	bestentry = entry;
+    }
+    return bestentry;
 }

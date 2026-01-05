@@ -49,18 +49,9 @@
 #ifndef ROUTESOCK_H
 #define ROUTESOCK_H
 
-struct staticrt {
-	struct sockaddr_in6 paddr;
-	u_int8 plen;
-	struct sockaddr_in6 gwaddr;
-	TAILQ_ENTRY(staticrt) link;
-};
-
 int init_routesock (void);
 extern int routing_socket;
 extern pid_t pid;
 extern int k_req_incoming (struct sockaddr_in6 *src, struct rpfctl *rpfp); 
-extern struct staticrt * find_static_rt_entry (struct sockaddr_in6 *p);
-extern int add_static_rt_entry
-	(struct sockaddr_in6 *p, int plen, struct sockaddr_in6 *gw);
+
 #endif
