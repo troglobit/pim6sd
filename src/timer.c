@@ -636,7 +636,7 @@ age_routes()
 	     */
 
 	    IF_TIMEOUT(mrtentry_rp->rs_timer)
-		;
+	    { }
 	    /* routing entry */
 
 	    if ((TIMEOUT(mrtentry_rp->timer))
@@ -845,7 +845,7 @@ age_routes()
 		     * for (*,G) entry, but keep this around.
 		     */
 		    IF_TIMEOUT(mrtentry_grp->rs_timer)
-			;
+		    { }
 
 		    /* routing entry */
 
