@@ -29,8 +29,7 @@ pim6sd_SOURCES    = callout.c		callout.h			\
 		    trace.c		trace.h				\
 		    vif.c		vif.h
 pim6sd_LDADD      = $(LIBS) $(LIBOBJS)
-# TODO, add: -W -Wall -Wextra -Wno-unused
-pim6sd_CFLAGS     = -std=c99
+pim6sd_CFLAGS     = -std=c99 -W -Wall -Wextra -Wno-unused
 pim6sd_CPPFLAGS   = -DYIPS_DEBUG -I$(top_srcdir)/include
 
 if LINUX
