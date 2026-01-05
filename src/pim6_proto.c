@@ -206,7 +206,7 @@ receive_pim6_hello(src, pim_message, datalen)
     /* Get Hello options (including Holdtime in seconds) from the message. */
     memset(&hopts, 0, sizeof(hopts));
     parse_pim6_hello(pim_message, datalen, src, &hopts);
-    if (hopts.bitmap & PIM_HELLO_HOLDTIME_BIT == 0) {
+    if ((hopts.bitmap & PIM_HELLO_HOLDTIME_BIT) == 0) {
 	result = FALSE;
 	goto end;
     }
@@ -251,7 +251,7 @@ receive_pim6_hello(src, pim_message, datalen)
 	/* check generation-id */
 	if (hopts.bitmap & PIM_HELLO_GENID_BIT) {
 	    if (hopts.genid != nbr->genid ||
-	        (nbr->options_bitmap & PIM_HELLO_GENID_BIT == 0)) {
+	        ((nbr->options_bitmap & PIM_HELLO_GENID_BIT) == 0)) {
 		IF_DEBUG(DEBUG_PIM_HELLO)
 		    log_msg(LOG_DEBUG, 0, "detected the GenID change");
 
