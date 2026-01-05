@@ -191,7 +191,7 @@ find_route(source, group, flags, create)
     char            		create;
 {
     srcentry_t     *srcentry_ptr;
-    grpentry_t     *grpentry_ptr;
+    grpentry_t     *grpentry_ptr = NULL;
     mrtentry_t     *mrtentry_ptr;
     mrtentry_t     *mrtentry_ptr_wc;
     mrtentry_t     *mrtentry_ptr_pmbr;
