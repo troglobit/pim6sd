@@ -55,31 +55,6 @@
  *
  */
 
-#ifdef HAVE_CONFIG_H
-#include <../include/config.h>
-#endif
-#include <sys/param.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <sys/time.h>
-#include <net/if.h>
-#include <net/route.h>
-#include <netinet/in.h>
-#include <netinet/icmp6.h>
-#ifdef __linux__
-#include <linux/mroute6.h>
-#include <linux/pim.h>
-#else
-#include <netinet6/ip6_mroute.h>
-#endif
-#ifdef HAVE_NETINET6_PIM6_H
-#include <netinet6/pim6.h>
-#endif
-#include <stdio.h>
-#include <stdlib.h>
-#include <syslog.h>
-#include <errno.h>
-#include <time.h>
 #include "defs.h"
 #include "pathnames.h"
 #include "pimd.h"
@@ -92,20 +67,14 @@
 #include "mld6v2.h"
 #include "mld6v2_proto.h"
 
-#ifdef __STDC__
-#include <stdarg.h>
-#else
-#include <varargs.h>
-#endif
-
 extern char    *progname;
 
 int             log_nmsgs = 0;
 unsigned long   debug = 0x00000000;	/* If (long) is smaller than 4 bytes,
 					 * then we are in trouble. */
-static char     dumpfilename[] = _PATH_PIM6D_DUMP;
+static char     dumpfilename[]  = _PATH_PIM6D_DUMP;
 static char     cachefilename[] = _PATH_PIM6D_CACHE;	/* TODO: notused */
-static char	statfilename[] = _PATH_PIM6D_STAT;
+static char	statfilename[]  = _PATH_PIM6D_STAT;
 
 static struct debugname
 {
@@ -796,35 +765,16 @@ dump_mldgroups(fp)
  * according to the severity of the message and the current debug level. For
  * errors of severity LOG_ERR or worse, terminate the program.
  */
-#ifdef __STDC__
 void
 log_msg(int severity, int syserr, char *format, ...)
 {
-    va_list         ap;
-    static char     fmt[211] = "warning - ";
-    char           *msg;
-    struct timeval  now;
-    struct tm      *thyme;
+    va_list          ap;
+    static char      fmt[211] = "warning - ";
+    char            *msg;
+    struct timeval   now;
+    const struct tm *thyme;
 
     va_start(ap, format);
-#else
-/* VARARGS3 */
-void
-log_msg(severity, syserr, format, va_alist)
-    int             severity,
-                    syserr;
-    char           *format;
-va_dcl
-{
-    va_list         ap;
-    static char     fmt[311] = "warning - ";
-    char           *msg;
-    char            tbuf[20];
-    struct timeval  now;
-    struct tm      *thyme;
-
-    va_start(ap);
-#endif
     vsnprintf(&fmt[10], sizeof(fmt) - 10, format, ap);
     va_end(ap);
     msg = (severity == LOG_WARNING) ? fmt : &fmt[10];

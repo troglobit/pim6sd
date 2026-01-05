@@ -11,30 +11,6 @@
  * $Id: netlink.c,v 1.4 2008/05/05 11:49:55 suzsuz Exp $
  */
 
-#ifdef HAVE_CONFIG_H
-#include <../include/config.h>
-#endif
-
-#include <errno.h>
-#include <net/if.h>
-#include <netdb.h>
-#include <paths.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <strings.h>
-#include <syslog.h>
-#include <time.h>
-#include <unistd.h>
-
-#include <sys/file.h>
-#include <sys/param.h>
-#include <sys/socket.h>
-#include <sys/types.h>
-
-#include <linux/mroute6.h>
-#include <linux/rtnetlink.h>
-
 #include "defs.h"
 #include "vif.h"
 #include "debug.h"

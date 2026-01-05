@@ -55,26 +55,12 @@
  *
  */
 
-#include <sys/param.h>
-#include <sys/file.h>
-#include <sys/queue.h>
-#include <sys/types.h>
-#include <errno.h>
-#include <sys/socket.h>
-#include <net/if.h>
-#include <netinet/in.h>
 #include "defs.h"
-#include <sys/socket.h>
-#include <net/route.h>
-#include <netinet6/ip6_mroute.h>
+
+#include <sys/file.h>
 #include <net/if_dl.h>
-#include <arpa/inet.h>
 #include <netdb.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <string.h>
-#include <syslog.h>
-#include <stdio.h>
+
 #include "vif.h"
 #include "debug.h"
 #include "routesock.h"

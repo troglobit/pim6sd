@@ -102,32 +102,6 @@
  *
  */
 
-#ifdef HAVE_CONFIG_H
-#include <../include/config.h>
-#endif
-#include <sys/types.h>
-#include <sys/param.h>
-#include <sys/queue.h>
-#include <sys/socket.h>
-#include <net/if.h>
-#include <net/route.h>
-#include <netinet/in.h>
-#include <netinet/icmp6.h>
-#ifdef HAVE_NETINET6_PIM6_H
-#include <netinet6/pim6.h>
-#endif
-#ifdef __linux__
-#include <linux/mroute6.h>
-#include <linux/pim.h>
-#else
-#include <netinet6/ip6_mroute.h>
-#endif
-#include <netinet/ip6.h>
-#include <syslog.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <errno.h>
 #include "defs.h"
 #include "mrt.h"
 #include "vif.h"
@@ -144,7 +118,7 @@
 #include "routesock.h"
 
 #ifndef IPV6_VERSION
-#define        IPV6_VERSION            0x60
+#define IPV6_VERSION           0x60
 #endif
 #ifndef IPV6_VERSION_MASK
 #define IPV6_VERSION_MASK      0xf0

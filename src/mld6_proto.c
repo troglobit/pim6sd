@@ -92,24 +92,6 @@
  *
  */
 
-#include <sys/types.h>
-#include <sys/param.h>
-#include <sys/time.h>
-#include <sys/socket.h>
-#include <net/if.h>
-#include <net/route.h>
-#include <netinet/in.h>
-#ifdef __linux__
-#include <linux/mroute6.h>
-#else
-#include <netinet6/ip6_mroute.h>
-#endif
-#include <netinet/icmp6.h>
-#include <syslog.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <time.h>
 #include "defs.h"
 #include "mld6.h"
 #include "vif.h"
@@ -122,8 +104,6 @@
 #include "route.h"
 #include "callout.h"
 #include "timer.h"
-
-#include "mld6_proto.h"
 
 /*
  * Forward declarations.

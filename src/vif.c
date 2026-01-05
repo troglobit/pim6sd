@@ -55,25 +55,6 @@
  *
  */
 
-#include <sys/types.h>
-#include <sys/ioctl.h>
-#include <sys/param.h>
-#include <sys/socket.h>
-#include <net/if.h>
-#include <net/route.h>
-#include <netinet/in.h>
-#include <netinet/icmp6.h>
-#ifdef __linux__
-#include <linux/mroute6.h>
-#else
-#include <netinet6/ip6_mroute.h>
-#endif
-#include <errno.h>
-#include <syslog.h>
-#include <string.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <time.h>
 #include "defs.h"
 #include "vif.h"
 #include "mld6.h"

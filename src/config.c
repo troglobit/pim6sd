@@ -55,37 +55,6 @@
  *
  */
 
-
-#ifdef HAVE_CONFIG_H
-#include <../include/config.h>
-#endif
-#include <sys/types.h>
-#include <sys/ioctl.h>
-#include <sys/param.h>
-#include <sys/socket.h>
-#include <sys/queue.h>
-#include <net/if.h>
-#ifdef __FreeBSD__
-#include <net/if_var.h>
-#endif
-#include <net/route.h>
-#include <netinet/in.h>
-#ifdef __linux__
-#include <linux/mroute6.h>
-#else
-#include <netinet6/ip6_mroute.h>
-#endif
-#ifdef HAVE_NETINET6_IN6_VAR_H
-#include <netinet6/in6_var.h>
-#endif
-#include <arpa/inet.h>
-#include <syslog.h>
-#include <stdlib.h>
-#include <ifaddrs.h>
-#include <string.h>
-#include <errno.h>
-#include <ctype.h>
-#include <stdio.h>
 #include "defs.h"
 #include "vif.h"
 #include "pim6.h"

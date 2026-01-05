@@ -36,21 +36,7 @@
  * SUCH DAMAGE.
  */
 
-#ifdef HAVE_CONFIG_H
-#include "../include/config.h"
-#endif
-#include <sys/types.h>
-#include <sys/param.h>
-#include <stdio.h>
-#include <errno.h>
-#include <string.h>
-#ifdef HAVE_STDARG_H
-#include <stdarg.h>
-#else
-#include <varargs.h>
-#endif
-
-#include "debug.h"
+#include "defs.h"
 #include "cfparse-defs.h"
 #include "cfparse.h"
 
@@ -668,11 +654,7 @@ void
 yyerror(char *s, ...)
 {
 	va_list ap;
-#ifdef HAVE_STDARG_H
 	va_start(ap, s);
-#else
-	va_start(ap);
-#endif
 	yyerror0(s, ap);
 	va_end(ap);
 	yyerrorcount++;
@@ -682,11 +664,7 @@ void
 yywarn(char *s, ...)
 {
 	va_list ap;
-#ifdef HAVE_STDARG_H
 	va_start(ap, s);
-#else
-	va_start(ap);
-#endif
 	yyerror0(s, ap);
 	va_end(ap);
 }
