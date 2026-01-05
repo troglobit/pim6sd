@@ -573,6 +573,7 @@ static void sig_handler(int signo)
     {
     case SIGALRM:
 	sighandled |= GOT_SIGALRM;
+	/* FALLTHROUGH */
     case SIGINT:
     case SIGTERM:
 	sighandled |= GOT_SIGINT;

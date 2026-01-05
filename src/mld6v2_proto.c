@@ -552,7 +552,7 @@ accept_multicast_record(vifi, mard, src, grp)
 		recv_listener_done(vifi, src, grp);
 		break;
 	    }
-	    /* FALLTHOUGH */
+	    /* FALLTHROUGH */
 	case MODE_IS_INCLUDE:
 	case ALLOW_NEW_SOURCES:
 	    for (j = 0; j < numsrc; j++) {
