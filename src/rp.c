@@ -337,9 +337,11 @@ bootstrap_initial_delay()
 
 	    for (j = 0; j < 8; j++) {
 		mask = 0x80 >> j;
-		if ((mask & diff) == 0)
+		if ((mask & diff) == 0) {
 			log_of_2--;
 			continue;
+		}
+		break;
 	    }
 	    break;
 	}
