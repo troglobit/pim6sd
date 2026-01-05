@@ -13,7 +13,7 @@
 # 3. Neither the name of the project nor the names of its contributors
 #    may be used to endorse or promote products derived from this software
 #    without specific prior written permission.
-# 
+#
 # THIS SOFTWARE IS PROVIDED BY THE PROJECT AND CONTRIBUTORS ``AS IS'' AND
 # ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 # IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -26,14 +26,22 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 
+usage()
+{
+	echo "usage: pim6stat [-d] [-f dumpfile] [-h] [-p pidfile] [-s] [-w waitsec]"
+}
+
 # get options
-while getopts "df:p:sw:" option
+while getopts "df:hp:sw:" option
 do
 	case $option in
 	d)
 	    densemode="YES";;
 	f)
 	    dumpfile="${OPTARG}";;
+	h)
+	    usage
+	    exit 0;;
 	p)
 	    pidfile="${OPTARG}";;
         s)
@@ -41,7 +49,7 @@ do
 	w)
 	    waittime="${OPTARG}";;
 	*)			# (error msg printed by getopts)
-	    echo usage: pim6stat [-d][-f dumpfile][-p pidfile][-w waitsec]
+	    usage >&2
 	    exit 2;;
 	esac
 done
@@ -82,6 +90,33 @@ if [ X"${dumpfile}" = X ]; then
 fi
 
 # execution
-kill ${signame} `cat ${pidfile}`
+if [ ! -f "${pidfile}" ]; then
+    echo "pim6sd is not running (no PID file: ${pidfile})" >&2
+    exit 1
+fi
+
+pid=$(cat "${pidfile}" 2>/dev/null)
+if [ -z "${pid}" ]; then
+    echo "Cannot read PID from ${pidfile}" >&2
+    exit 1
+fi
+
+if ! kill -0 "${pid}" 2>/dev/null; then
+    echo "pim6sd is not running (stale PID file: ${pidfile})" >&2
+    exit 1
+fi
+
+if ! kill ${signame} "${pid}" 2>/dev/null; then
+    echo "Cannot signal pim6sd (PID ${pid}): permission denied or process died" >&2
+    exit 1
+fi
+
 sleep ${waittime}
-cat ${dumpfile} 
+
+if [ ! -f "${dumpfile}" ]; then
+    echo "Dump file not created: ${dumpfile}" >&2
+    echo "The daemon may not have had time to generate it or lacks permissions" >&2
+    exit 1
+fi
+
+cat "${dumpfile}"
