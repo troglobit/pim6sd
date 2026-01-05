@@ -77,17 +77,17 @@
 
 /* Macro to duplicate oif info (oif bits, timers) */
 
-#define VOIF_COPY(from , to )					\
+#define VOIF_COPY(from, to)						\
 	do {								\
-		IF_COPY(&from->joined_oifs , &to->joined_oifs);		\
-		IF_COPY(&from->oifs ,&to->oifs );			\
-		IF_COPY(&from->leaves , &to->leaves);			\
-		IF_COPY(&from->pruned_oifs , &to->pruned_oifs);		\
-		IF_COPY(&from->asserted_oifs ,&to->asserted_oifs);	\
-		bcopy(from->vif_timers , to->vif_timers ,		\
-		numvifs*sizeof(from->vif_timers[0]));			\
-		bcopy(from->vif_deletion_delay , to->vif_deletion_delay,\
-		numvifs*sizeof(from->vif_deletion_delay[0]));		\
+		IF_COPY(&from->joined_oifs, &to->joined_oifs);		\
+		IF_COPY(&from->oifs, &to->oifs);			\
+		IF_COPY(&from->leaves, &to->leaves);			\
+		IF_COPY(&from->pruned_oifs, &to->pruned_oifs);		\
+		IF_COPY(&from->asserted_oifs, &to->asserted_oifs);	\
+		bcopy(from->vif_timers, to->vif_timers,			\
+		      numvifs*sizeof(from->vif_timers[0]));		\
+		bcopy(from->vif_deletion_delay, to->vif_deletion_delay,	\
+		      numvifs*sizeof(from->vif_deletion_delay[0]));	\
 	} while (0)
 
 
@@ -96,14 +96,14 @@
 		kernel_cache_t *prev;					\
 		kernel_cache_t *next;					\
 									\
-		free((char *)((mrtentry_ptr)->vif_timers));		\
-		free((char *)((mrtentry_ptr)->vif_deletion_delay));	\
-		for (next = (mrtentry_ptr)->kernel_cache; next != NULL; ) {\
-			prev=next;					\
-			next=next->next;				\
+		free((mrtentry_ptr)->vif_timers);			\
+		free((mrtentry_ptr)->vif_deletion_delay);		\
+		for (next = (mrtentry_ptr)->kernel_cache; next; ) {	\
+			prev = next;					\
+			next = next->next;				\
 			free(prev);					\
 		}							\
-		free((char *)(mrtentry_ptr));				\
+		free((mrtentry_ptr));					\
 	} while (0)
 
 /*

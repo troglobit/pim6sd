@@ -398,8 +398,8 @@ recv_listener_report(mifi, src, grp, mld_version)
 		log_msg(LOG_DEBUG, 0,
 		    "The group doesn't exist, trying to add it");
 
-	g = (struct listaddr *) malloc(sizeof(struct listaddr));
-	if (g == NULL)
+	g = malloc(sizeof(*g));
+	if (!g)
 		log_msg(LOG_ERR, 0, "ran out of memory");	/* fatal */
 	memset(g, 0, sizeof(*g));
 	g->al_addr = *grp;
@@ -624,7 +624,9 @@ SetTimer(mifi, g)
 {
 	cbk_t *cbk;
 
-	cbk = (cbk_t *) malloc(sizeof(cbk_t));
+	cbk = malloc(sizeof(*cbk));
+	if (!cbk)
+		log_msg(LOG_ERR, 0, "ran out of memory");	/* fatal */
 	cbk->mifi = mifi;
 	cbk->g = g;
 	cbk->s = NULL;
@@ -695,7 +697,9 @@ SetQueryTimer(g, mifi, to_expire, q_time)
 	struct uvif *v = &uvifs[mifi];
 #endif
 
-	cbk = (cbk_t *) malloc(sizeof(cbk_t));
+	cbk = malloc(sizeof(*cbk));
+	if (!cbk)
+		log_msg(LOG_ERR, 0, "ran out of memory");	/* fatal */
 	cbk->g = g;
 	cbk->s = NULL;
 	cbk->q_time = q_time;

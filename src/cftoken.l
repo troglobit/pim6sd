@@ -533,6 +533,8 @@ slash		\/
 	BEGIN S_IFCONF;
 	yylval.val.l = strlen(yytext);
 	yylval.val.v = strdup(yytext);
+	if (!yylval.val.v)
+		log_msg(LOG_ERR, 0, "ran out of memory");	/* fatal */
 	return(IFNAME);
 }
 <S_PHYINT>{semi} { yyerror("phyint was specified without interface."); return(EOS); }
@@ -558,6 +560,8 @@ slash		\/
 	YYD_ECHO;
 	yylval.val.l = strlen(yytext);
 	yylval.val.v = strdup(yytext);
+	if (!yylval.val.v)
+		log_msg(LOG_ERR, 0, "ran out of memory");	/* fatal */
 	return(IFNAME);
 }
 <S_CANDRP>{semi} { DP("end cand_rp"); BEGIN S_CNF; return(EOS); }
@@ -571,6 +575,8 @@ slash		\/
 	YYD_ECHO;
 	yylval.val.l = strlen(yytext);
 	yylval.val.v = strdup(yytext);
+	if (!yylval.val.v)
+		log_msg(LOG_ERR, 0, "ran out of memory");	/* fatal */
 	return(IFNAME);
 }
 <S_CANDBSR>{semi} { DP("end cand_bsr"); BEGIN S_CNF; return(EOS); }
@@ -636,6 +642,8 @@ slash		\/
 			YYD_ECHO;
 			yylval.val.l = strlen(yytext);
 			yylval.val.v = strdup(yytext);
+			if (!yylval.val.v)
+				log_msg(LOG_ERR, 0, "ran out of memory");	/* fatal */
 			return(STRING);
 		}
 %%

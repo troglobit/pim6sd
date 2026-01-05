@@ -126,7 +126,10 @@ init_pim6_mrt()
     /* The first entry has address 'IN6ADDR_ANY' and is not used */
     /* The order is the smallest address first. */
 
-    srclist = malloc(sizeof(srcentry_t));
+    srclist = malloc(sizeof(*srclist));
+    if (!srclist)
+	    log_msg(LOG_ERR, 0, "ran out of memory");	/* fatal */
+
     srclist->next = NULL;
     srclist->prev = NULL;
     init_sin6(&srclist->address);
@@ -142,7 +145,10 @@ init_pim6_mrt()
     /* The first entry has address 'IN6ADDR_ANY' and is not used */
     /* The order is the smallest address first. */
 
-    grplist = malloc(sizeof(grpentry_t));
+    grplist = malloc(sizeof(*grplist));
+    if (!grplist)
+	    log_msg(LOG_ERR, 0, "ran out of memory");	/* fatal */
+
     grplist->next = NULL;
     grplist->prev = NULL;
     grplist->rpnext = NULL;
@@ -802,11 +808,11 @@ create_srcentry(source)
     if (search_srclist(source, &prev) == TRUE)
 	return (prev);
 
-    node = malloc(sizeof(srcentry_t));
-    if (node == NULL)
+    node = malloc(sizeof(*node));
+    if (!node)
     {
 	log_msg(LOG_WARNING, 0, "Memory allocation error for srcentry %s",
-	    sa6_fmt(source));
+		sa6_fmt(source));
 	return NULL;
     }
 
@@ -848,8 +854,8 @@ create_grpentry(group)
     if (search_grplist(group, &prev) == TRUE)
 	return (prev);
 
-    node = malloc(sizeof(grpentry_t));
-    if (node == NULL)
+    node = malloc(sizeof(*node));
+    if (!node)
     {
 	log_msg(LOG_WARNING, 0, "Memory allocation error for grpentry %s", sa6_fmt(group));
 	return NULL;
@@ -1020,8 +1026,8 @@ alloc_mrtentry(srcentry_ptr, grpentry_ptr)
                    	*i_ptr;
     u_int8          	vif_numbers;
 
-    mrtentry_ptr = malloc(sizeof(mrtentry_t));
-    if (mrtentry_ptr == NULL)
+    mrtentry_ptr = malloc(sizeof(*mrtentry_ptr));
+    if (!mrtentry_ptr)
     {
 	log_msg(LOG_WARNING, 0, "alloc_mrtentry(): out of memory");
 	return NULL;
@@ -1060,18 +1066,14 @@ alloc_mrtentry(srcentry_ptr, grpentry_ptr)
 
 #ifdef SAVE_MEMORY
     mrtentry_ptr->vif_timers = malloc(sizeof(u_int16) * numvifs);
-    mrtentry_ptr->vif_deletion_delay =
-	malloc(sizeof(u_int16) * numvifs);
+    mrtentry_ptr->vif_deletion_delay = malloc(sizeof(u_int16) * numvifs);
     vif_numbers = numvifs;
 #else
-    mrtentry_ptr->vif_timers =
-	malloc(sizeof(u_int16) * total_interfaces);
-    mrtentry_ptr->vif_deletion_delay =
-	malloc(sizeof(u_int16) * total_interfaces);
+    mrtentry_ptr->vif_timers = malloc(sizeof(u_int16) * total_interfaces);
+    mrtentry_ptr->vif_deletion_delay = malloc(sizeof(u_int16) * total_interfaces);
     vif_numbers = total_interfaces;
 #endif
-    if ((mrtentry_ptr->vif_timers == NULL) ||
-	(mrtentry_ptr->vif_deletion_delay == NULL))
+    if (!mrtentry_ptr->vif_timers || !mrtentry_ptr->vif_deletion_delay)
     {
 	log_msg(LOG_WARNING, 0, "alloc_mrtentry(): out of memory");
 	FREE_MRTENTRY(mrtentry_ptr);
@@ -1136,7 +1138,7 @@ create_mrtentry(srcentry_ptr, grpentry_ptr, flags)
 	 * Create and insert in group mrtlink and source mrtlink chains.
 	 */
 	r_new = alloc_mrtentry(srcentry_ptr, grpentry_ptr);
-	if (r_new == NULL)
+	if (!r_new)
 	    return NULL;
 
 	/*
@@ -1161,7 +1163,7 @@ create_mrtentry(srcentry_ptr, grpentry_ptr, flags)
 	    return (grpentry_ptr->grp_route);
 
 	r_new = alloc_mrtentry(srcentry_ptr, grpentry_ptr);
-	if (r_new == NULL)
+	if (!r_new)
 	    return NULL;
 
 	grpentry_ptr->grp_route = r_new;
@@ -1176,7 +1178,7 @@ create_mrtentry(srcentry_ptr, grpentry_ptr, flags)
 	    return (srcentry_ptr->mrtlink);
 
 	r_new = alloc_mrtentry(srcentry_ptr, grpentry_ptr);
-	if (r_new == NULL)
+	if (!r_new)
 	    return NULL;
 
 	srcentry_ptr->mrtlink = r_new;
@@ -1325,7 +1327,10 @@ add_kernel_cache(mrtentry_ptr, source, group, flags)
 	if (mrtentry_ptr->flags & MRTF_KERNEL_CACHE)
 	    return;
 
-	node = malloc(sizeof(kernel_cache_t));
+	node = malloc(sizeof(*node));
+	if (!node)
+		log_msg(LOG_ERR, 0, "ran out of memory");	/* fatal */
+
 	node->next = NULL;
 	node->prev = NULL;
 	node->source = *source;
@@ -1361,13 +1366,17 @@ add_kernel_cache(mrtentry_ptr, source, group, flags)
      * The new entry must be placed between prev and
      * next
      */
-    node = malloc(sizeof(kernel_cache_t));
-    if (prev != NULL)
+    node = malloc(sizeof(*node));
+    if (!node)
+	    log_msg(LOG_ERR, 0, "ran out of memory");	/* fatal */
+
+    if (prev)
 	prev->next = node;
     else
 	mrtentry_ptr->kernel_cache = node;
-    if (next != NULL)
+    if (next)
 	next->prev = node;
+
     node->prev = prev;
     node->next = next;
     node->source = *source;

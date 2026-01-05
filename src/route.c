@@ -1289,7 +1289,11 @@ add_static_rt_entry(paddr, plen, gwaddr)
 	if (inet6_same_prefix(paddr, &entry->paddr, &mask))
 	    return -1;
     }
-    entry = malloc(sizeof(struct staticrt));
+
+    entry = malloc(sizeof(*entry));
+    if (!entry)
+	log_msg(LOG_ERR, 0, "ran out of memory");	/* fatal */
+
     entry->paddr = *paddr;
     entry->plen = plen;
     entry->gwaddr = *gwaddr;

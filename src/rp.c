@@ -205,10 +205,9 @@ init_rp6()
      * some padding put in the compiler. However, it doesn't matter
      * since we use the space just as a buffer(i.e not as the message).
      */
-    cand_rp_adv_message.buffer = 
-		(u_int8 *) malloc(4 + sizeof(pim6_encod_uni_addr_t) +
-				  255*sizeof(pim6_encod_grp_addr_t));
-    if (cand_rp_adv_message.buffer == NULL)
+    cand_rp_adv_message.buffer = malloc(4 + sizeof(pim6_encod_uni_addr_t) +
+					255*sizeof(pim6_encod_grp_addr_t));
+    if (!cand_rp_adv_message.buffer)
 	log_msg(LOG_ERR, 0, "CandRPadv Buffer allocation");
 
     cand_rp_adv_message.prefix_cnt_ptr = cand_rp_adv_message.buffer;
@@ -384,7 +383,7 @@ bootstrap_initial_delay()
     }
 
     Delay = 5 + 2 * Delay + AddrDelay;
-    return (u_int16) Delay;
+    return (u_int16)Delay;
 }
 
 
@@ -402,7 +401,6 @@ add_cand_rp(used_cand_rp_list, address)
     for (cand_rp = *used_cand_rp_list; cand_rp != NULL;
 	 cand_rp_prev = cand_rp, cand_rp = cand_rp->next)
     {
-
 	if (inet6_greaterthan(&cand_rp->rpentry->address, address))
 	    continue;
 	if (inet6_equal(&cand_rp->rpentry->address, address))
@@ -412,22 +410,24 @@ add_cand_rp(used_cand_rp_list, address)
     }
 
     /* Create and insert the new entry between cand_rp_prev and cand_rp */
-    cand_rp_new = (cand_rp_t *) malloc(sizeof(cand_rp_t));
+    cand_rp_new = malloc(sizeof(*cand_rp_new));
+    if (!cand_rp_new)
+	log_msg(LOG_ERR, 0, "ran out of memory");	/* fatal */
+
     cand_rp_new->rp_grp_next = NULL;
     cand_rp_new->next = cand_rp;
     cand_rp_new->prev = cand_rp_prev;
-    if (cand_rp != NULL)
+    if (cand_rp)
 	cand_rp->prev = cand_rp_new;
-    if (cand_rp_prev == NULL)
-    {
+    if (!cand_rp_prev)
 	*used_cand_rp_list = cand_rp_new;
-    }
     else
-    {
 	cand_rp_prev->next = cand_rp_new;
-    }
 
-    rpentry_ptr = (rpentry_t *) malloc(sizeof(rpentry_t));
+    rpentry_ptr = malloc(sizeof(*rpentry_ptr));
+    if (!rpentry_ptr)
+	log_msg(LOG_ERR, 0, "ran out of memory");	/* fatal */
+
     cand_rp_new->rpentry = rpentry_ptr;
     rpentry_ptr->next = NULL;
     rpentry_ptr->prev = NULL;
@@ -449,15 +449,11 @@ add_cand_rp(used_cand_rp_list, address)
      */
 
     if (local_address(&rpentry_ptr->address) == NO_VIF)
-    {
 	/* TODO: check for error and delete */
 	set_incoming(rpentry_ptr, PIM_IIF_RP);
-    }
     else
-    {
 	/* TODO: XXX: CHECK!!! */
 	rpentry_ptr->incoming = reg_vif_num;
-    }
 
     return (cand_rp_new);
 }
@@ -500,20 +496,19 @@ add_grp_mask(used_grp_mask_list, group_addr, group_mask, hash_mask)
 	    break;
     }
 
-    grp_mask_tmp = (grp_mask_t *) malloc(sizeof(grp_mask_t));
+    grp_mask_tmp = malloc(sizeof(*grp_mask_tmp));
+    if (!grp_mask_tmp)
+	log_msg(LOG_ERR, 0, "ran out of memory");	/* fatal */
+
     grp_mask_tmp->grp_rp_next = NULL;
     grp_mask_tmp->next = grp_mask;
     grp_mask_tmp->prev = grp_mask_prev;
-    if (grp_mask != NULL)
+    if (grp_mask)
 	grp_mask->prev = grp_mask_tmp;
-    if (grp_mask_prev == NULL) 
-    {
+    if (!grp_mask_prev)
 	*used_grp_mask_list = grp_mask_tmp;
-    }
     else
-    {
 	grp_mask_prev->next = grp_mask_tmp;
-    }
 
     grp_mask_tmp->group_addr = *group_addr;
     grp_mask_tmp->group_mask = group_mask;
@@ -661,12 +656,15 @@ add_rp_grp_entry(used_cand_rp_list, used_grp_mask_list,
 
     /* Create and link the new entry */
 
-    grp_rp_entry_new = (rp_grp_entry_t *) malloc(sizeof(rp_grp_entry_t));
+    grp_rp_entry_new = malloc(sizeof(*grp_rp_entry_new));
+    if (!grp_rp_entry_new)
+	log_msg(LOG_ERR, 0, "ran out of memory");	/* fatal */
+
     grp_rp_entry_new->grp_rp_next = grp_rp_entry_next;
     grp_rp_entry_new->grp_rp_prev = grp_rp_entry_prev;
-    if (grp_rp_entry_next != NULL)
+    if (grp_rp_entry_next)
 	grp_rp_entry_next->grp_rp_prev = grp_rp_entry_new;
-    if (grp_rp_entry_prev == NULL)
+    if (!grp_rp_entry_prev)
 	grp_mask_ptr->grp_rp_next = grp_rp_entry_new;
     else
 	grp_rp_entry_prev->grp_rp_next = grp_rp_entry_new;

@@ -359,8 +359,9 @@ start_vif(mifi_t vifi)
 		 */
 		v->uv_flags |= VIFF_QUERIER;
 		if (!v->uv_querier) {
-			v->uv_querier = malloc(sizeof(struct listaddr));
-			memset(v->uv_querier, 0, sizeof(struct listaddr));
+			v->uv_querier = calloc(1, sizeof(struct listaddr));
+			if (!v->uv_querier)
+				log_msg(LOG_ERR, 0, "ran out of memory");	/* fatal */
 		}
 
 		if (!v->uv_linklocal) {
