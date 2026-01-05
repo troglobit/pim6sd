@@ -161,7 +161,7 @@ int usage(int rc)
 {
     char buf[768];
 
-    printf("Usage: %s [-hnv] [-f FILE] [-d [LEVEL][,LEVEL]]\n"
+    printf("Usage: %s [-hnv] [-f FILE] [-d LEVEL[,LEVEL,...]]\n"
 	   "\n"
 	   "Options:\n"
 	   " -d LVL     Debug subsystem(s), separate args with comma (no space)\n"
