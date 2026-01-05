@@ -138,24 +138,25 @@ static int datathres_config (void);
 }
 
 %token EOS
-%token LOGGING LOGLEV NOLOGLEV
+%token LOGGING
+%token <num> LOGLEV NOLOGLEV
 %token YES NO
 %token REVERSELOOKUP
-%token PHYINT IFNAME ENABLE DISABLE PREFERENCE METRIC NOLISTENER
+%token PHYINT
+%token <val> IFNAME
+%token ENABLE DISABLE PREFERENCE METRIC NOLISTENER
 %token ROBUST QUERY_INT QUERY_INT_RESP MLD_VERSION LLQI
 %token GRPPFX
 %token STATICRP
 %token STATIC
 %token CANDRP CANDBSR TIME PRIORITY MASKLEN
-%token NUMBER STRING SLASH ANY
+%token <fl> NUMBER
+%token <val> STRING
+%token SLASH ANY
 %token REGTHRES DATATHRES RATE INTERVAL
 %token SOURCEOIF
 %token SRCMETRIC SRCPREF HELLOPERIOD GRANULARITY JPPERIOD
 %token DATATIME REGSUPTIME PROBETIME ASSERTTIME DEFVIFSTAT
-
-%type <num> LOGLEV NOLOGLEV
-%type <fl> NUMBER
-%type <val> STRING IFNAME
 %type <attr> if_attributes rp_substatement rp_attributes
 %type <attr> bsr_substatement bsr_attributes thres_attributes
 %type <num> staticrp_priority
