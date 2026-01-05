@@ -118,7 +118,7 @@ void mld_fill_msg(int ifindex, struct sockaddr_in6 *src, int alert, int datalen)
 #define MLD_MTRACE_RESP		201
 #define MLD_MTRACE		202
 
-#ifndef HAVE_MLD_HDR
+#ifndef HAVE_STRUCT_MLD_HDR
 struct mld_hdr {
 	struct icmp6_hdr mld_icmp6_hdr;
 	struct in6_addr	mld_addr;

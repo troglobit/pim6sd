@@ -21,7 +21,6 @@ pim6sd_SOURCES    = callout.c		callout.h			\
 		    mld6v2.c		mld6v2.h			\
 		    mld6v2_proto.c	mld6v2_proto.h			\
 		    mrt.c		mrt.h				\
-		    netlink.c		routesock.c	routesock.h	\
 		    pim6.c		pim6.h				\
 		    pim6_proto.c	pim6_proto.h			\
 		    route.c		route.h				\
@@ -30,8 +29,19 @@ pim6sd_SOURCES    = callout.c		callout.h			\
 		    trace.c		trace.h				\
 		    vif.c		vif.h
 pim6sd_LDADD      = $(LIBS) $(LIBOBJS)
+# TODO, add: -W -Wall -Wextra -Wno-unused
 pim6sd_CFLAGS     = -std=c99
-pim6sd_CPPFLAGS   = -DYIPS_DEBUG -D_GNU_SOURCE -I$(top_srcdir)/include
+pim6sd_CPPFLAGS   = -DYIPS_DEBUG -I$(top_srcdir)/include
 
+if LINUX
+pim6sd_CPPFLAGS  += -D_GNU_SOURCE
+pim6sd_SOURCES   += netlink.c netlink.h
+endif
+
+if BSD
+pim6sd_SOURCES   += routesock.c routesock.h
+endif
+
+# https://www.gnu.org/software/automake/manual/html_node/Sources.html
 BUILT_SOURCES     = cfparse.h
 DISTCLEANFILES    = cftoken.c cfparse.c cfparse.h

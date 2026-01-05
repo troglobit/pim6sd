@@ -66,14 +66,8 @@
 #include "defs.h"
 #include <sys/socket.h>
 #include <net/route.h>
-#ifdef __linux__
-#include <linux/mroute6.h>
-#else
 #include <netinet6/ip6_mroute.h>
-#endif
-#ifdef HAVE_ROUTING_SOCKETS
 #include <net/if_dl.h>
-#endif
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <unistd.h>
@@ -88,7 +82,6 @@
 #include "inet6.h"
 #include "pimd.h"
 
-#ifdef HAVE_ROUTING_SOCKETS
 union sockunion
 {
     struct sockaddr sa;
@@ -105,9 +98,7 @@ u_long          rtm_inits;
 /*
  * Local functions definitions.
  */
-static int getmsg 
-(struct rt_msghdr *, int,
-     struct rpfctl * rpfinfo);
+static int getmsg (struct rt_msghdr *, int, struct rpfctl * rpfinfo);
 
 /*
  * TODO: check again!
@@ -444,4 +435,3 @@ getmsg(rtm, msglen, rpfinfop)
 
     return (TRUE);
 }
-#endif				/* HAVE_ROUTING_SOCKETS */

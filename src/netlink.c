@@ -15,36 +15,30 @@
 #include <../include/config.h>
 #endif
 
-#ifndef HAVE_NETLINK
-/* not compiled */
-#else
-
-#include <stdio.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/param.h>
-#include <sys/file.h>
-#include <sys/socket.h>
-#include <netdb.h>
-#include <stdlib.h>
-#include <strings.h>
-#include <paths.h>
-#include <net/if.h>
-#include <string.h>
-#ifdef __linux__
-#include <linux/mroute6.h>
-#endif
-#include <syslog.h>
 #include <errno.h>
+#include <net/if.h>
+#include <netdb.h>
+#include <paths.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <strings.h>
+#include <syslog.h>
 #include <time.h>
+#include <unistd.h>
+
+#include <sys/file.h>
+#include <sys/param.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+
+#include <linux/mroute6.h>
+#include <linux/rtnetlink.h>
+
 #include "defs.h"
 #include "vif.h"
 #include "debug.h"
 #include "inet6.h"
-
-#ifdef __linux__
-#include <linux/rtnetlink.h>
-#endif
 
 static int routing_socket = -1;
 static __u32 seq;
@@ -278,5 +272,3 @@ static int getmsg(struct rtmsg *rtm, int msglen, struct rpfctl *rpf)
 
 	return TRUE;
 }
-
-#endif /* HAVE_NETLINK */

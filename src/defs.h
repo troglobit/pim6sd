@@ -53,6 +53,16 @@
 #include "../include/config.h"
 #endif
 
+#include <sys/param.h>		/* Defines BSD system version (year & month) */
+
+/*
+ * Various definitions to make it working for different platforms
+ */
+/* The old style sockaddr definition doesn't have sa_len */
+#if defined(_AIX) || (defined(BSD) && (BSD >= 199006)) /* sa_len was added with 4.3-Reno */
+#define HAVE_SA_LEN
+#endif
+
 #define	TRUE		1
 #define	FALSE		0
 #define ELSE		else           /* To make emacs cc-mode happy */
