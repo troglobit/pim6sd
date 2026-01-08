@@ -10,7 +10,7 @@ struct pim {
 	__u8	pim_type:4,		/* PIM message type */
 		pim_ver:4;		/* PIM version */
 #elif defined(__BIG_ENDIAN_BITFIELD)
-	__u8	pim_ver:4;		/* PIM version */
+	__u8	pim_ver:4,		/* PIM version */
 		pim_type:4;		/* PIM message type */
 #endif
 	__u8	pim_rsv;		/* Reserved */
